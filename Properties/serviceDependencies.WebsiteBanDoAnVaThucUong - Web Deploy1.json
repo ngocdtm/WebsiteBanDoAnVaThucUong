@@ -1,0 +1,16 @@
+{
+  "dependencies": {
+    "mssql1": {
+      "ignored": "true",
+      "type": "mssql",
+      "connectionId": "ConnectionStrings:DefaultConnection"
+    },
+    "mssql2": {
+      "serviceConnectorResourceId": "/subscriptions/[parameters('subscriptionId')]/resourceGroups/[parameters('resourceGroupName')]/providers/Microsoft.Web/sites/WebsiteBanDoAnVaThucUong/providers/Microsoft.ServiceLinker/linkers/tcpfoodanddrink.database.windows.net1433_FBF7BBDF71",
+      "secretStore": "AzureAppSettings",
+      "resourceId": "/subscriptions/[parameters('subscriptionId')]/resourceGroups/[parameters('resourceGroupName')]/providers/Microsoft.Sql/servers/foodanddrink/databases/WebsiteBanDoAnVaThucUong",
+      "type": "mssql.azure",
+      "connectionId": "tcp:foodanddrink.database.windows.net,1433"
+    }
+  }
+}

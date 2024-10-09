@@ -1,0 +1,58 @@
+﻿@model IEnumerable<WebsiteBanDoAnVaThucUong.Models.ShoppingCartItem>
+@using WebsiteBanDoAnVaThucUong.Common
+
+@if (Model != null && Model.Any())
+{
+    <h3>GIỎ HÀNG <span style="float:right;position:relative"><small>@*@Model.Count()*@</small></span></h3>
+    var i = 0;
+    var tongtien = decimal.Zero;
+    var tongsl = 0;
+    var soluong = 0;
+    var thanhtien = decimal.Zero;
+    <div style="border:1px solid #808080; width:380px; height:450px">
+        <table class="table">
+            @foreach (var item in Model)
+            {
+                soluong = item.Quantity;
+                thanhtien = item.TotalPrice;
+                tongtien += item.TotalPrice;
+                tongsl += item.Quantity;
+                <tr>
+                    <td>@item.ProductName</td>
+                    <td>@Common.FormatNumber(item.Price, 0)</td>
+                    <td>@soluong</td>
+                    <td>@Common.FormatNumber(thanhtien, 0)</td>
+                </tr>
+            }
+            <tr>
+                <td>Tổng số lượng</td>
+                <td></td>
+                <td>@tongsl</td>
+            </tr>
+            <tr id="originalTotalRow">
+                <td>Tổng tiền</td>
+                <td></td>
+                <td></td>
+                <td id="originalTotal">@Common.FormatNumber(tongtien, 0)</td>
+            </tr>
+            <tr id="discountRow" style="display:none;">
+                <td>Giảm giá</td>
+                <td></td>
+                <td></td>
+                <td id="discountAmount"></td>
+            </tr>
+            <tr id="newTotalRow" style="display:none;">
+                <td>Tổng tiền sau giảm giá</td>
+                <td></td>
+                <td></td>
+                <td id="newTotal"></td>
+            </tr>
+
+        </table>
+    </div>
+
+}
+else
+{
+
+}

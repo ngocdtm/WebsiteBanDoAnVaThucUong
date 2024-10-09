@@ -1,0 +1,211 @@
+﻿
+<!-- Sidebar -->
+<div class="sidebar">
+    <!-- Sidebar user (optional) -->
+    <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+        @*<div class="image">
+            <img src="~/Uploads/images/logo.png" class="img-circle elevation-2" alt="User Image">
+        </div>*@
+        <div class="info">
+            <a href="/admin/home" class="d-block admin-name" style="font-size:25px">  Quản trị viên</a>
+            <style>
+                .admin-name {
+                    color: #FFD700 !important; /* Màu vàng gold */
+                }
+
+                    .admin-name:hover {
+                        color: #FFA500 !important; /* Màu cam khi hover */
+                    }
+            </style>
+        </div>
+    </div>
+
+    <!-- SidebarSearch Form -->
+    @*<div class="form-inline">
+        <div class="input-group" data-widget="sidebar-search">
+            <input class="form-control form-control-sidebar" type="search" placeholder="Search" aria-label="Search">
+            <div class="input-group-append">
+                <button class="btn btn-sidebar">
+                    <i class="fas fa-search fa-fw"></i>
+                </button>
+            </div>
+        </div>
+    </div>*@
+
+    <!-- Sidebar Menu -->
+    <nav class="mt-2">
+        <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+            <li class="nav-item">
+                <a href="/Admin/Home" class="nav-link">
+                    <i class="nav-icon fas fa-tachometer-alt"></i>
+                    <p>
+                        DashBoard
+                        @*<i class="right fas fa-angle-left"></i>*@
+                    </p>
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a href="/Admin/Category" class="nav-link">
+                    <i class="nav-icon fas fa-tachometer-alt"></i>
+                    <p>
+                        Danh mục
+                        @*<i class="right fas fa-angle-left"></i>*@
+                    </p>
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a href="/admin/role" class="nav-link">
+                    <i class="nav-icon fas fa-th"></i>
+                    <p>
+                        Quản lý Phân quyền
+                    </p>
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a href="/admin/account" class="nav-link">
+                    <i class="nav-icon fas fa-th"></i>
+                    <p>
+                        Quản lý Tài khoản
+                    </p>
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a href="/admin/statistical" class="nav-link">
+                    <i class="nav-icon fas fa-th"></i>
+                    <p>
+                        Quản lý Thống kê
+                    </p>
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a href="/admin/stores" class="nav-link">
+                    <i class="nav-icon fas fa-th"></i>
+                    <p>
+                        Quản lý Chi nhánh
+                    </p>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="/Admin/imagesliders" class="nav-link">
+                    <i class="nav-icon fas fa-th"></i>
+                    <p>
+                        Quản lý Banner
+                    </p>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="/Admin/" class="nav-link">
+                    <i class="nav-icon fas fa-tachometer-alt"></i>
+                    <p>
+                        Quản lý sản phẩm
+                        <i class="right fas fa-angle-left"></i>
+                    </p>
+                </a>
+                <ul class="nav nav-treeview">
+                    <li class="nav-item">
+                        <a href="/Admin/ProductCategory" class="nav-link">
+                            <i class="far fa-circle nav-icon"></i>
+                            <p>Danh mục</p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/Admin/Product" class="nav-link">
+                            <i class="far fa-circle nav-icon"></i>
+                            <p>Sản phẩm</p>
+                        </a>
+                    </li>
+
+                </ul>
+            </li>
+
+            <li class="nav-item">
+                <a href="/Admin/news/index" class="nav-link">
+                    <i class="nav-icon fas fa-th"></i>
+                    <p>
+                        Quản lý Tin tức
+                        @*<span class="right badge badge-danger">New</span>*@
+                    </p>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="/Admin/promotions/index" class="nav-link">
+                    <i class="nav-icon fas fa-th"></i>
+                    <p>
+                        Quản lý Ưu đãi
+                        @*<span class="right badge badge-danger">New</span>*@
+                    </p>
+                </a>
+            </li>
+            @*<li class="nav-item">
+            <a href="/Admin/promotions" class="nav-link">
+                <i class="nav-icon fas fa-tachometer-alt"></i>
+                <p>
+                    Quản lý Khuyến mãi
+                    <i class="right fas fa-angle-left"></i>
+                </p>
+            </a>
+            <ul class="nav nav-treeview">
+                <li class="nav-item">
+                    <a href="/Admin/promotiontypes" class="nav-link">
+                        <i class="far fa-circle nav-icon"></i>
+                        <p>Loại khuyến mãi</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/Admin/promotions" class="nav-link">
+                        <i class="far fa-circle nav-icon"></i>
+                        <p>Chương trình khuyến mãi</p>
+                    </a>
+                </li>
+
+            </ul>
+        </li>*@
+            <li class="nav-item">
+                <a href="/Admin/vouchers" class="nav-link">
+                    <i class="nav-icon fas fa-th"></i>
+                    <p>
+                        Quản lý Voucher
+                        @*<span class="right badge badge-danger">New</span>*@
+                    </p>
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a href="/admin/order/index" class="nav-link">
+                    <i class="nav-icon fas fa-th"></i>
+                    <p>
+                        Quản lý Đơn đặt hàng
+                    </p>
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a href="/admin/feedbackletter/index" class="nav-link">
+                    <i class="nav-icon fas fa-th"></i>
+                    <p>
+                        Quản lý Thư phản hồi
+                    </p>
+                </a>
+            </li>
+
+
+            <!--<li class="nav-item">
+    <a href="/post" class="nav-link">
+        <i class="nav-icon fas fa-th"></i>
+        <p>
+            Cấu hình hệ thống-->
+            @*<span class="right badge badge-danger">New</span>*@
+            <!--</p>
+        </a>
+    </li>-->
+
+        </ul>
+    </nav>
+    <!-- /.sidebar-menu -->
+</div>
+<!-- /.sidebar -->

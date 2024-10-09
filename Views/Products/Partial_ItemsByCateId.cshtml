@@ -1,0 +1,96 @@
+﻿@model IEnumerable<WebsiteBanDoAnVaThucUong.Models.EF.Product>
+@using Microsoft.AspNet.Identity
+@Html.AntiForgeryToken()
+@if (Model != null && Model.Any())
+{
+    foreach (var item in Model)
+    {
+        <!-- Product 1 -->
+        var strImge = "";
+        var img = item.ProductImage.FirstOrDefault(x => x.IsDefault);
+        if (img != null)
+        {
+            strImge = img.Image;
+        }
+        var wishlist = item.Wishlist.FirstOrDefault(x => x.CustomerId == User.Identity.GetUserId());
+        var isWishlist = wishlist != null;
+
+        <div class="product-item @item.ProductCategory.Alias">
+            <div class="product discount product_filter">
+                <div class="product_image">
+                    <img src="@strImge"  style="width:220px; height:180px" alt="@item.Title">
+                </div>
+
+                <div data-id="@item.Id" class="favorite @(isWishlist ? "active" : "")" style="margin-right: 160px; font-size:20px"></div>
+
+                @*@if (item.PriceSale > 0)
+                {
+                    <div class="product_bubble product_bubble_right product_bubble_red d-flex flex-column align-items-center"><span>sale</span></div>
+                }*@
+                <div class="product_info">
+                    <h6 class="product_name"><a href="/chi-tiet/@item.Alias-p@(item.Id)">@item.Title</a></h6>
+                        <div class="product_price">@WebsiteBanDoAnVaThucUong.Common.Common.FormatNumber(item.SalePrice, 0)</div>
+                </div>
+            </div>
+            <div class="red_button add_to_cart_button"><a href="#" class="btnAddToCart" data-id="@item.Id">add to cart</a></div>
+        </div>
+    }
+}
+
+<script>
+    $(document).ready(function () {
+        $('.favorite').click(function (e) {
+            e.preventDefault();
+            var productId = $(this).data('id');
+            var $heartIcon = $(this);
+
+            if ($heartIcon.hasClass('active')) {
+                // Xóa khỏi danh sách yêu thích
+                $.ajax({
+                    url: '/Wishlist/RemoveFromWishlist',
+                    type: 'POST',
+                    data: { productId: productId },
+                    success: function (response) {
+                        console.log('Remove response:', response); // Log server response
+                        if (response.success) {
+                            $heartIcon.removeClass('active');
+                            alert(response.message);
+                        } else {
+                            alert(response.message);
+                        }
+                    }, 
+                    error: function (error) {
+                        console.log('Error removing from wishlist:', error); // Log any errors
+                        alert('Error occurred while removing the item. Please try again.');
+                    }
+                });
+            } else {
+                // Thêm vào danh sách yêu thích
+                $.ajax({
+                    url: '/Wishlist/AddToWishlist',
+                    type: 'POST',
+                    data: { productId: productId },
+                    success: function (response) {
+                        if (response.success) {
+                            $heartIcon.addClass('active');
+                            alert(response.message);
+                        } else {
+                            alert(response.message);
+                        }
+                    }
+                });
+            }
+        });
+    });
+</script>
+
+<style>
+    .favorite {
+        cursor: pointer;
+        transition: color 0.3s ease;
+    }
+
+        .favorite.active {
+            color: red;
+        }
+</style>

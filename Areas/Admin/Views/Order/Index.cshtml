@@ -1,0 +1,191 @@
+﻿﻿@model PagedList.IPagedList<WebsiteBanDoAnVaThucUong.Models.EF.Order>
+@using Microsoft.AspNet.Identity
+@Html.AntiForgeryToken()
+@using PagedList.Mvc;
+@{
+    ViewBag.Title = "Danh sách đơn hàng";
+}
+@section naviheader{
+    <!-- Left navbar links -->
+    <ul class="navbar-nav">
+        <li class="nav-item">
+            <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
+        </li>
+        <li class="nav-item d-none d-sm-inline-block">
+            <a href="/admin/home" class="nav-link">Trang chủ</a>
+        </li>
+        <li class="nav-item d-none d-sm-inline-block">
+            <a href="/admin/order" class="nav-link">Danh sách đơn hàng</a>
+        </li>
+    </ul>
+}
+
+<!-- Main content -->
+<section class="content">
+
+    <!-- Default box -->
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">Danh sách đơn hàng</h3>
+        </div>
+        <div class="card-body">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Mã đơn hàng</th>
+                        <th>Tên Khách hàng</th>
+                        <th>Phone</th>
+                        <th>Tiền</th>
+                        <th>Phương thức thanh toán</th>
+                        <th>Ngày đặt hàng</th>
+                        <th>Trạng thái</th>
+                        <th>Giao hàng</th>
+                        <th></th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @if (Model != null && Model.Any())
+                    {
+                        var i = ((ViewBag.Page - 1) * ViewBag.PageSize) + 1;
+                        foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@i</td>
+                                <td>@item.Code</td>
+                                <td>@item.User.FullName</td>
+                                <td>@item.User.PhoneNumber</td>
+                                <td>@WebsiteBanDoAnVaThucUong.Common.Common.FormatNumber(item.FinalAmount, 0)</td>
+                                <td>@(item.TypePayment==1?"COD":"Chuyển khoản")</td>
+                                <td>@item.CreatedDate.ToString("dd/MM/yyyy")</td>
+                                <td>
+                                    @if (item.OrderStatus == 1)
+                                    {
+                                        <span>Chưa thanh toán</span>
+                                    }
+                                    @if (item.OrderStatus == 2)
+                                    {
+                                        <span>Đã thanh toán</span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (item.ShippingStatus == 1)
+                                    {
+                                        <span>Chờ xác nhận</span>
+                                    }
+                                    @if (item.ShippingStatus == 2)
+                                    {
+                                        <span>Đang hàng đã được duyệt</span>
+                                    }
+                                    @if (item.ShippingStatus == 3)
+                                    {
+                                        <span>Đang giao hàng</span>
+                                    }
+                                    @if (item.ShippingStatus == 4)
+                                    {
+                                        <span>Giao hàng thành công</span>
+                                    }
+                                    @if (item.ShippingStatus == 5)
+                                    {
+                                        <span>Đã hủy</span>
+                                    }
+                                </td>
+
+                                <td>
+                                    <a href="/admin/order/view/@item.Id" class="btn btn-sm btn-primary">Xem chi tiết</a>
+                                    <a href="#" data-id="@item.Id" class="btn btn-success btnUpdateOrder">Cập nhật</a>
+                                </td>
+                            </tr>
+                            i++;
+                        }
+                    }
+                </tbody>
+            </table>
+
+            <div class="row">
+                <div class="col-6"></div>
+                <div class="col-6" style="text-align:right;">
+                    @Html.PagedListPager(Model, page => Url.Action("Index", new { page }))
+                </div>
+            </div>
+        </div>
+        <!-- /.card-body -->
+        <div class="card-footer">
+
+        </div>
+        <!-- /.card-footer-->
+    </div>
+    <!-- /.card -->
+
+</section>
+<!-- /.content -->
+
+<div class="modal fade" id="updateStatusModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Cập nhật trạng thái đơn hàng</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="updateStatusForm">
+                    <input type="hidden" id="orderId" name="orderId" value="" />
+                    <div class="form-group">
+                        <label for="status">Trạng thái giao hàng</label>
+                        <select class="form-control" id="status" name="status">
+                            <option value="1">Chờ xác nhận</option>
+                            <option value="2">Đơn hàng đã được duyệt</option>
+                            <option value="3">Đang giao hàng</option>
+                            <option value="4">Giao hàng thành công</option>
+                            <option value="5">Đã hủy</option>
+                        </select>
+                    </div>
+
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Thoát</button>
+                    <button type="submit" class="btn btn-primary" style="margin-left:280px">Lưu cập nhật</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            $('.btnUpdateOrder').click(function() {
+                var orderId = $(this).data('id');
+                $('#orderId').val(orderId);
+                $('#updateStatusModal').modal('show');
+            });
+
+            $('#updateStatusForm').submit(function(e) {
+                e.preventDefault();
+                var orderId = $('#orderId').val();
+                var status = $('#status').val();
+
+                $.ajax({
+                    url: '@Url.Action("UpdateShippingStatus", "Order")',
+                    type: 'POST',
+                    data: {
+                        id: orderId,
+                        status: status
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            $('#updateStatusModal').modal('hide');
+                            location.reload();
+                        } else {
+                            alert('Có lỗi xảy ra khi cập nhật trạng thái.');
+                        }
+                    },
+                    error: function() {
+                        alert('Có lỗi xảy ra khi cập nhật trạng thái.');
+                    }
+                });
+            });
+        });
+    </script>
+}

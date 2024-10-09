@@ -1,0 +1,125 @@
+﻿﻿@model PagedList.PagedList<WebsiteBanDoAnVaThucUong.Models.EF.ImageSlider>
+@using PagedList.Mvc
+@Html.AntiForgeryToken()
+@{
+    ViewBag.Title = "Slider Quảng cáo";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+@section naviheader{
+    <!-- Left navbar links -->
+    <ul class="navbar-nav">
+        <li class="nav-item">
+            <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
+        </li>
+        <li class="nav-item d-none d-sm-inline-block">
+            <a href="/admin/home" class="nav-link">Trang chủ</a>
+        </li>
+        <li class="nav-item d-none d-sm-inline-block">
+            <a href="/admin/imagesliders" class="nav-link">@ViewBag.Title</a>
+        </li>
+    </ul>
+}
+<link rel="stylesheet" href="//code.jquery.com/ui/1.13.1/themes/base/jquery-ui.css">
+
+<section class="content">
+
+    <!-- Default box -->
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">Các Slide của Banner Quảng cáo</h3>
+
+            <div class="card-tools">
+                <a href="/admin/imagesliders/create" class="btn btn-success">Thêm mới</a>
+            </div>
+        </div>
+        <div class="card-body">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>STT</th>
+                        <th>Hình ảnh</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null && Model.Any())
+                    {
+                        var i = ((ViewBag.Page - 1) * ViewBag.PageSize) + 1;
+                        foreach (var item in Model)
+                        {
+
+                            <tr id="trow_@item.Id">
+                                <td>@i</td>
+                                <td><img src="~/Image/@item.Image" style="width:100px;height:80px" /></td>
+                                <td>
+                                    <a href="/admin/imagesliders/edit/@item.Id" class="btn btn-sm btn-primary">Sửa</a>
+                                    <a href="#" data-id="@item.Id" class="btn btn-sm btn-danger btnDelete">Xóa</a>
+                                </td>
+
+                            </tr>
+                            i++;
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="4">Không có bản ghi nào!!!</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+            <div class="row">
+                <div class="col-6"></div>
+                <div class="col-6" style="text-align:right;">
+                    @Html.PagedListPager(Model, page => Url.Action("Index", new { page }))
+                </div>
+            </div>
+
+        </div>
+        <!-- /.card-body -->
+        <div class="card-footer">
+
+        </div>
+        <!-- /.card-footer-->
+    </div>
+    <!-- /.card -->
+
+</section>
+
+
+<div id="dialog">
+    <iframe id="myIframe" style="border: 0; width: 100%; height: 10px;"></iframe>
+</div>
+
+<script>
+    $(document).ready(function() {
+    $(document).on('click', '.btnDelete', function(e) {
+        e.preventDefault();
+        var id = $(this).data('id');
+        if (confirm("Bạn có chắc chắn muốn xóa slide này?")) {
+            $.ajax({
+                url: '@Url.Action("Delete", "ImageSliders", new { area = "Admin" })/' + id,
+                type: 'POST',
+                dataType: 'json',
+                data: {
+                    __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+                },
+                success: function(result) {
+                    if (result.success) {
+                        $('#trow_' + id).remove();
+                        alert(result.message);
+                    } else {
+                        alert(result.message);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.log(xhr.responseText);
+                    alert('Có lỗi xảy ra!');
+                }
+            });
+        }
+    });
+});
+</script>

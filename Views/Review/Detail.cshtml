@@ -1,0 +1,124 @@
+﻿﻿@model WebsiteBanDoAnVaThucUong.Models.EF.Order
+@{
+    ViewBag.Title = "Chi tiết đơn hàng";
+}
+
+<!-- Main content -->
+<section class="content">
+
+    <!-- Default box -->
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">Chi tiết đơn hàng</h3>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>Mã đơn hàng</label>
+                        <p class="form-control">@Model.Code</p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>Họ tên khách</label>
+                        <p class="form-control">@Model.User.FullName</p>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>Tổng tiền</label>
+                        <p class="form-control">@WebsiteBanDoAnVaThucUong.Common.Common.FormatNumber(Model.FinalAmount, 0) VNĐ</p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>Số điện thoại</label>
+                        <p class="form-control">@Model.User.PhoneNumber</p>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>Ngày tạo</label>
+                        <p class="form-control">@Model.CreatedDate.ToString("dd/MM/yyyy")</p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>Email</label>
+                        <p class="form-control">@Model.User.Email</p>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>Trạng thái thanh toán</label>
+                        @if (Model.OrderStatus == 1)
+                        {
+                            <p class="form-control">Chưa thanh toán</p>
+                        }
+                        @if (Model.OrderStatus == 2)
+                        {
+                            <p class="form-control">Đã thanh toán</p>
+                        }
+                        @*<p class="form-control">@(Model.TypePayment == 1 ? "Chua thanh toán" : "Đã thanh toán")</p>*@
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Trạng thái giao hàng</label>
+                            @if (Model.ShippingStatus == 1)
+                            {
+                                <p class="form-control">Chờ xác nhận</p>
+                            }
+                            @if (Model.ShippingStatus == 2)
+                            {
+                                <p class="form-control">Đang hàng đã được duyệt</p>
+                            }
+                            @if (Model.ShippingStatus == 3)
+                            {
+                                <p class="form-control">Đang giao hàng</p>
+                            }
+                            @if (Model.ShippingStatus == 4)
+                            {
+                                <p class="form-control">Giao hàng thành công</p>
+                            }
+                            @if (Model.ShippingStatus == 5)
+                            {
+                                <p class="form-control">Đã hủy</p>
+                            }
+                        </div>
+
+                    </div>
+                    <div class="col-md-6">
+
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        <h2>Danh sách sản phẩm</h2>
+                    </div>
+                    <div class="col-12">
+                        @Html.Action("Partial_CTSanPham", "Review", new { id = Model.Id })
+                    </div>
+                </div>
+                <div class="form-group">
+                    <a href="/admin/order" class="btn btn-primary">Trở về</a>
+                </div>
+            </div>
+            <!-- /.card-body -->
+            <div class="card-footer">
+
+            </div>
+            <!-- /.card-footer-->
+        </div>
+        <!-- /.card -->
+    </div>
+</section>
+<!-- /.content -->

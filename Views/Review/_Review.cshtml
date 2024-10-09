@@ -1,0 +1,92 @@
+﻿@model WebsiteBanDoAnVaThucUong.Models.EF.ReviewProduct
+
+
+<div class="add_review">
+    @using (Ajax.BeginForm("PostReview", "Review", new AjaxOptions
+    {
+        HttpMethod = "POST",
+        UpdateTargetId = "load_review",
+        OnSuccess = "OnSuccessRE",
+        OnFailure = "OnFailureRE",
+        OnBegin = "OnBeginRE"
+
+    }, new { @Id = "review_form" }))
+    {
+        <script>
+            function OnBeginRE() {
+                $('#review_submit').attr("disabled", "disabled");
+                $('#load_send').html('<h2>Đang gửi....</h2>');
+            }
+            function OnSuccessRE(res) {
+                debugger;
+                if (res.Success) {
+                    $("#review_form")[0].reset();
+                    $('#load_send').html('<h2>Đang gửi....</h2>');
+                    window.location.reload();
+
+                }
+            }
+            function validateRate() {
+                const rateValue = parseInt($('#txtRate').val());
+                if (rateValue == 0) {
+                    alert('Vui lòng chọn đánh giá trước khi gửi bình luận!');
+                    return false; // Prevent form submission if rate is 0
+                }
+                return true; // Allow form submission if rate is valid
+            }
+        </script>
+        <h1>Add Review</h1>
+        @Html.AntiForgeryToken()@*<form id="review_form" action="post">*@
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        if (Model.User != null)
+        {
+            <div class="form-group">
+                <label>Email</label>
+                <input type="text" class="form-control" value="@Model.User.Email" readonly />
+            </div>
+            <div class="form-group">
+                <label>Họ tên</label>
+                <input type="text" class="form-control" value="@Model.User.FullName" readonly />
+            </div>
+            @*<div class="form-group">
+                    <label>Số điện thoại</label>
+                    <input type="text" class="form-control" value="@Model.User.PhoneNumber" readonly />
+                </div>*@
+
+        }
+        @Html.HiddenFor(x => x.ProductId, new { @Value = ViewBag.ProductId })
+        <input type="text" id="txtRate" name="Rate" value="0" style="visibility:hidden;" />
+        <div>
+            <h1>Your Rating:</h1>
+            <ul class="user_star_rating">
+                <li><i class="fa fa-star-o" aria-hidden="true"></i></li>
+                <li><i class="fa fa-star-o" aria-hidden="true"></i></li>
+                <li><i class="fa fa-star-o" aria-hidden="true"></i></li>
+                <li><i class="fa fa-star-o" aria-hidden="true"></i></li>
+                <li><i class="fa fa-star-o" aria-hidden="true"></i></li>
+            </ul>
+            @Html.TextAreaFor(x => x.Content, new { @class = "input_review", @rows = "4", @placeholder = "Your Review" })
+            @*<textarea id="review_message" class="input_review" name="message" placeholder="Your Review" rows="4" required data-error="Please, leave us a review."></textarea>*@
+        </div>
+        <div class="text-left text-sm-right">
+            <button id="review_submit" type="submit" class="red_button review_submit_btn trans_300" value="Submit" onclick="return validateRate()">submit</button>
+        </div>
+    }
+</div>
+
+<script>
+    $(document).ready(function () {
+        $('.user_star_rating li').on('click', function () {
+            var rating = $(this).index() + 1;
+            $('#txtRate').val(rating);
+
+            $('.user_star_rating li').each(function (index) {
+                if (index < rating) {
+                    $(this).find('i').removeClass('fa-star-o').addClass('fa-star');
+                } else {
+                    $(this).find('i').removeClass('fa-star').addClass('fa-star-o');
+                }
+            });
+        });
+    });
+</script>

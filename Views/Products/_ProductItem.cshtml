@@ -1,0 +1,27 @@
+﻿@*@model WebsiteBanDoAnVaThucUong.Models.EF.Product
+@using Microsoft.AspNet.Identity
+
+<div class="product-item @Model.ProductCategory.Alias">
+    <div class="product discount product_filter">
+        <div class="product_image">
+            <img src="@Model.ProductImage.FirstOrDefault(x => x.IsDefault)?.Image" alt="@Model.Title">
+        </div>
+        <div data-id="@Model.Id" class="favorite" style="margin-right: 160px; font-size:20px"></div>
+        @if (Model.PriceSale > 0)
+        {
+            <div class="product_bubble product_bubble_right product_bubble_red d-flex flex-column align-items-center"><span>sale</span></div>
+        }
+        <div class="product_info">
+            <h6 class="product_name"><a href="/chi-tiet/@Model.Alias-p@(Model.Id)">@Model.Title</a></h6>
+            @if (Model.PriceSale > 0)
+            {
+                <div class="product_price">@WebsiteBanDoAnVaThucUong.Common.Common.FormatNumber(Model.PriceSale, 0)<span>@WebsiteBanDoAnVaThucUong.Common.Common.FormatNumber(Model.Price, 0)</span></div>
+            }
+            else
+            {
+                <div class="product_price">@WebsiteBanDoAnVaThucUong.Common.Common.FormatNumber(Model.Price, 0)</div>
+            }
+        </div>
+    </div>
+    <div class="red_button add_to_cart_button"><a href="#" class="btnAddToCart" data-id="@Model.Id">add to cart</a></div>
+</div>*@

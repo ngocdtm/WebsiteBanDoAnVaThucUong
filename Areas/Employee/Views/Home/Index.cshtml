@@ -1,0 +1,184 @@
+﻿
+@{
+    ViewBag.Title = "Trang chủ Employee";
+    Layout = "~/Areas/Employee/Views/Shared/_Layout.cshtml";
+}
+
+<main>
+    <div class="container-fluid px-4">
+        <h1 class="mt-4">Dashboard</h1>
+        <ol class="breadcrumb mb-4">
+            <li class="breadcrumb-item active" Danh sách quản lý</li>
+        </ol>
+        <div class="row">
+            <div class="col-xl-3 col-md-6">
+                <div class="card bg-primary text-white mb-4">
+                    <div class="card-body">Danh mục sản phẩm</div>
+                    <div class="card-footer d-flex align-items-center justify-content-between">
+                        <a class="small text-white stretched-link" href="@Url.Action("Index", "ProductCategory")">Xem danh mục</a>
+                        <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-md-6">
+                <div class="card bg-warning text-white mb-4">
+                    <div class="card-body">Sản phẩm</div>
+                    <div class="card-footer d-flex align-items-center justify-content-between">
+                        <a class="small text-white stretched-link" href="@Url.Action("Index", "Product")">Xem sản phẩm</a>
+                        <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-md-6">
+                <div class="card bg-success text-white mb-4">
+                    <div class="card-body">Đơn đặt hàng</div>
+                    <div class="card-footer d-flex align-items-center justify-content-between">
+                        <a class="small text-white stretched-link" href="@Url.Action("Index", "Order")">Xem đơn hàng</a>
+                        <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-md-6">
+                <div class="card bg-danger text-white mb-4">
+                    <div class="card-body">Thư phản hồi</div>
+                    <div class="card-footer d-flex align-items-center justify-content-between">
+                        <a class="small text-white stretched-link" href="@Url.Action("Index", "FeedBack")">Xem thư phản hồi</a>
+                        <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @*<div class="row">
+                <div class="col-xl-3 col-md-6">
+                    <div class="card bg-primary text-white mb-4">
+                        <div class="card-body">Revenue Statistics</div>
+                        <div class="card-footer d-flex align-items-center justify-content-between">
+                            <a class="small text-white stretched-link" href="@Url.Action("Index", "Statistics")">View Statistics</a>
+                            <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-md-6">
+                    <div class="card bg-warning text-white mb-4">
+                        <div class="card-body">Vouchers</div>
+                        <div class="card-footer d-flex align-items-center justify-content-between">
+                            <a class="small text-white stretched-link" href="@Url.Action("Index", "Vouchers")">View Vouchers</a>
+                            <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+                        </div>
+                    </div>
+                </div>
+            </div>*@
+
+        @*<div class="row">
+                <div class="col-xl-6">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <i class="fas fa-chart-area me-1"></i>
+                            Area Chart
+                        </div>
+                        <div class="card-body"><canvas id="myAreaChart" width="100%" height="40"></canvas></div>
+                    </div>
+                </div>
+                <div class="col-xl-6">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <i class="fas fa-chart-bar me-1"></i>
+                            Bar Chart
+                        </div>
+                        <div class="card-body"><canvas id="myBarChart" width="100%" height="40"></canvas></div>
+                    </div>
+                </div>
+            </div>*@
+        @*<div class="card mb-4">
+                <div class="card-header">
+                    <i class="fas fa-table me-1"></i>
+                    DataTable Example
+                </div>
+                <div class="card-body">
+                    <table id="datatablesSimple">
+
+                        <tbody>
+
+                            <tr>
+                                <td>Đặng Thị Mỹ Ngọc</td>
+                                <td>Junior Javascript Developer</td>
+                                <td>Hello</td>
+                                <td>43</td>
+                                <td>2013/02/01</td>
+                                <td>9000000</td>
+                            </tr>
+                            <tr>
+                                <td>Võ Thanh Xuân</td>
+                                <td>Sales Assistant</td>
+                                <td>New York</td>
+                                <td>46</td>
+                                <td>2011/12/06</td>
+                                <td>9000099</td>
+                            </tr>
+                            <tr>
+                                <td>Phạm Thanh Ngân</td>
+                                <td>Regional Director</td>
+                                <td>London</td>
+                                <td>47</td>
+                                <td>2011/03/21</td>
+                                <td>8900000</td>
+                            </tr>
+                            <tr>
+                                <td>Trương Thủy Cẩm Tiên</td>
+                                <td>Systems Administrator</td>
+                                <td>London</td>
+                                <td>21</td>
+                                <td>2009/02/27</td>
+                                <td>$103,500</td>
+                            </tr>
+                            <tr>
+                                <td>Đặng Thị Mỹ Ngọc</td>
+                                <td>Junior Javascript Developer</td>
+                                <td>Hello</td>
+                                <td>43</td>
+                                <td>2013/02/01</td>
+                                <td>9000000</td>
+                            </tr>
+                            <tr>
+                                <td>Võ Thanh Xuân</td>
+                                <td>Sales Assistant</td>
+                                <td>New York</td>
+                                <td>46</td>
+                                <td>2011/12/06</td>
+                                <td>9000099</td>
+                            </tr>
+                            <tr>
+                                <td>Phạm Thanh Ngân</td>
+                                <td>Regional Director</td>
+                                <td>London</td>
+                                <td>47</td>
+                                <td>2011/03/21</td>
+                                <td>8900000</td>
+                            </tr>
+                            <tr>
+                                <td>Trương Thủy Cẩm Tiên</td>
+                                <td>Systems Administrator</td>
+                                <td>London</td>
+                                <td>21</td>
+                                <td>2009/02/27</td>
+                                <td>$103,500</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>*@
+    </div>
+</main>
+@*<footer class="py-4 bg-light mt-auto">
+        <div class="container-fluid px-4">
+            <div class="d-flex align-items-center justify-content-between small">
+                <div class="text-muted">Copyright &copy; Your Website 2023</div>
+                <div>
+                    <a href="#">Privacy Policy</a>
+                    &middot;
+                    <a href="#">Terms &amp; Conditions</a>
+                </div>
+            </div>
+        </div>
+    </footer>*@

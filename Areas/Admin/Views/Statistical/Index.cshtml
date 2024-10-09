@@ -1,0 +1,393 @@
+﻿﻿
+@{
+    ViewBag.Title = "Quản lý thống kê";
+}
+
+
+@section naviheader{
+    <!-- Left navbar links -->
+    <ul class="navbar-nav">
+        <li class="nav-item">
+            <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
+        </li>
+        <li class="nav-item d-none d-sm-inline-block">
+            <a href="/admin/home" class="nav-link">Trang chủ</a>
+        </li>
+        <li class="nav-item d-none d-sm-inline-block">
+            <a href="/admin/statistical" class="nav-link">@ViewBag.Title</a>
+        </li>
+    </ul>
+}
+
+<!-- Main content -->
+<section class="content">
+
+    <!-- Default box -->
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">Thống kê doanh thu và đơn hàng</h3>
+
+            <div class="card-tools">
+                <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                    <i class="fas fa-minus"></i>
+                </button>
+                <button type="button" class="btn btn-tool" data-card-widget="remove" title="Remove">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="chart">
+                        <canvas id="productOrderChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="chart">
+                        <canvas id="revenueChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="chart">
+                        <canvas id="topProductsChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="filterDate">Lọc theo thời gian:</label>
+                        <select id="filterDate" class="form-control">
+                            <option value="day">1 Ngày</option>
+                            <option value="week">1 Tuần</option>
+                            <option value="month">1 Tháng</option>
+                            <option value="year">1 Năm</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-md-4">
+                    <label>Tổng tiền tối thiểu:</label>
+                    <input type="number" id="minTotal" class="form-control">
+                </div>
+                <div class="col-md-4">
+                    <label>Tổng tiền tối đa:</label>
+                    <input type="number" id="maxTotal" class="form-control">
+                </div>
+                <div class="col-md-4">
+                    <label>&nbsp;</label>
+                    <button type="button" id="btnFilterOrders" class="btn btn-primary form-control">Lọc đơn hàng</button>
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-md-8">
+                    <div class="chart">
+                        <canvas id="barChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Ngày</th>
+                                <th>Doanh thu</th>
+                            </tr>
+                        </thead>
+                        <tbody id="load_data"></tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h3 class="card-title">Top 5 sản phẩm bán chạy nhất</h3>
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                        <button type="button" class="btn btn-tool" data-card-widget="remove" title="Remove">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="chart">
+                                <canvas id="pieChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>Sản phẩm</th>
+                                        <th>Số lượng bán</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="product_data"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.card-body -->
+                <div class="card-footer">
+                    Footer
+                </div>
+                <!-- /.card-footer-->
+            </div>
+            <!-- /.card -->
+        @*</div>
+    </div>*@
+</section>
+<!-- /.content -->
+
+@section scripts{
+    <script src="~/Content/clients/plugins/chart.js/Chart.min.js"></script>
+    <script src="~/Content/assets/plugins/moment/moment.min.js"></script>
+    <script>
+        $(function () {
+            var fromDate = '';
+            var toDate = '';
+
+            // Function to get the date range based on the selected filter
+            function getDateRange(filter) {
+                var endDate = moment();
+                var startDate = moment();
+
+                if (filter === 'day') {
+                    startDate = endDate.clone().subtract(1, 'days');
+                } else if (filter === 'week') {
+                    startDate = endDate.clone().subtract(1, 'weeks');
+                } else if (filter === 'month') {
+                    startDate = endDate.clone().subtract(1, 'months');
+                } else if (filter === 'year') {
+                    startDate = endDate.clone().subtract(1, 'years');
+                }
+
+                return {
+                    fromDate: startDate.format('DD/MM/YYYY'),
+                    toDate: endDate.format('DD/MM/YYYY')
+                };
+            }
+
+            function loadCharts() {
+                var filter = $('#filterDate').val();
+                var dateRange = getDateRange(filter);
+
+                $.ajax({
+                    url: '@Url.Action("GetStatistical", "Statistical")',
+                    type: 'GET',
+                    data: { fromDate: dateRange.fromDate, toDate: dateRange.toDate },
+                    success: function (response) {
+                        // Prepare data for Product and Order Chart
+                        var productOrderLabels = [];
+                        var totalQuantityData = [];
+                        var orderCountData = [];
+
+                        $.each(response.ProductOrderData, function (i, item) {
+                            productOrderLabels.push(moment(item.Date).format('DD/MM/YYYY'));
+                            totalQuantityData.push(item.TotalQuantity);
+                            orderCountData.push(item.OrderCount);
+                        });
+
+                        var productOrderChartData = {
+                            labels: productOrderLabels,
+                            datasets: [
+                                {
+                                    label: 'Số lượng',
+                                    backgroundColor: 'rgba(60,141,188,0.9)',
+                                    borderColor: 'rgba(60,141,188,0.8)',
+                                    data: totalQuantityData
+                                },
+                                {
+                                    label: 'Số hóa đơn',
+                                    backgroundColor: 'rgba(210, 214, 222, 1)',
+                                    borderColor: 'rgba(210, 214, 222, 1)',
+                                    data: orderCountData
+                                }
+                            ]
+                        };
+
+                        var productOrderChartCanvas = $('#productOrderChart').get(0).getContext('2d');
+                        var productOrderChartOptions = {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            datasetFill: false
+                        };
+
+                        new Chart(productOrderChartCanvas, {
+                            type: 'bar',
+                            data: productOrderChartData,
+                            options: productOrderChartOptions
+                        });
+
+                        // Prepare data for Revenue Chart
+                        var revenueLabels = [];
+                        var revenueData = [];
+                        var profitData = [];
+
+                        $.each(response.RevenueData, function (i, item) {
+                            revenueLabels.push(moment(item.Date).format('DD/MM/YYYY'));
+                            revenueData.push(item.DoanhThu);
+                            profitData.push(item.LoiNhuan);
+                        });
+
+                        var revenueChartData = {
+                            labels: revenueLabels,
+                            datasets: [
+                                {
+                                    label: 'Doanh thu',
+                                    backgroundColor: 'rgba(60,141,188,0.9)',
+                                    borderColor: 'rgba(60,141,188,0.8)',
+                                    data: revenueData
+                                },
+                                {
+                                    label: 'Lợi nhuận',
+                                    backgroundColor: 'rgba(210, 214, 222, 1)',
+                                    borderColor: 'rgba(210, 214, 222, 1)',
+                                    data: profitData
+                                }
+                            ]
+                        };
+
+                        var revenueChartCanvas = $('#revenueChart').get(0).getContext('2d');
+                        var revenueChartOptions = {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            datasetFill: false
+                        };
+
+                        new Chart(revenueChartCanvas, {
+                            type: 'bar',
+                            data: revenueChartData,
+                            options: revenueChartOptions
+                        });
+
+                        // Prepare data for Top Products Chart
+                        var topProductsLabels = [];
+                        var topProductsData = [];
+
+                        $.each(response.TopProducts, function (i, item) {
+                            topProductsLabels.push(item.ProductName);
+                            topProductsData.push(item.TotalQuantity);
+                        });
+
+                        var topProductsChartData = {
+                            labels: topProductsLabels,
+                            datasets: [
+                                {
+                                    label: 'Số lượng bán',
+                                    backgroundColor: 'rgba(60,141,188,0.9)',
+                                    borderColor: 'rgba(60,141,188,0.8)',
+                                    data: topProductsData
+                                }
+                            ]
+                        };
+
+                        var topProductsChartCanvas = $('#topProductsChart').get(0).getContext('2d');
+                        var topProductsChartOptions = {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            datasetFill: false
+                        };
+
+                        new Chart(topProductsChartCanvas, {
+                            type: 'bar',
+                            data: topProductsChartData,
+                            options: topProductsChartOptions
+                        });
+                    }
+                });
+            }
+            function loadFilteredOrders(minTotal, maxTotal) {
+                $.ajax({
+                    url: '/Admin/Statistical/GetFilteredOrders',
+                    type: 'GET',
+                    data: { minTotal: minTotal, maxTotal: maxTotal },
+                    success: function (rs) {
+                        var strHtml = "";
+                        $.each(rs.Data, function (i, item) {
+                            var strDate = moment(item.CreatedDate).format('DD/MM/yyyy');
+                            strHtml += "<tr>";
+                            strHtml += "<td>" + (i + 1) + "</td>";
+                            strHtml += "<td>" + strDate + "</td>";
+                            strHtml += "<td>" + item.Total + "</td>";
+                            strHtml += "</tr>";
+                        });
+                        $('#load_data').html(strHtml);
+                    }
+                });
+            }
+              $.ajax({
+                url: '@Url.Action("GetProductStatistics", "Statistical")',
+                success: function (response) {
+                    var labels = [];
+                    var data = [];
+                    var rows = '';
+
+                    $.each(response.Data, function (i, item) {
+                        labels.push(item.ProductName);
+                        data.push(item.TotalQuantity);
+                        rows += '<tr><td>' + item.ProductName + '</td><td>' + item.TotalQuantity + '</td></tr>';
+                    });
+
+                    $('#product_data').html(rows);
+
+                    var pieData = {
+                        labels: labels,
+                        datasets: [
+                            {
+                                data: data,
+                                backgroundColor: ['#f56954', '#00a65a', '#f39c12', '#00c0ef', '#3c8dbc'],
+                            }
+                        ]
+                    }
+
+                    var pieOptions = {
+                        legend: {
+                            display: true
+                        },
+                        maintainAspectRatio: false,
+                        responsive: true
+                    }
+
+                    var pieChartCanvas = $('#pieChart').get(0).getContext('2d')
+                    new Chart(pieChartCanvas, {
+                        type: 'pie',
+                        data: pieData,
+                        options: pieOptions
+                    })
+                }
+            });
+            $('#btnFilterOrders').click(function () {
+                var minTotal = $('#minTotal').val();
+                var maxTotal = $('#maxTotal').val();
+                loadFilteredOrders(minTotal, maxTotal);
+            });
+             function load_data(data) {
+            var strHtml = "";
+            $.each(data, function (i, item) {
+                var strDate = moment(item.Date).format('DD/MM/yyyy');
+                strHtml += "<tr>";
+                strHtml += "<td>"+(i+1)+"</td>";
+                strHtml += "<td>" + strDate+"</td>";
+                strHtml += "<td>"+item.DoanhThu+"</td>";
+                strHtml += "<td>"+item.LoiNhuan+"</td>";
+                strHtml += "</tr>";
+            });
+            $('#load_data').html(strHtml);
+        }
+            // Load charts initially
+            loadCharts();
+
+            // Reload charts when the filter is changed
+            $('#filterDate').change(function () {
+                loadCharts();
+            });
+
+        });
+    </script>
+}

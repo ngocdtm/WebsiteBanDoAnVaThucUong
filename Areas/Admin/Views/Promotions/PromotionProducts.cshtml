@@ -1,0 +1,42 @@
+﻿@{
+    ViewBag.Title = "Sản phẩm ưu đãi";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Sản phẩm ưu đãi cho chương trình: @ViewBag.PromotionName</h2>
+@if (TempData["Message"] != null)
+{
+    <div class="alert alert-info">
+        @TempData["Message"]
+    </div>
+}
+@using (Html.BeginForm("UpdatePromotionProducts", "Promotions", FormMethod.Post))
+{
+    @Html.Hidden("promotionId", (int)ViewBag.PromotionId)
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Chọn</th>
+                <th>Tên sản phẩm</th>
+                <th>Giá</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var product in (List<WebsiteBanDoAnVaThucUong.Models.EF.Product>)ViewBag.AllProducts)
+            {
+                <tr>
+                    <td>
+                        <input type="checkbox" name="selectedProductIds" value="@product.Id"
+                               @(((List<int>)ViewBag.SelectedProductIds).Contains(product.Id) ? "checked" : "") />
+                    </td>
+                    <td>@product.Title</td>
+                    <td>@product.SalePrice</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <a href="/admin/promotions" class="btn btn-primary">Quay lại</a>
+    <input type="submit" value="Cập nhật" class="btn btn-success" style="margin-left:80px"/>
+
+}

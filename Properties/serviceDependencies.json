@@ -1,0 +1,16 @@
+{
+  "dependencies": {
+    "mssql1": {
+      "type": "mssql",
+      "connectionId": "ConnectionStrings:DefaultConnection"
+    },
+    "identityapp1": {
+      "ignored": "true",
+      "type": "identityapp"
+    },
+    "mssql2": {
+      "type": "mssql",
+      "connectionId": "tcp:foodanddrink.database.windows.net,1433"
+    }
+  }
+}

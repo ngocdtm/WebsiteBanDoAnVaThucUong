@@ -1,0 +1,182 @@
+﻿@*﻿@model IEnumerable<WebsiteBanDoAnVaThucUong.Models.EF.Order>*@
+﻿@model PagedList.PagedList<WebsiteBanDoAnVaThucUong.Models.EF.Order>
+@using WebsiteBanDoAnVaThucUong.Common
+@using PagedList.Mvc
+@{
+    ViewBag.Title = "Danh sách đơn hàng";
+}
+
+<!-- Main content -->
+<section class="content">
+
+    <!-- Default box -->
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">@ViewBag.Title</h3>
+
+        </div>
+
+        <div class="card-body" style="margin-left:30px; margin-right:30px">
+            <h2>Lịch sử đơn hàng</h2>
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>STT</th>
+                        <th>Mã đơn hàng</th>
+                        @*<th>Tên khách hàng</th>*@
+                        <th>Tổng tiền hóa đơn</th>
+                        <th>Ngày đặt</th>
+                        <th>Thanh toán</th>
+                        <th>Giao hàng</th>
+                        <th>Chức năng</th>
+
+                        <th style="width:150px"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null && Model.Any())
+                    {
+                        var i = ((ViewBag.Page - 1) * ViewBag.PageSize) + 1;
+                        foreach (var item in Model)
+                        {
+                            <tr id="trow_@item.Id">
+                                <td>@i</td>
+                                <td>@item.Code</td>
+                                @*<td>@item.User.UserName</td>*@
+                                <td>@Common.FormatNumber(item.FinalAmount, 0)</td>
+                                <td>@item.CreatedDate</td>
+                                <td>
+                                    @if (item.OrderStatus == 1)
+                                    {
+                                        <span>Chưa thanh toán</span>
+                                    }
+                                    @if (item.OrderStatus == 2)
+                                    {
+                                        <span>Đã thanh toán</span>
+                                    }
+
+                                </td>
+                                <td>
+                                    @if (item.ShippingStatus == 1)
+                                    {
+                                        <span>Chờ xác nhận</span>
+                                    }
+                                    @if (item.ShippingStatus == 2)
+                                    {
+                                        <span>Đang hàng đã được duyệt</span>
+                                    }
+                                    @if (item.ShippingStatus == 3)
+                                    {
+                                        <span>Đang giao hàng</span>
+                                    }
+                                    @if (item.ShippingStatus == 4)
+                                    {
+                                        <span>Giao hàng thành công</span>
+                                    }
+                                    @if (item.ShippingStatus == 5)
+                                    {
+                                        <span>Đã hủy</span>
+                                    }
+                                </td>
+                                <td>
+                                    @*<a href="/review/detail/@item.Id" class="btn btn-sm btn-primary">Xem chi tiết</a>*@
+                                    @*<a href="#" data-id="@item.Id" class="btn btn-sm btn-danger btnDelete">Hủy đơn hàng</a>*@
+                                    @if (item.ShippingStatus == 1)
+                                    {
+                                        using (Html.BeginForm("EditOrder", "Review"))
+                                        {
+                                            @Html.AntiForgeryToken()
+                                            @*<input type="hidden" name="id" value="@item.id" />*@
+                                            <a href="#" data-id="@item.Id" class="btn btn-sm btn-danger btnCancelOrder">Hủy đơn hàng</a>
+                                            @*@Html.ActionLink("Export to Excel", "Reports", new { ReportType = "Excel" })*@
+                                        }
+                                    }
+                                </td>
+                            </tr>
+                            i++;
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="4">Không có bản ghi nào!!!</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+            <div class="row">
+                <div class="col-6"></div>
+                <div class="col-6" style="text-align:right;">
+                    @Html.PagedListPager(Model, page => Url.Action("LichSuDonHang", new { page }))
+                </div>
+            </div>
+
+        </div>
+        <!-- /.card-body -->
+        <div class="card-footer">
+
+        </div>
+        <!-- /.card-footer-->
+    </div>
+    <!-- /.card -->
+
+</section>
+<!-- /.content -->
+<div id="dialog">
+    <iframe id="myIframe" style="border: 0; width: 100%; height: 100%;"></iframe>
+</div>
+
+<!-- Add this HTML markup in your view -->
+<div class="modal fade" id="confirmCancelModal" tabindex="-1" role="dialog" aria-labelledby="confirmCancelModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmCancelModalLabel">Xác nhận yêu cầu</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Bạn có chắc muốn hủy đơn hàng này không?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Hủy</button>
+                <button type="button" class="btn btn-danger" id="confirmCancelOrder">Xác nhận hủy</button>
+                
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function() {
+        var orderId;
+
+        // Show the confirmation dialog
+        $('body').on('click', '.btnCancelOrder', function() {
+            orderId = $(this).data("id");
+            $('#confirmCancelModal').modal('show');
+        });
+
+        // Handle the confirmation button click
+        $('#confirmCancelOrder').on('click', function() {
+            $.ajax({
+                url: '/Review/CancelOrder', // Change the URL to match your controller action
+                type: 'POST',
+                data: {
+                    id: orderId
+                },
+                success: function(res) {
+                    if (res.Success) {
+                        $('#confirmCancelModal').modal('hide');                       
+                        alert('Hủy đơn hàng thành công!');
+                        location.reload(); // Reload the page after successful cancellation
+                    } else {
+                        alert('Không thể hủy đơn hàng');
+                    }
+                }
+            });
+        });
+    });
+</script>

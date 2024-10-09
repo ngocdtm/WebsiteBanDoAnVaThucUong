@@ -1,0 +1,310 @@
+﻿@model IEnumerable<WebsiteBanDoAnVaThucUong.Models.EF.Store>
+@using WebsiteBanDoAnVaThucUong.Common
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    //Layout = null;
+}
+<link rel="stylesheet" type="text/css" href="~/Content/assets/styles/stores_styles.css">
+<link rel="stylesheet" type="text/css" href="~/Content/assets/styles/stores_responsive.css">
+
+<head>
+    <title>@ViewBag.Title</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="description" content="Matane Store">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="~/Content/assets/styles/bootstrap4/bootstrap.min.css">
+    <link href="~/Content/assets/plugins/font-awesome-4.7.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="stylesheet" type="text/css" href="~/Content/assets/styles/main_styles.css">
+    <style>
+        .header {
+            display: flex;
+            flex-direction: column;
+            background-color: #fff;
+        }
+
+        .main_nav_container {
+            width: 100%;
+            display: flex;
+            justify-content: center; /* Center the content */
+            align-items: center;
+            padding: 10px 20px;
+            /*background-color: #007BFF;*/ /* Change to blue */
+            color: #fff;
+            position: fixed; /* Fix the navigation bar */
+            top: 0;
+            z-index: 1000;
+        }
+
+        .main_nav {
+            display: flex;
+            align-items: center;
+            color: #fff; /* Ensure text is white on blue background */
+        }
+
+        .logo_container img {
+            width: 100px;
+        }
+
+        .navbar {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+            .navbar a, .navbar form, .navbar .checkout {
+                margin: 0 10px;
+            }
+
+        .box-search {
+            position: absolute;
+            width: 350px;
+            right: 0;
+            display: none;
+        }
+
+        .li_search:hover .box-search {
+            display: block;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #41b9af;
+            min-width: 160px;
+            box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+            z-index: 1;
+        }
+
+            .dropdown-content a {
+                padding: 12px 16px;
+                text-decoration: none;
+                display: block;
+            }
+
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+
+        .dropdown .dropbtn {
+            background-color: #45b2dd;
+            color: white;
+            padding: 8px 16px;
+            font-size: 16px;
+            border: none;
+        }
+
+        .hamburger_container {
+            display: none;
+        }
+    </style>
+
+    <link rel="stylesheet" type="text/css" href="~/Content/assets/plugins/OwlCarousel2-2.2.1/owl.carousel.css">
+    <link rel="stylesheet" type="text/css" href="~/Content/assets/plugins/OwlCarousel2-2.2.1/owl.theme.default.css">
+    <link rel="stylesheet" type="text/css" href="~/Content/assets/plugins/OwlCarousel2-2.2.1/animate.css">
+    <link rel="stylesheet" type="text/css" href="~/Content/assets/plugins/jquery-ui-1.12.1.custom/jquery-ui.css">
+    <meta name="description" content="@ViewBag.SeoDescription" />
+    <meta name="keywords" itemprop="keywords" content="@ViewBag.SeoKeyWord" />
+    @*<meta name="news_keywords" content="@ViewBag.SeoKeyWord" />*@
+    <link rel="canonical" href="https://www.ten_mien_cua_cac_ban/" />
+    <meta name="robots" content="index,follow,noodp" />
+    <meta name="robots" content="noarchive">
+    <meta property="og:site_name" content="Bán hàng online" />
+    <meta property="og:type" content="Website" />
+    <meta property="og:locale" content="vi_VN" />
+    @*<meta property="fb:app_id" content="232505114857147" />*@
+    @*<meta property="fb:pages" content="1128104117285467" />*@
+    <meta property="og:title" itemprop="name" content="@ViewBag.Title" />
+    <meta property="og:url" itemprop="url" content="https://www.ten_mien_cua_cac_ban/" />
+    <meta property="og:description" content="@ViewBag.SeoDescription" />
+    <meta content="https://cdn.24h.com.vn/upload/2-2018/images/2018-06-14/logo-chan-trang-24h.png" property="og:image" itemprop="thumbnailUrl" />
+    <!--script_breadcrum-->
+    @*@RenderSection("css", required: false)*@
+    <link rel="stylesheet" type="text/css" href="~/Content/assets/styles/responsive.css">
+    @*@Styles.Render("~/Content/css")*@
+    @Scripts.Render("~/bundles/modernizr")
+    <script src="~/Content/assets/js/jquery-3.2.1.min.js"></script>
+    @Scripts.Render("~/bundles/jqueryval")
+
+
+</head>
+<body>
+    <!--<div class="super_container">
+        <!-- Header -->
+        <!--<header class="header trans_300">-->
+            <!-- Main Navigation -->
+            <!--<div class="main_nav_container">
+                <div class="logo_container">
+                    <a href="/trang-chu" style="font-size:22px; color:#315fbc ;font-family:sans-serif"><img src="~/Content/assets/images/logo_food&drink.png" alt="logo" style="width:170px; height: 120px"></a>
+                </div>
+                <nav class="navbar">
+                    @Html.Action("MenuTop", "Menu")
+                    <div class="li_search">
+                        <a href="#"><i class="fa fa-search" style="font-size: 30px; color:#3687a2"></i></a>
+                        <form>
+                            <div class="box-search">
+                                <div class="input-group mb-3">
+                                    <input type="text" class="form-control" placeholder="Search">
+                                    <div class="input-group-append">
+                                        <button class="btn btn-outline-secondary" type="button"></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="checkout">
+                        <a href="/gio-hang">
+                            <i class="fa fa-shopping-cart" style="font-size: 30px; color:#3687a2"></i>
+                            <span id="checkout_items" class="checkout_items">0</span>
+                        </a>
+                    </div>
+                    @if (Request.IsAuthenticated)
+                    {
+                        <div class="dropdown">
+                            <button class="dropbtn ">Chào @User.Identity.Name</button>
+                            <div class="dropdown-content">
+                                <a href="/account/profile"><i class="fa fa-user"></i> Thông tin cá nhân</a>
+                                <a href="/review/lichsudonhang"><i class="fa fa-money-bill"></i> Lịch sử đơn hàng</a>
+                                <a href="/wishlist/index"><i class="fa fa-heart"></i> Danh sách yêu thích</a>
+                                <a href="javascript:document.getElementById('logOffForm').submit()"><i class="fa fa-sign-out"></i> Đăng xuất</a>
+                            </div>
+                        </div>
+                        <div style="display:none">
+                            @using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new { @id = "logOffForm" }))
+                            {
+                                @Html.AntiForgeryToken()
+                            }
+                        </div>
+                    }
+                    else
+                    {
+
+                        <div class="dropdown">
+                            <img src="~/Content/assets/images/blueuser.png" alt="logo" style="width: 28px">
+                            <div class="dropdown-content">
+                                <a href="/account/login"><i class="fa fa-sign-inr"></i> Đăng nhập</a>
+                                <a href="/account/Register"><i class="fa fa-user-plust"></i> Đăng ký</a>
+                            </div>
+                        </div>
+                    }
+
+                </nav>
+            </div>
+        </header>-->
+
+        <!-- Newsletter -->-->
+        <!--@*@Html.Action("Partial_Subcrice", "Home")*@-->
+        <!-- Footer -->
+
+
+
+    <!--</div>-->
+
+
+    <script src="~/Content/assets/styles/bootstrap4/popper.js"></script>
+    <script src="~/Content/assets/styles/bootstrap4/bootstrap.min.js"></script>
+    <script src="~/Content/assets/plugins/Isotope/isotope.pkgd.min.js"></script>
+    <script src="~/Content/assets/plugins/OwlCarousel2-2.2.1/owl.carousel.js"></script>
+    <script src="~/Content/assets/plugins/easing/easing.js"></script>
+    <script src="~/Content/assets/plugins/jquery-ui-1.12.1.custom/jquery-ui.js"></script>
+    <script src="~/Content/assets/js/custom.js"></script>
+    <script src="~/Scripts/jquery.validate.min.js"></script>
+    <script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+    <script src="~/Scripts/jquery.unobtrusive-ajax.min.js"></script>
+    @*@Scripts.Render("~/bundles/bootstrap")*@
+    <script src="~/Scripts/jsShopping.js"></script>
+    @*@RenderSection("scripts", required: false)*@
+
+    <div class="store-grid">
+
+        <div class="row">
+            <div class="col text-center">
+                <div class="section_title new_arrivals_title">
+                    <h2>Các chi nhánh cửa hàng</h2>
+                </div>
+            </div>
+        </div>
+        <div class="row" style="margin-top: 50px; margin-left:100px; margin: 100px">
+            <div class="row">
+
+
+                @if (Model != null && Model.Any())
+                {
+                    foreach (var item in Model)
+                    {
+                        <!-- Product 1 -->
+
+                        <div class="store-item @item.Alias">
+
+                            <div class="store discount store_filter">
+                                <div class="store_info">
+                                    <div class="store_image">
+                                        <img src="~/Image/@item.Image" style="width:300px;height:200px" />
+                                    </div>
+                                  
+
+
+                                    @*<h3 class="store_name"><a href="/stores/details/@item.Id" style="font-size:20px">@item.Name </a></h3>*@
+                                     <h3 class="store_name" style="font-size:20px">@item.Name</h3>
+                                    <h6 style="font-size:16px;margin-top:30px; margin-left:30px; margin-right:30px"> @item.Address</h6>
+
+                                </div>
+
+                            </div>
+                        </div>
+
+                    }
+                }
+
+            </div>
+
+        </div>
+    </div>
+</body>
+
+    @section scripts{
+        <script src="~/Content/assets/js/store.js"></script>
+    }
+
+    <script src="~/lib/leaf/leaflet.js"></script>
+    <script src="~/lib/leaf/leaflet.min.js"></script>
+    <link href="~/lib/leaf/leaflet.min.css" rel="stylesheet" />
+    <link href="~/lib/leaf/leaflet.css" rel="stylesheet" />
+    <div id="map" style="width:100%;height:400px"></div>
+    <script>
+    var map = L.map('map').setView([10.902522935042768, 106.5834090763168], 8);
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
+
+
+    var jsModel = @Html.Raw(Json.Encode(Model));
+        console.log(jsModel)
+
+        //var settings = new JsonSerializerSettings
+        //{
+        //    ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+        //};
+        //var jsModel = Html.Raw(JsonConvert.SerializeObject(Model, settings));
+
+    var myIcon = L.icon({
+        iconUrl: '/lib/leaf/images/location.png',
+        iconSize: [25, 45],
+        iconAnchor: [15, 45],
+        popupAnchor: [-3, -46],
+
+    });
+
+    for (i in jsModel) {
+        item = jsModel[i]
+        if (item.long < 35) {
+            L.marker([item.Lat, item.Long], {icon:myIcon}).addTo(map).bindPopup(item.Name + '<br>' + item.Address)
+        }
+        else {
+            L.marker([item.Lat, item.Long]).addTo(map).bindPopup(item.Name + '<br>' + item.Address)
+        }
+
+    }
+    </script>

@@ -1,0 +1,74 @@
+﻿@model WebsiteBanDoAnVaThucUong.Models.EF.FeedBackLetter
+@{
+    ViewBag.Title = "Thư phản hồi";
+
+}
+
+<<div class="container contact_container" style="margin-top:120px">
+    <div class="row">
+        <div class="col">
+
+            <!-- Breadcrumbs -->
+
+            <div class="breadcrumbs d-flex flex-row align-items-center">
+                <ul>
+                    <li style="font-size: 16px">
+                        <a href="/home/index">Home</a>
+                        <a href="#"><i class="fa fa-angle-right" aria-hidden="true"></i>  Liên hệ và góp ý</a>
+                    </li>
+                    @*<li class="active">*@@*</li>*@
+
+                    @*<li class="active-cate"><a href="#"><i class="fa fa-angle-right" aria-hidden="true"></i>@ViewBag.Title</a></li>*@
+                </ul>
+            </div>
+
+        </div>
+    </div>
+    <div class="row mt-3 g-4" style="margin-top:50px">
+
+        <div class="col-lg-6 col-md-8" style="margin-top:30px">
+            <h3 style="margin-left: 170px">Đơn liên hệ</h3>
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+            }
+            @using (Html.BeginForm("FeedBackLetter", "Home", FormMethod.Post))
+            {
+                @Html.AntiForgeryToken()
+                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                if (Model.User != null)
+                {
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="text" class="form-control" value="@Model.User.Email" readonly />
+                    </div>
+                    <div class="form-group">
+                        <label>Họ tên</label>
+                        <input type="text" class="form-control" value="@Model.User.FullName" readonly />
+                    </div>
+                    <div class="form-group">
+                        <label>Số điện thoại</label>
+                        <input type="text" class="form-control" value="@Model.User.PhoneNumber" readonly />
+                    </div>
+                }
+                <div class="form-group">
+                    @Html.LabelFor(m => m.Title)
+                    @Html.TextBoxFor(m => m.Title, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(m => m.Title, "", new { @class = "text-danger" })
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(m => m.Content)
+                    @Html.TextAreaFor(m => m.Content, new { @class = "form-control", rows = "6" })
+                    @Html.ValidationMessageFor(m => m.Content, "", new { @class = "text-danger" })
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-success">Gửi</button>
+                </div>
+            }
+        </div>
+        <div class="col-lg-6 col-md-4">
+            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m8!1m3!1d3918.2928073474422!2d106.59838101533447!3d10.86531956051636!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31752b088de30f3b%3A0xd2140740d360f705!2zKEhVRkxJVCkgVFLGr-G7nE5HIMSQ4bqgSSBI4buMQyBOR0_huqBJIE5H4buuIC0gVElOIEjhu4xDIFRQLiBI4buSIENIw40gTUlOSCBDxqAgU-G7niBJSQ!5e0!3m2!1svi!2s!4v1639239625784!5m2!1svi!2s" width="800" height="600" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+        </div>
+    </div>
+</div>
+

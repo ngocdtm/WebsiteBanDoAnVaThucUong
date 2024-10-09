@@ -1,0 +1,158 @@
+﻿@model WebsiteBanDoAnVaThucUong.Models.EF.Promotion
+
+@{
+    ViewBag.Title = "Tạo Chương Trình Khuyến Mãi Mới";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<h2>@ViewBag.Title</h2>
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal">
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Name, "Tên chương trình", new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Description, "Mô tả", new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.TextAreaFor(model => model.Description, new { @class = "form-control", rows = 3 })
+                @Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.StartDate, "Ngày bắt đầu", new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.StartDate, new { htmlAttributes = new { @class = "form-control", type = "date" } })
+                @Html.ValidationMessageFor(model => model.StartDate, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.EndDate, "Ngày kết thúc", new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.EndDate, new { htmlAttributes = new { @class = "form-control", type = "date" } })
+                @Html.ValidationMessageFor(model => model.EndDate, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.DiscountType, "Loại giảm giá", new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.DropDownListFor(model => model.DiscountType, new List<SelectListItem>
+                {
+                    new SelectListItem { Value = "1", Text = "Percentage" },
+                    new SelectListItem { Value = "2", Text = "Combo" },
+                    new SelectListItem { Value = "3", Text = "Buy X Get Y" }
+                }, "Select discount type", new { @class = "form-control", id = "discountType" })
+                @Html.ValidationMessageFor(model => model.DiscountType, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.DiscountValue, "Giá trị giảm giá", new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.DiscountValue, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.DiscountValue, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        @*<div class="form-group" id="comboQuantityGroup" style="display: none;">
+            @Html.LabelFor(model => model.ComboQuantity, "Số lượng combo", new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.ComboQuantity, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.ComboQuantity, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group" id="buyGetQuantityGroup" style="display: none;">
+            @Html.LabelFor(model => model.BuyQuantity, "Số lượng mua", new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.BuyQuantity, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.BuyQuantity, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group" id="getQuantityGroup" style="display: none;">
+            @Html.LabelFor(model => model.GetQuantity, "Số lượng tặng", new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.GetQuantity, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.GetQuantity, "", new { @class = "text-danger" })
+            </div>
+        </div>*@
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.IsActive, "Kích hoạt", new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                <div class="checkbox">
+                    @Html.EditorFor(model => model.IsActive)
+                    @Html.ValidationMessageFor(model => model.IsActive, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group percentage-combo-fields">
+            <label class="control-label col-md-2">Applied Products</label>
+            <div class="col-md-10">
+                @Html.ListBox("selectedProducts", (MultiSelectList)ViewBag.Products, new { @class = "form-control", multiple = "multiple" })
+            </div>
+        </div>
+
+        <div class="form-group buy-x-get-y-fields" style="display:none;">
+            <label class="control-label col-md-2">Buy Products</label>
+            <div class="col-md-10">
+                @Html.ListBox("selectedBuyProducts", (MultiSelectList)ViewBag.Products, new { @class = "form-control", multiple = "multiple" })
+            </div>
+        </div>
+
+        <div class="form-group buy-x-get-y-fields" style="display:none;">
+            <label class="control-label col-md-2">Get Products</label>
+            <div class="col-md-10">
+                @Html.ListBox("selectedGetProducts", (MultiSelectList)ViewBag.Products, new { @class = "form-control", multiple = "multiple" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Create" class="btn btn-default" />
+            </div>
+        </div>
+    </div>
+}
+
+<div>
+    @Html.ActionLink("Back to List", "Index")
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script>
+        $(document).ready(function () {
+            $('#discountType').change(function () {
+                var selectedType = $(this).val();
+                $('.percentage-combo-fields, .buy-x-get-y-fields, .combo-fields').hide();
+                if (selectedType == '1' || selectedType == '2') {
+                    $('.percentage-combo-fields').show();
+                    if (selectedType == '2') {
+                        $('.combo-fields').show();
+                    }
+                } else if (selectedType == '3') {
+                    $('.buy-x-get-y-fields').show();
+                }
+            });
+
+            $('#discountType').trigger('change');
+        });
+    </script>
+}

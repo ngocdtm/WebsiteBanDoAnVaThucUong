@@ -1,0 +1,75 @@
+﻿﻿@model WebsiteBanDoAnVaThucUong.Models.EditAccountViewModel
+@{
+    ViewBag.Title = "Profile";
+}
+<link rel="stylesheet" type="text/css" href="~/Content/assets/styles/main_styles.css">
+<!-- Slider -->
+<style>
+    .news_section_container {
+        margin-top: 180px;
+    }
+
+    .row-item-new {
+        margin-bottom: 20px;
+    }
+
+    .title-news {
+        font-size: 24px;
+        border-bottom: 1px solid;
+        padding: 15px 0;
+        margin-bottom: 25px;
+    }
+
+    .img-box img {
+        max-width: 100%;
+        max-height: 100%;
+    }
+</style>
+<div class="container news_section_container">
+    <h2>Thông tin cá nhân</h2>
+    <div class="row">
+
+        <div class="col-md-12">
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <div class="alert alert-success">
+                    @TempData["SuccessMessage"]
+                </div>
+            }
+            @using (Html.BeginForm("Profile", "Account"))
+            {
+                @Html.ValidationSummary(false)
+                @Html.AntiForgeryToken()
+                <div class="form-group">
+                    <label for="exampleInputEmail1">Email</label>
+                    <input type="text" class="form-control" aria-describedby="emailHelp" name="Email" value="@Model.Email" readonly>
+
+                </div>
+
+                <div class="form-group">
+                    <label for="exampleInputEmail1">Tên người dùng</label>
+                    <input type="text" class="form-control" aria-describedby="emailHelp" name="UserName" value="@Model.UserName">
+
+                </div>
+                <div class="form-group">
+                    <label for="exampleInputEmail1">Họ tên</label>
+                    <input type="text" class="form-control" aria-describedby="emailHelp" name="FullName" value="@Model.FullName">
+
+                </div>
+                <div class="form-group">
+                    <label for="exampleInputEmail1">Số điện thoại</label>
+                    <input type="text" class="form-control" aria-describedby="emailHelp" name="PhoneNumber" value="@Model.PhoneNumber">
+                </div>
+                <div class="form-group">
+                    <label for="exampleInputEmail1">Địa chỉ</label>
+                    <input type="text" class="form-control" aria-describedby="emailHelp" name="Address" value="@Model.Address">
+                </div>
+                <div class="form-group">
+
+                    <button type="submit" class="btn btn-success">Cập nhật</button>
+
+                </div>}
+        </div>
+
+    </div>
+</div>
