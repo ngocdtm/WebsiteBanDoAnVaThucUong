@@ -12,6 +12,7 @@ namespace WebsiteBanDoAnVaThucUong.Models
     // You can add profile data for the user by adding more properties to your ApplicationUser class, please visit https://go.microsoft.com/fwlink/?LinkID=317594 to learn more.
     public class ApplicationUser : IdentityUser
     {
+        //DAPM
         public bool Status { get; set; }
         public string FullName { get; set; }
         //public string Phone {  get; set; }
@@ -112,11 +113,12 @@ namespace WebsiteBanDoAnVaThucUong.Models
         public DbSet<Contact> Contacts { get; set; }
         public DbSet<Order> Orders { get; set; }
         public DbSet<OrderDetail> OrderDetails { get; set; }
-        public DbSet <Subscribe> Subscribe { get; set; }
-        
+        public DbSet<Subscribe> Subscribe { get; set; }
+        public DbSet<StoreProduct> StoreProducts { get; set; }
         public static ApplicationDbContext Create()
         {
             return new ApplicationDbContext();
         }
+
     }
 }

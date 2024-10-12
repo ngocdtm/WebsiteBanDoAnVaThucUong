@@ -8,12 +8,12 @@ using System.Web;
 namespace WebsiteBanDoAnVaThucUong.Models.EF
 {
     [Table("Store")]
-    public class Store 
+    public class Store
     {
-        //public Store()
-        //{
-        //    this.WishlistStores = new HashSet<WishlistStore>();
-        //}
+        public Store()
+        {
+            this.StoreProducts = new HashSet<StoreProduct>();
+        }
         [Key]
         [DatabaseGeneratedAttribute(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
@@ -29,5 +29,7 @@ namespace WebsiteBanDoAnVaThucUong.Models.EF
         public string IdManager { get; set; }
         //public virtual ICollection<WishlistStore> WishlistStores { get; set; }
         public virtual ApplicationUser User { get; set; }
+        public virtual ICollection<StoreProduct> StoreProducts { get; set; }
+
     }
 }
