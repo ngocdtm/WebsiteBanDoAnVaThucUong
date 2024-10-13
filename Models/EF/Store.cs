@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web;
+using PagedList;
 
 namespace WebsiteBanDoAnVaThucUong.Models.EF
 {
@@ -25,6 +26,7 @@ namespace WebsiteBanDoAnVaThucUong.Models.EF
         public double Lat { get; set; }
         [StringLength(250)]
         public string Image { get; set; }
+
         [Required]
         public string IdManager { get; set; }
         //public virtual ICollection<WishlistStore> WishlistStores { get; set; }
