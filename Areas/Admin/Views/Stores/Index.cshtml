@@ -63,7 +63,7 @@
                                 <td>
                                     <a href="/admin/stores/edit/@item.Id" class="btn btn-sm btn-primary">Sửa</a>
                                     <a href="#" data-id="@item.Id" class="btn btn-sm btn-danger btnDelete">Xóa</a>
-                                    <a href="@Url.Action("ProductsByStore", "Stores", new { area = "Admin", storeId = item.Id })" class="btn btn-sm btn-info">Xem sản phẩm</a>
+                                    <a href="@Url.Action("Index", "StoreProducts", new { area = "Admin", storeId = item.Id })" class="btn btn-sm btn-info">Xem sản phẩm</a>
                                 </td>
 
                             </tr>

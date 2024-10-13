@@ -8,7 +8,7 @@ using WebsiteBanDoAnVaThucUong.Models.EF;
 
 namespace WebsiteBanDoAnVaThucUong.Areas.Admin.Controllers
 {
-    public class StoreProductController : Controller
+    public class StoreProductsController : Controller
     {
         private ApplicationDbContext db = new ApplicationDbContext();
 
