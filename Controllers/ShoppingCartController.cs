@@ -134,12 +134,13 @@ namespace WebsiteBanDoAnVaThucUong.Controllers
             if (ModelState.IsValid)
             {
                 ShoppingCart cart = (ShoppingCart)Session["Cart"];
-                if (cart != null && cart.Items.Any())
+                if (cart != null)
                 {
                     try
                     {
                         // Kiểm tra xem tất cả sản phẩm có cùng StoreId không
                         var storeId = cart.Items.First().StoreId;
+
                         if (cart.Items.All(item => item.StoreId == storeId))
                         {
                             Order order = new Order();
@@ -153,46 +154,46 @@ namespace WebsiteBanDoAnVaThucUong.Controllers
 
                             foreach (var item in cart.Items)
                             {
-                                var orderDetail = new OrderDetail
-                                {
-                                    ProductId = item.ProductId,
-                                    Quantity = item.Quantity,
-                                    UnitPrice = item.Price,
-                                    Subtotal = item.Quantity * item.Price,
-                                    DiscountAmount = item.DiscountAmount,
-                                    FinalAmount = item.TotalPrice
-                                };
-                                order.OrderDetails.Add(orderDetail);
-
-                                // Add OrderDetailPromotions
-                                if (appliedPromotions.TryGetValue(item.ProductId, out var promotions))
-                                {
-                                    foreach (var promo in promotions)
+                                    var orderDetail = new OrderDetail
                                     {
-                                        orderDetail.OrderDetailPromotion.Add(new OrderDetailPromotion
+                                        ProductId = item.ProductId,
+                                        Quantity = item.Quantity,
+                                        UnitPrice = item.Price,
+                                        Subtotal = item.Quantity * item.Price,
+                                        DiscountAmount = item.DiscountAmount,
+                                        FinalAmount = item.TotalPrice
+                                    };
+                                    order.OrderDetails.Add(orderDetail);
+
+                                    // Add OrderDetailPromotions
+                                    if (appliedPromotions.TryGetValue(item.ProductId, out var promotions))
+                                    {
+                                        foreach (var promo in promotions)
                                         {
-                                            PromotionId = promo.PromotionId,
-                                            DiscountAmount = promo.DiscountAmount
-                                        });
+                                            orderDetail.OrderDetailPromotion.Add(new OrderDetailPromotion
+                                            {
+                                                PromotionId = promo.PromotionId,
+                                                DiscountAmount = promo.DiscountAmount
+                                            });
+                                        }
                                     }
-                                }
 
-                                // Cập nhật số lượng tồn kho
-                                var storeProduct = db.StoreProducts.FirstOrDefault(sp => sp.ProductId == item.ProductId && sp.StoreId == storeId);
-                                if (storeProduct != null)
-                                {
-                                    if (storeProduct.StockCount < item.Quantity)
+                                    // Cập nhật số lượng tồn kho
+                                    var storeProduct = db.StoreProducts.FirstOrDefault(sp => sp.ProductId == item.ProductId && sp.StoreId == storeId);
+                                    if (storeProduct != null)
                                     {
-                                        throw new Exception($"Sản phẩm {item.ProductName} không đủ số lượng trong kho.");
+                                        if (storeProduct.StockCount < item.Quantity)
+                                        {
+                                            throw new Exception($"Sản phẩm {item.ProductName} không đủ số lượng trong kho.");
+                                        }
+                                        storeProduct.StockCount -= item.Quantity;
+                                        storeProduct.SellCount += item.Quantity;
+                                        db.Entry(storeProduct).State = EntityState.Modified;
                                     }
-                                    storeProduct.StockCount -= item.Quantity;
-                                    storeProduct.SellCount += item.Quantity;
-                                    db.Entry(storeProduct).State = EntityState.Modified;
-                                }
-                                else
-                                {
-                                    throw new Exception($"Không tìm thấy sản phẩm {item.ProductName} trong kho của cửa hàng.");
-                                }
+                                    else
+                                    {
+                                        throw new Exception($"Không tìm thấy sản phẩm {item.ProductName} trong kho của cửa hàng.");
+                                    }
                             }
 
                             order.TotalQuantity = cart.GetTotalQuantity();
@@ -222,6 +223,7 @@ namespace WebsiteBanDoAnVaThucUong.Controllers
                             //order.E = req.CustomerName;
                             db.Orders.Add(order);
                             db.SaveChanges();
+
                             //send mail cho khachs hang
                             var strSanPham = "";
                             var thanhtien = decimal.Zero;
