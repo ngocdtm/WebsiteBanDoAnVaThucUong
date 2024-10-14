@@ -10,6 +10,7 @@ using WebsiteBanDoAnVaThucUong.Models.EF;
 using WebsiteBanDoAnVaThucUong.Models;
 using System.Web.Management;
 using WebsiteBanDoAnVaThucUong.Models.Payments;
+using System.Data.Entity;
 
 namespace WebsiteBanDoAnVaThucUong.Controllers
 {
@@ -129,130 +130,170 @@ namespace WebsiteBanDoAnVaThucUong.Controllers
         public ActionResult CheckOut(OrderViewModel req, string CouponCode)
         {
 
-            var code = new { Success = false, Code = -1, Url = "" };
+            var code = new { Success = false, Code = -1, Url = "", msg = "" };
             if (ModelState.IsValid)
             {
                 ShoppingCart cart = (ShoppingCart)Session["Cart"];
-                if (cart != null)
+                if (cart != null && cart.Items.Any())
                 {
-                    Order order = new Order();
-                    order.OrderStatus = 1;//chưa thanh toán, 2/đã thanh toán, 3/Hoàn thành, 4/hủy
-                    order.ShippingStatus = 1; // Chờ xác nhận
-
-                    // Apply promotions
-                    var appliedPromotions = ApplyPromotions(cart);
-
-                    foreach (var item in cart.Items)
+                    try
                     {
-                        var orderDetail = new OrderDetail
+                        // Kiểm tra xem tất cả sản phẩm có cùng StoreId không
+                        var storeId = cart.Items.First().StoreId;
+                        if (cart.Items.All(item => item.StoreId == storeId))
                         {
-                            ProductId = item.ProductId,
-                            Quantity = item.Quantity,
-                            UnitPrice = item.Price,
-                            Subtotal = item.Quantity * item.Price,
-                            DiscountAmount = item.DiscountAmount,
-                            FinalAmount = item.TotalPrice
-                        };
-                        order.OrderDetails.Add(orderDetail);
+                            Order order = new Order();
+                            order.StoreId = storeId;
 
-                        // Add OrderDetailPromotions
-                        if (appliedPromotions.TryGetValue(item.ProductId, out var promotions))
-                        {
-                            foreach (var promo in promotions)
+                            order.OrderStatus = 1;//chưa thanh toán, 2/đã thanh toán, 3/Hoàn thành, 4/hủy
+                            order.ShippingStatus = 1; // Chờ xác nhận
+
+                            // Apply promotions
+                            var appliedPromotions = ApplyPromotions(cart);
+
+                            foreach (var item in cart.Items)
                             {
-                                orderDetail.OrderDetailPromotion.Add(new OrderDetailPromotion
+                                var orderDetail = new OrderDetail
                                 {
-                                    PromotionId = promo.PromotionId,
-                                    DiscountAmount = promo.DiscountAmount
-                                });
+                                    ProductId = item.ProductId,
+                                    Quantity = item.Quantity,
+                                    UnitPrice = item.Price,
+                                    Subtotal = item.Quantity * item.Price,
+                                    DiscountAmount = item.DiscountAmount,
+                                    FinalAmount = item.TotalPrice
+                                };
+                                order.OrderDetails.Add(orderDetail);
+
+                                // Add OrderDetailPromotions
+                                if (appliedPromotions.TryGetValue(item.ProductId, out var promotions))
+                                {
+                                    foreach (var promo in promotions)
+                                    {
+                                        orderDetail.OrderDetailPromotion.Add(new OrderDetailPromotion
+                                        {
+                                            PromotionId = promo.PromotionId,
+                                            DiscountAmount = promo.DiscountAmount
+                                        });
+                                    }
+                                }
+
+                                // Cập nhật số lượng tồn kho
+                                var storeProduct = db.StoreProducts.FirstOrDefault(sp => sp.ProductId == item.ProductId && sp.StoreId == storeId);
+                                if (storeProduct != null)
+                                {
+                                    if (storeProduct.StockCount < item.Quantity)
+                                    {
+                                        throw new Exception($"Sản phẩm {item.ProductName} không đủ số lượng trong kho.");
+                                    }
+                                    storeProduct.StockCount -= item.Quantity;
+                                    storeProduct.SellCount += item.Quantity;
+                                    db.Entry(storeProduct).State = EntityState.Modified;
+                                }
+                                else
+                                {
+                                    throw new Exception($"Không tìm thấy sản phẩm {item.ProductName} trong kho của cửa hàng.");
+                                }
                             }
-                        }
 
-                        // Update product quantity
-                        var product = db.Products.Find(item.ProductId);
-                        if (product != null)
+                            order.TotalQuantity = cart.GetTotalQuantity();
+                            order.SubTotal = cart.GetSubTotal();
+                            order.ProductDiscountTotal = cart.GetTotalDiscount();
+                            order.TypePayment = req.TypePayment;
+                            order.CreatedDate = DateTime.Now;
+                            order.CreatedBy = req.CustomerName;
+                            order.ModifiedDate = DateTime.Now;
+                            order.ModifiedBy = User.Identity.GetUserId();
+
+                            // Áp dụng mã giảm giá nếu có
+                            var voucher = db.Vouchers.FirstOrDefault(v => v.Coupon == CouponCode && v.StartDate <= DateTime.Now && v.EndDate >= DateTime.Now);
+                            if (voucher != null)
+                            {
+                                order.VoucherId = voucher.Id;
+                                order.VoucherDiscount = order.SubTotal * voucher.Discount;
+                            }
+                            order.FinalAmount = order.SubTotal - order.ProductDiscountTotal - order.VoucherDiscount;
+
+                            if (User.Identity.IsAuthenticated)
+                                order.CustomerId = User.Identity.GetUserId();
+
+                            Random rd = new Random();
+                            order.Code = "DH" + rd.Next(0, 9) + rd.Next(0, 9) + rd.Next(0, 9) + rd.Next(0, 9);
+
+                            //order.E = req.CustomerName;
+                            db.Orders.Add(order);
+                            db.SaveChanges();
+                            //send mail cho khachs hang
+                            var strSanPham = "";
+                            var thanhtien = decimal.Zero;
+                            var TongTien = decimal.Zero;
+                            foreach (var sp in cart.Items)
+                            {
+                                strSanPham += "<tr>";
+                                strSanPham += "<td>" + sp.ProductName + "</td>";
+                                strSanPham += "<td>" + sp.Quantity + "</td>";
+                                strSanPham += "<td>" + WebsiteBanDoAnVaThucUong.Common.Common.FormatNumber(sp.TotalPrice, 0) + "</td>";
+                                strSanPham += "</tr>";
+                                thanhtien += sp.Price * sp.Quantity;
+                            }
+                            TongTien = thanhtien;
+                            string contentCustomer = System.IO.File.ReadAllText(Server.MapPath("~/Content/templates/send2.html"));
+                            contentCustomer = contentCustomer.Replace("{{MaDon}}", order.Code);
+                            contentCustomer = contentCustomer.Replace("{{SanPham}}", strSanPham);
+                            contentCustomer = contentCustomer.Replace("{{NgayDat}}", DateTime.Now.ToString("dd/MM/yyyy"));
+                            contentCustomer = contentCustomer.Replace("{{TenKhachHang}}", req.CustomerName);
+                            contentCustomer = contentCustomer.Replace("{{Phone}}", req.Phone);
+                            contentCustomer = contentCustomer.Replace("{{Email}}", req.Email);
+                            contentCustomer = contentCustomer.Replace("{{DiaChiNhanHang}}", req.Address);
+                            contentCustomer = contentCustomer.Replace("{{ThanhTien}}", WebsiteBanDoAnVaThucUong.Common.Common.FormatNumber(thanhtien, 0));
+                            contentCustomer = contentCustomer.Replace("{{TongTien}}", WebsiteBanDoAnVaThucUong.Common.Common.FormatNumber(TongTien, 0));
+                            WebsiteBanDoAnVaThucUong.Common.Common.SendMail("ShopOnline", "Đơn hàng #" + order.Code, contentCustomer.ToString(), req.Email);
+
+                            string contentAdmin = System.IO.File.ReadAllText(Server.MapPath("~/Content/templates/send1.html"));
+                            contentAdmin = contentAdmin.Replace("{{MaDon}}", order.Code);
+                            contentAdmin = contentAdmin.Replace("{{SanPham}}", strSanPham);
+                            contentAdmin = contentAdmin.Replace("{{NgayDat}}", DateTime.Now.ToString("dd/MM/yyyy"));
+                            contentAdmin = contentAdmin.Replace("{{TenKhachHang}}", req.CustomerName);
+                            contentAdmin = contentAdmin.Replace("{{Phone}}", req.Phone);
+                            contentAdmin = contentAdmin.Replace("{{Email}}", req.Email);
+                            contentAdmin = contentAdmin.Replace("{{DiaChiNhanHang}}", req.Address);
+                            contentAdmin = contentAdmin.Replace("{{ThanhTien}}", WebsiteBanDoAnVaThucUong.Common.Common.FormatNumber(thanhtien, 0));
+                            contentAdmin = contentAdmin.Replace("{{TongTien}}", WebsiteBanDoAnVaThucUong.Common.Common.FormatNumber(TongTien, 0));
+                            WebsiteBanDoAnVaThucUong.Common.Common.SendMail("ShopOnline", "Đơn hàng mới #" + order.Code, contentAdmin.ToString(), ConfigurationManager.AppSettings["EmailAdmin"]);
+
+                           
+                            //var url = "";
+                            if (req.TypePayment == 2)
+                            {
+                                var url = UrlPayment(req.TypePaymentVN, order.Code);
+                                code = new { Success = true, Code = req.TypePayment, Url = url, msg = "" };
+                            }
+                            else
+                            {
+                                code = new { Success = true, Code = req.TypePayment, Url = "", msg = "" };
+                            }
+
+                            // Xóa giỏ hàng
+                            cart.ClearCart();
+                            Session["Cart"] = null;
+                        }
+                        else
                         {
-                            product.Quantity -= item.Quantity;
+                            code = new { Success = false, Code = -1, Url = "", msg = "Giỏ hàng chứa sản phẩm từ nhiều cửa hàng khác nhau. Vui lòng chỉ mua hàng từ một cửa hàng trong mỗi đơn hàng." };
                         }
                     }
-
-                    order.TotalQuantity = cart.GetTotalQuantity();
-                    order.SubTotal = cart.GetSubTotal();
-                    order.ProductDiscountTotal = cart.GetTotalDiscount();
-                    order.TypePayment = req.TypePayment;
-                    order.CreatedDate = DateTime.Now;
-                    order.CreatedBy = req.CustomerName;
-                    order.ModifiedDate = DateTime.Now;
-                    order.ModifiedBy = User.Identity.GetUserId();
-
-                    // Áp dụng mã giảm giá nếu có
-                    var voucher = db.Vouchers.FirstOrDefault(v => v.Coupon == CouponCode && v.StartDate <= DateTime.Now && v.EndDate >= DateTime.Now);
-                    if (voucher != null)
+                    catch (Exception ex)
                     {
-                        order.VoucherId = voucher.Id;
-                        order.VoucherDiscount = order.SubTotal * voucher.Discount;
+                        code = new { Success = false, Code = -1, Url = "", msg = ex.Message };
                     }
-                    order.FinalAmount = order.SubTotal - order.ProductDiscountTotal - order.VoucherDiscount;
-
-                    if (User.Identity.IsAuthenticated)
-                        order.CustomerId = User.Identity.GetUserId();
-
-                    Random rd = new Random();
-                    order.Code = "DH" + rd.Next(0, 9) + rd.Next(0, 9) + rd.Next(0, 9) + rd.Next(0, 9);
-
-                    //order.E = req.CustomerName;
-                    db.Orders.Add(order);
-                    db.SaveChanges();
-                    //send mail cho khachs hang
-                    var strSanPham = "";
-                    var thanhtien = decimal.Zero;
-                    var TongTien = decimal.Zero;
-                    foreach (var sp in cart.Items)
-                    {
-                        strSanPham += "<tr>";
-                        strSanPham += "<td>" + sp.ProductName + "</td>";
-                        strSanPham += "<td>" + sp.Quantity + "</td>";
-                        strSanPham += "<td>" + WebsiteBanDoAnVaThucUong.Common.Common.FormatNumber(sp.TotalPrice, 0) + "</td>";
-                        strSanPham += "</tr>";
-                        thanhtien += sp.Price * sp.Quantity;
-                    }
-                    TongTien = thanhtien;
-                    string contentCustomer = System.IO.File.ReadAllText(Server.MapPath("~/Content/templates/send2.html"));
-                    contentCustomer = contentCustomer.Replace("{{MaDon}}", order.Code);
-                    contentCustomer = contentCustomer.Replace("{{SanPham}}", strSanPham);
-                    contentCustomer = contentCustomer.Replace("{{NgayDat}}", DateTime.Now.ToString("dd/MM/yyyy"));
-                    contentCustomer = contentCustomer.Replace("{{TenKhachHang}}", req.CustomerName);
-                    contentCustomer = contentCustomer.Replace("{{Phone}}", req.Phone);
-                    contentCustomer = contentCustomer.Replace("{{Email}}", req.Email);
-                    contentCustomer = contentCustomer.Replace("{{DiaChiNhanHang}}", req.Address);
-                    contentCustomer = contentCustomer.Replace("{{ThanhTien}}", WebsiteBanDoAnVaThucUong.Common.Common.FormatNumber(thanhtien, 0));
-                    contentCustomer = contentCustomer.Replace("{{TongTien}}", WebsiteBanDoAnVaThucUong.Common.Common.FormatNumber(TongTien, 0));
-                    WebsiteBanDoAnVaThucUong.Common.Common.SendMail("ShopOnline", "Đơn hàng #" + order.Code, contentCustomer.ToString(), req.Email);
-
-                    string contentAdmin = System.IO.File.ReadAllText(Server.MapPath("~/Content/templates/send1.html"));
-                    contentAdmin = contentAdmin.Replace("{{MaDon}}", order.Code);
-                    contentAdmin = contentAdmin.Replace("{{SanPham}}", strSanPham);
-                    contentAdmin = contentAdmin.Replace("{{NgayDat}}", DateTime.Now.ToString("dd/MM/yyyy"));
-                    contentAdmin = contentAdmin.Replace("{{TenKhachHang}}", req.CustomerName);
-                    contentAdmin = contentAdmin.Replace("{{Phone}}", req.Phone);
-                    contentAdmin = contentAdmin.Replace("{{Email}}", req.Email);
-                    contentAdmin = contentAdmin.Replace("{{DiaChiNhanHang}}", req.Address);
-                    contentAdmin = contentAdmin.Replace("{{ThanhTien}}", WebsiteBanDoAnVaThucUong.Common.Common.FormatNumber(thanhtien, 0));
-                    contentAdmin = contentAdmin.Replace("{{TongTien}}", WebsiteBanDoAnVaThucUong.Common.Common.FormatNumber(TongTien, 0));
-                    WebsiteBanDoAnVaThucUong.Common.Common.SendMail("ShopOnline", "Đơn hàng mới #" + order.Code, contentAdmin.ToString(), ConfigurationManager.AppSettings["EmailAdmin"]);
-
-                    cart.ClearCart();
-                    code = new { Success = true, Code = req.TypePayment, Url = "" };
-                    //var url = "";
-                    if (req.TypePayment == 2)
-                    {
-                        var url = UrlPayment(req.TypePaymentVN, order.Code);
-                        code = new { Success = true, Code = req.TypePayment, Url = url };
-                    }
-
-                    //code = new { Success = true, Code = 1, Url = url };
-                    //return RedirectToAction("CheckOutSuccess");
                 }
+                else
+                {
+                    code = new { Success = false, Code = -1, Url = "", msg = "Giỏ hàng trống." };
+                }
+            }
+            else
+            {
+                code = new { Success = false, Code = -1, Url = "", msg = "Dữ liệu không hợp lệ." };
             }
             return Json(code);
         }
@@ -367,72 +408,85 @@ namespace WebsiteBanDoAnVaThucUong.Controllers
 
         [AllowAnonymous]
         [HttpPost]
-        public ActionResult AddToCart(int id, int quantity)
+        public ActionResult AddToCart(int id, int quantity, int storeId)
         {
             var code = new { Success = false, msg = "", code = -1, Count = 0 };
-            var db = new ApplicationDbContext();
-            var checkProduct = db.Products.FirstOrDefault(x => x.Id == id);
-            if (checkProduct != null)
+            System.Diagnostics.Debug.WriteLine($"AddToCart called with id: {id}, quantity: {quantity}, storeId: {storeId}");
+            try
             {
-                ShoppingCart cart = (ShoppingCart)Session["Cart"];
-                if (cart == null)
+               
+                var db = new ApplicationDbContext();
+                var checkProduct = db.Products.FirstOrDefault(x => x.Id == id);
+                if (checkProduct != null)
                 {
-                    cart = new ShoppingCart();
-                }
-                ShoppingCartItem item = new ShoppingCartItem
-                {
-                    ProductId = checkProduct.Id,
-                    ProductName = checkProduct.Title,
-                    CategoryName = checkProduct.ProductCategory.Title,
-                    Alias = checkProduct.Alias,
-                    Quantity = quantity
-                };
-                if (checkProduct.ProductImage.FirstOrDefault(x => x.IsDefault) != null)
-                {
-                    item.ProductImg = checkProduct.ProductImage.FirstOrDefault(x => x.IsDefault).Image;
-                }
-                item.Price = checkProduct.SalePrice;
-                item.TotalPrice = item.Quantity * item.Price;
-                cart.AddToCart(item, quantity);
-                Session["Cart"] = cart;
-                code = new { Success = true, msg = "Thêm sản phẩm vào giỏ hàng thành công!", code = 1, Count = cart.Items.Count };
-
-                // Kiểm tra điều kiện "Mua 2 tặng 1"
-                var promotion = db.Promotions.FirstOrDefault(p => p.DiscountType == 3 && p.IsActive);
-                if (promotion != null)
-                {
-                    var eligibleProducts = db.PromotionProducts
-                        .Where(pp => pp.PromotionId == promotion.Id && pp.IsBuyProduct)
-                        .Select(pp => pp.ProductId)
-                        .ToList();
-
-                    if (eligibleProducts.Contains(id))
+                    ShoppingCart cart = (ShoppingCart)Session["Cart"];
+                    if (cart == null)
                     {
-                        var cartItems = cart.Items.Where(i => eligibleProducts.Contains(i.ProductId)).ToList();
-                        if (cartItems.Sum(i => i.Quantity) >= 2)
+                        cart = new ShoppingCart();
+                    }
+                    ShoppingCartItem item = new ShoppingCartItem
+                    {
+                        ProductId = checkProduct.Id,
+                        ProductName = checkProduct.Title,
+                        CategoryName = checkProduct.ProductCategory.Title,
+                        Alias = checkProduct.Alias,
+                        Quantity = quantity,
+                        StoreId = storeId
+                    };
+                    if (checkProduct.ProductImage.FirstOrDefault(x => x.IsDefault) != null)
+                    {
+                        item.ProductImg = checkProduct.ProductImage.FirstOrDefault(x => x.IsDefault).Image;
+                    }
+                    item.Price = checkProduct.SalePrice;
+                    item.TotalPrice = item.Quantity * item.Price;
+                    cart.AddToCart(item, quantity, storeId);
+                    Session["Cart"] = cart;
+                    code = new { Success = true, msg = "Thêm sản phẩm vào giỏ hàng thành công!", code = 1, Count = cart.Items.Count };
+
+                    // Kiểm tra điều kiện "Mua 2 tặng 1"
+                    var promotion = db.Promotions.FirstOrDefault(p => p.DiscountType == 3 && p.IsActive);
+                    if (promotion != null)
+                    {
+                        var eligibleProducts = db.PromotionProducts
+                            .Where(pp => pp.PromotionId == promotion.Id && pp.IsBuyProduct)
+                            .Select(pp => pp.ProductId)
+                            .ToList();
+
+                        if (eligibleProducts.Contains(id))
                         {
-                            var giftProduct = db.PromotionProducts
-                                .FirstOrDefault(pp => pp.PromotionId == promotion.Id && !pp.IsBuyProduct);
-                            if (giftProduct != null)
+                            var cartItems = cart.Items.Where(i => eligibleProducts.Contains(i.ProductId)).ToList();
+                            if (cartItems.Sum(i => i.Quantity) >= 2)
                             {
-                                var giftItem = new ShoppingCartItem
+                                var giftProduct = db.PromotionProducts
+                                    .FirstOrDefault(pp => pp.PromotionId == promotion.Id && !pp.IsBuyProduct);
+                                if (giftProduct != null)
                                 {
-                                    ProductId = giftProduct.ProductId,
-                                    ProductName = giftProduct.Product.Title,
-                                    Alias = giftProduct.Product.Alias,
-                                    CategoryName = giftProduct.Product.ProductCategory.Title,
-                                    Quantity = 1,
-                                    Price = 0,
-                                    OriginalPrice = giftProduct.Product.SalePrice,
-                                    TotalPrice = 0,
-                                    ProductImg = giftProduct.Product.ProductImage.FirstOrDefault(x => x.IsDefault)?.Image,
-                                    IsGift = true
-                                };
-                                cart.AddToCart(giftItem, 1);
+                                    var giftItem = new ShoppingCartItem
+                                    {
+                                        ProductId = giftProduct.ProductId,
+                                        ProductName = giftProduct.Product.Title,
+                                        Alias = giftProduct.Product.Alias,
+                                        CategoryName = giftProduct.Product.ProductCategory.Title,
+                                        Quantity = 1,
+                                        Price = 0,
+                                        OriginalPrice = giftProduct.Product.SalePrice,
+                                        TotalPrice = 0,
+                                        ProductImg = giftProduct.Product.ProductImage.FirstOrDefault(x => x.IsDefault)?.Image,
+                                        IsGift = true
+                                    };
+                                    cart.AddToCart(giftItem, 1, storeId);
+                                }
                             }
                         }
                     }
                 }
+
+            }
+            catch (Exception ex)
+            {
+                // Log the exception
+                Console.WriteLine($"Error in AddToCart: {ex.Message}");
+                return Json(new { Success = false, msg = "An error occurred", code = -1 });
             }
             return Json(code);
         }
@@ -457,25 +511,26 @@ namespace WebsiteBanDoAnVaThucUong.Controllers
 
         [AllowAnonymous]
         [HttpPost]
-        public ActionResult Update(int id, int quantity)
+        public ActionResult Update(int id, int quantity, int storeId)
         {
             var code = new { Success = false, msg = "", code = -1, Count = 0 };
             ShoppingCart cart = (ShoppingCart)Session["Cart"];
-
             if (cart != null)
             {
-
-                var product = db.Products.Find(id);
-                // Kiểm tra số lượng tồn kho
-                if (product.Quantity < quantity)
+                var storeProduct = db.StoreProducts.FirstOrDefault(sp => sp.ProductId == id && sp.StoreId == storeId);
+                if (storeProduct != null)
                 {
-
-                    return Json(new { Success = false, msg = "Not enough stock available.", code = -1, Count = cart.Items.Count });
+                    // Kiểm tra số lượng tồn kho
+                    if (storeProduct.StockCount < quantity)
+                    {
+                        return Json(new { Success = false, msg = "Không đủ số lượng tồn kho.", code = -1, Count = cart.Items.Count });
+                    }
+                    cart.UpdateQuantity(id, quantity);
+                    return Json(new { Success = true, msg = "Giỏ hàng đã được cập nhật.", code = 1, Count = cart.Items.Count });
                 }
-                cart.UpdateQuantity(id, quantity);
-                return Json(new { Success = true, msg = "Cart updated successfully.", code = 1, Count = cart.Items.Count });
+                return Json(new { Success = false, msg = "Không tìm thấy sản phẩm trong kho của cửa hàng.", code = -1, Count = cart.Items.Count });
             }
-            return Json(new { Success = false, msg = "Cart not found.", code = -1, Count = 0 });
+            return Json(new { Success = false, msg = "Không tìm thấy giỏ hàng.", code = -1, Count = 0 });
         }
 
 

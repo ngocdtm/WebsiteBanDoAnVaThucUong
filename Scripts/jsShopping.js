@@ -2,23 +2,30 @@
     ShowCount();
     $('body').on('click', '.btnAddToCart', function (e) {
         e.preventDefault();
+        console.log('AddToCart button clicked'); // Add this line
         var id = $(this).data('id');
-        var quatity = 1;
+        var storeId = $(this).data('storeid');
+        var quantity = 1;
         var tQuantity = $('#quantity_value').text();
         if (tQuantity != '') {
-            quatity = parseInt(tQuantity);
+            quantity = parseInt(tQuantity);
         }
 
-        //alert(id + " " + quatity);
         $.ajax({
-            url: '/shoppingcart/addtocart',
+            url: '/shoppingCart/AddToCart',
             type: 'POST',
-            data: { id: id, quantity: quatity },
+            data: { id: id, quantity: quantity, storeId: storeId },
             success: function (rs) {
                 if (rs.Success) {
                     $('#checkout_items').html(rs.Count);
                     alert(rs.msg);
+                } else {
+                    alert("Có lỗi xảy ra: " + rs.msg);
                 }
+            },
+            error: function (xhr, status, error) {
+                console.error("AJAX Error: " + status + error);
+                alert("Có lỗi xảy ra khi thêm sản phẩm vào giỏ hàng");
             }
         });
     });

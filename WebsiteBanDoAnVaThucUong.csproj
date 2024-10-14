@@ -352,6 +352,7 @@
     <Compile Include="Controllers\ProductsController.cs" />
     <Compile Include="Controllers\ReviewController.cs" />
     <Compile Include="Controllers\ShoppingCartController.cs" />
+    <Compile Include="Controllers\StoreProductsController.cs" />
     <Compile Include="Controllers\StoresController.cs" />
     <Compile Include="Controllers\WishlistController.cs" />
     <Compile Include="Controllers\WishlistStoresController.cs" />
@@ -359,9 +360,9 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="IServiceCollection.cs" />
-    <Compile Include="Migrations\202410131032463_h.cs" />
-    <Compile Include="Migrations\202410131032463_h.Designer.cs">
-      <DependentUpon>202410131032463_h.cs</DependentUpon>
+    <Compile Include="Migrations\202410140218474_m.cs" />
+    <Compile Include="Migrations\202410140218474_m.Designer.cs">
+      <DependentUpon>202410140218474_m.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\EF\StoreDTO.cs" />
@@ -3869,6 +3870,7 @@
     <Content Include="Scripts\jquery-3.7.1.slim.min.map" />
     <Content Include="Scripts\jquery-3.7.1.min.map" />
     <Content Include="Web.config" />
+    <Content Include="Views\StoreProducts\Index.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -3893,8 +3895,8 @@
     <WCFMetadata Include="Connected Services\" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\202410131032463_h.resx">
-      <DependentUpon>202410131032463_h.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\202410140218474_m.resx">
+      <DependentUpon>202410140218474_m.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
