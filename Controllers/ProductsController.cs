@@ -74,6 +74,28 @@ namespace WebsiteBanDoAnVaThucUong.Controllers
                 items = items.Where(x => x.Alias.Contains(searchString) || x.Title.Contains(searchString));
             }
             return View(items.ToList());
-        }       
+        }
+
+        // Sản phẩm liên quan
+        public ActionResult RelatedProducts(int productId)
+        {
+            var currentProduct = db.Products.Find(productId);
+            if (currentProduct == null)
+            {
+                return HttpNotFound();
+            }
+
+            // Chia tiêu đề sản phẩm hiện tại thành các từ khóa
+            var keywords = currentProduct.Title.Split(' ');
+
+            // Tìm các sản phẩm có tiêu đề chứa các từ khóa này (loại bỏ sản phẩm hiện tại)
+            var relatedProducts = db.Products
+                                    .Where(p => p.Id != productId && keywords.Any(kw => p.Title.Contains(kw)))
+                                    .Take(5)  // Giới hạn số lượng sản phẩm liên quan
+                                    .ToList();
+
+            return PartialView("_RelatedProducts", relatedProducts);
+        }
+
     }
 }
