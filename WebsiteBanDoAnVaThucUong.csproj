@@ -354,6 +354,7 @@
     <Compile Include="Controllers\ShoppingCartController.cs" />
     <Compile Include="Controllers\StoreProductsController.cs" />
     <Compile Include="Controllers\StoresController.cs" />
+    <Compile Include="Controllers\VouchersController.cs" />
     <Compile Include="Controllers\WishlistController.cs" />
     <Compile Include="Controllers\WishlistStoresController.cs" />
     <Compile Include="Global.asax.cs">
@@ -3848,10 +3849,6 @@
     <Content Include="Views\WishlistStores\Index.cshtml" />
     <Content Include="Views\Stores\Details.cshtml" />
     <Content Include="Views\Stores\Index.cshtml" />
-    <Content Include="Views\ImageSliders\Create.cshtml" />
-    <Content Include="Views\ImageSliders\Delete.cshtml" />
-    <Content Include="Views\ImageSliders\Details.cshtml" />
-    <Content Include="Views\ImageSliders\Edit.cshtml" />
     <Content Include="Views\ImageSliders\Index.cshtml" />
     <Content Include="Views\ShoppingCart\CheckOutSuccess.cshtml" />
     <Content Include="Views\Products\_ProductItem.cshtml" />
