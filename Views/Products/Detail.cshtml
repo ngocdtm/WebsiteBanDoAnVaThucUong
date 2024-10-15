@@ -1,8 +1,8 @@
 ﻿﻿@model WebsiteBanDoAnVaThucUong.Models.EF.Product
 @{
-//ViewBag.Title = Model.SeoTitle;
-//ViewBag.SeoDescription = Model.SeoDescription ?? Model.Title;
-//ViewBag.SeoKeyWord = Model.SeoKeywords ?? Model.Title;
+    //ViewBag.Title = Model.SeoTitle;
+    //ViewBag.SeoDescription = Model.SeoDescription ?? Model.Title;
+    //ViewBag.SeoKeyWord = Model.SeoKeywords ?? Model.Title;
 }
 <link rel="stylesheet" type="text/css" href="~/Content/assets/styles/single_styles.css">
 <link rel="stylesheet" type="text/css" href="~/Content/assets/styles/single_responsive.css">
@@ -67,14 +67,14 @@
                         <p>@Model.Description</p>
                         <p>Lượt xem: <b>@Model.ViewCount</b></p>
                     </div>
-                        <div class="product_price">@WebsiteBanDoAnVaThucUong.Common.Common.FormatNumber(Model.SalePrice, 0)</div>
+                    <div class="product_price">@WebsiteBanDoAnVaThucUong.Common.Common.FormatNumber(Model.SalePrice, 0)</div>
                     @*<ul class="star_rating">
-                        <li><i class="fa fa-star" aria-hidden="true"></i></li>
-                        <li><i class="fa fa-star" aria-hidden="true"></i></li>
-                        <li><i class="fa fa-star" aria-hidden="true"></i></li>
-                        <li><i class="fa fa-star" aria-hidden="true"></i></li>
-                        <li><i class="fa fa-star-o" aria-hidden="true"></i></li>
-                    </ul>*@
+                            <li><i class="fa fa-star" aria-hidden="true"></i></li>
+                            <li><i class="fa fa-star" aria-hidden="true"></i></li>
+                            <li><i class="fa fa-star" aria-hidden="true"></i></li>
+                            <li><i class="fa fa-star" aria-hidden="true"></i></li>
+                            <li><i class="fa fa-star-o" aria-hidden="true"></i></li>
+                        </ul>*@
 
                     <div class="quantity d-flex flex-column flex-sm-row align-items-sm-center">
                         <span>Quantity:</span>
@@ -116,7 +116,6 @@
                             @Html.Raw(Model.Detail)
                         </div>
                     </div>
-
                     <!-- Tab Additional Info -->
                     <!-- Tab Reviews -->
 
@@ -130,23 +129,28 @@
                             </div>
 
                             <!-- Add Review -->
-
                             <div class="col-lg-6 add_review_col">
-
-
                                 @Html.Action("_Review", "Review", new { productId = Model.Id })
                             </div>
 
+
                         </div>
                     </div>
-
                 </div>
             </div>
+            <div class="row">
+                <div class="col">
+                    @Html.Action("RelatedProducts", new { productId = Model.Id })
+                </div>
+            </div>
+
         </div>
 
     </div>
 
 }
 @*@section scripts{
-    <script src="~/Content/assets/js/single_custom.js"></script>
-}*@
+        <script src="~/Content/assets/js/single_custom.js"></script>
+    }*@
+
+
