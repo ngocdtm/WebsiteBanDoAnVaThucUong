@@ -64,16 +64,58 @@ namespace WebsiteBanDoAnVaThucUong.Controllers
                db.OrderDetails.Where(od => od.ProductId == product.Id).Sum(od => (int?)od.Quantity) > 10).ToList();
             return PartialView(filteredProducts);
         }
-
+        // tìm kiếm dựa theo từ khóa 
         [HttpGet]
-        public ActionResult Search(string searchString)
+        public ActionResult Search(string searchString, int page = 1, int pageSize = 10)
         {
-            IEnumerable<Product> items = db.Products.OrderByDescending(x => x.Id);
-            if (!string.IsNullOrEmpty(searchString))
+            var items = db.Products
+                .Where(x => x.Alias.Contains(searchString) || x.Title.Contains(searchString))
+                .OrderByDescending(x => x.Id)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+
+            ViewBag.CurrentPage = page;
+            ViewBag.TotalPages = Math.Ceiling((double)db.Products.Count(x => x.Alias.Contains(searchString) || x.Title.Contains(searchString)) / pageSize);
+
+            return View(items);
+        }
+
+        //Tìm kiếm dựa vào từ khóa nhưng sẽ gợi ý thêm các sản phẩm liên quan sẽ mở ra view 
+        [HttpGet]
+        public JsonResult SearchSuggestions(string searchString)
+        {
+            if (string.IsNullOrEmpty(searchString))
             {
-                items = items.Where(x => x.Alias.Contains(searchString) || x.Title.Contains(searchString));
+                return Json(new { success = false }, JsonRequestBehavior.AllowGet);
             }
-            return View(items.ToList());
+
+            // tối đa 5 sp getdata sau đó dropdown 
+            var suggestions = db.Products
+                .Where(x => x.Alias.Contains(searchString) || x.Title.Contains(searchString))
+                .Select(x => new { x.Id, x.Title, x.Alias, x.SalePrice, x.ProductImage })
+                .Take(5)
+                .ToList();
+
+            return Json(new { success = true, data = suggestions }, JsonRequestBehavior.AllowGet);
+        }
+
+        public JsonResult GetProductSuggestions(string query)
+        {
+            var products = db.Products
+                             .Where(p => p.Title.Contains(query) || p.Alias.Contains(query))
+                             .Select(p => new
+                             {
+                                 p.Title,
+                                 p.Id,
+                                 p.Alias,
+                                 ImageUrl = p.ProductImage.FirstOrDefault(x => x.IsDefault).Image,
+                                 p.SalePrice
+                             })
+                             .Take(5) // giới hạn 5 sp 
+                             .ToList();
+
+            return Json(products, JsonRequestBehavior.AllowGet);
         }
 
         // Sản phẩm liên quan
@@ -99,3 +141,5 @@ namespace WebsiteBanDoAnVaThucUong.Controllers
 
     }
 }
+
+
