@@ -360,9 +360,9 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="IServiceCollection.cs" />
-    <Compile Include="Migrations\202410140218474_m.cs" />
-    <Compile Include="Migrations\202410140218474_m.Designer.cs">
-      <DependentUpon>202410140218474_m.cs</DependentUpon>
+    <Compile Include="Migrations\202410140833425_getData.cs" />
+    <Compile Include="Migrations\202410140833425_getData.Designer.cs">
+      <DependentUpon>202410140833425_getData.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\EF\StoreDTO.cs" />
@@ -3895,8 +3895,8 @@
     <WCFMetadata Include="Connected Services\" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\202410140218474_m.resx">
-      <DependentUpon>202410140218474_m.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\202410140833425_getData.resx">
+      <DependentUpon>202410140833425_getData.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
