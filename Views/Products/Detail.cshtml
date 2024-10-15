@@ -143,7 +143,11 @@
                     @Html.Action("RelatedProducts", new { productId = Model.Id })
                 </div>
             </div>
-
+            <div class="row">
+                <div class="col">
+                    @Html.Action("ViewHistory", new { productId = Model.Id })
+                </div>
+            </div>
         </div>
 
     </div>

@@ -1,0 +1,48 @@
+﻿@model IEnumerable<WebsiteBanDoAnVaThucUong.Models.EF.Product>
+
+<div class="view-history-section">
+    <h3>Your Recently Viewed Products</h3>
+    <div class="view-historys">
+
+        @if (Model.Any())
+        {
+            foreach (var item in Model)
+            {
+                <div class="view-history-item">
+                    <img src="@item.Image" alt="@item.Title" />
+                    <h4>@item.Title</h4>
+                    <p>@WebsiteBanDoAnVaThucUong.Common.Common.FormatNumber(item.SalePrice, 0)</p>
+                    <a href="@Url.Action("Details", "Products", new { id = item.Id })">View Details</a>
+                </div>
+            }
+        }
+        else
+        {
+            <p>You haven't viewed any products yet.</p>
+        }
+    </div>
+ </div>
+
+    <style>
+        .view-history-section {
+            margin-top: 40px;
+        }
+
+        .view-historys {
+            display: flex;
+            gap: 20px;
+        }
+
+        .view-history-item {
+            flex: 1;
+            text-align: left;
+        }
+
+            .view-history-item img {
+                max-width: 200px;
+                height: 200px;
+            }
+    </style>
+
+
+

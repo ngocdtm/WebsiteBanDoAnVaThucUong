@@ -25,15 +25,67 @@ namespace WebsiteBanDoAnVaThucUong.Controllers
             var item = db.Products.Find(id);
             if (item != null)
             {
+                // Update the product's view count
                 db.Products.Attach(item);
-                item.ViewCount = item.ViewCount + 1;
+                item.ViewCount += 1;
                 db.Entry(item).Property(x => x.ViewCount).IsModified = true;
                 db.SaveChanges();
+
+                // Save product to user's view history
+                var userId = User.Identity.GetUserId(); // Assuming you're using Identity or any other user identification
+
+                if (userId != null) // If the user is logged in
+                {
+                    var existingHistory = db.ProductViewHistory
+                        .FirstOrDefault(h => h.ProductId == id && h.UserId == userId);
+
+                    if (existingHistory == null) // Avoid duplicate entries in the history
+                    {
+                        var historyEntry = new ProductViewHistory
+                        {
+                            ProductId = id,
+                            UserId = userId,
+                            ViewedAt = DateTime.Now
+                        };
+
+                        db.ProductViewHistory.Add(historyEntry);
+                        db.SaveChanges();
+                    }
+                }
+                else
+                {
+                    // For guest users, store viewed product IDs in session
+                    List<int> viewedProducts = Session["ViewHistory"] as List<int> ?? new List<int>();
+                    if (!viewedProducts.Contains(id))
+                    {
+                        viewedProducts.Add(id);
+                        Session["ViewHistory"] = viewedProducts;
+                    }
+                }
             }
+
+            // Get the count of reviews
             var countReview = db.Reviews.Where(x => x.ProductId == id).Count();
             ViewBag.CountReview = countReview;
+
+            // Return the product details view
             return View(item);
         }
+
+        public ActionResult ViewHistory()
+        {
+            var userId = User.Identity.GetUserId();
+
+            var history = db.ProductViewHistory
+                .Where(h => h.UserId == userId)
+                .OrderByDescending(h => h.ViewedAt)
+                .Take(5) // 5 hui
+                .Select(h => h.Product) // Get the products
+                .ToList();
+
+            return View(history);
+        }
+
         public ActionResult ProductCategory(string alias, int id)
         {
             var items = db.Products.ToList();
