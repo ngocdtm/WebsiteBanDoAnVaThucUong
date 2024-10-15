@@ -101,6 +101,12 @@ namespace WebsiteBanDoAnVaThucUong
                 defaults: new { controller = "Home", action = "Index", id = UrlParameter.Optional },
                 namespaces: new[] { "WebsiteBanDoAnVaThucUong.Controllers" }
             );
+            routes.MapRoute(
+            name: "Vouchers",
+            url: "Vouchers/{action}/{id}",
+            defaults: new { controller = "Vouchers", action = "GetActiveVoucher", id = UrlParameter.Optional },
+            namespaces: new[] { "WebsiteBanDoAnVaThucUong.Controllers" }
+            );
         }
     }
 }
