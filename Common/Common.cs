@@ -44,7 +44,8 @@ namespace WebsiteBanDoAnVaThucUong.Common
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                // Log the exception using a logging framework
+                System.Diagnostics.Debug.WriteLine($"Error sending email: {ex.Message}");
                 rs = false;
             }
             return rs;
