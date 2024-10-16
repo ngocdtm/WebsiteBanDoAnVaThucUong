@@ -361,6 +361,10 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="IServiceCollection.cs" />
+    <Compile Include="Migrations\202410141025381_UpdateSubrie.cs" />
+    <Compile Include="Migrations\202410141025381_UpdateSubrie.designer.cs">
+      <DependentUpon>202410141025381_UpdateSubrie.cs</DependentUpon>
+
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\EF\ProductViewHistory.cs" />
@@ -3892,6 +3896,9 @@
     <WCFMetadata Include="Connected Services\" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Migrations\202410141025381_UpdateSubrie.resx">
+      <DependentUpon>202410141025381_UpdateSubrie.cs</DependentUpon>
+
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
