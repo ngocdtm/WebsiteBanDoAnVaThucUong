@@ -361,9 +361,6 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="IServiceCollection.cs" />
-    <Compile Include="Migrations\202410151752360_h.cs" />
-    <Compile Include="Migrations\202410151752360_h.Designer.cs">
-      <DependentUpon>202410151752360_h.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\EF\ProductViewHistory.cs" />
@@ -3895,8 +3892,6 @@
     <WCFMetadata Include="Connected Services\" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\202410151752360_h.resx">
-      <DependentUpon>202410151752360_h.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
