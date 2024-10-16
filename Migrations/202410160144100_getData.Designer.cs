@@ -13,7 +13,7 @@ namespace WebsiteBanDoAnVaThucUong.Migrations
         
         string IMigrationMetadata.Id
         {
-            get { return "202410140833425_getData"; }
+            get { return "202410160144100_getData"; }
         }
         
         string IMigrationMetadata.Source
