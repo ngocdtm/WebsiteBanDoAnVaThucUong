@@ -1,8 +1,6 @@
-﻿﻿
-@{
+﻿@{
     ViewBag.Title = "Quản lý thống kê";
 }
-
 
 @section naviheader{
     <!-- Left navbar links -->
@@ -21,41 +19,13 @@
 
 <!-- Main content -->
 <section class="content">
-
-    <!-- Default box -->
     <div class="card">
         <div class="card-header">
             <h3 class="card-title">Thống kê doanh thu và đơn hàng</h3>
-
-            <div class="card-tools">
-                <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
-                    <i class="fas fa-minus"></i>
-                </button>
-                <button type="button" class="btn btn-tool" data-card-widget="remove" title="Remove">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
         </div>
         <div class="card-body">
             <div class="row">
-                <div class="col-md-6">
-                    <div class="chart">
-                        <canvas id="productOrderChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="chart">
-                        <canvas id="revenueChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="chart">
-                        <canvas id="topProductsChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
-                    </div>
-                </div>
-                <div class="col-md-6">
+                <div class="col-md-3">
                     <div class="form-group">
                         <label for="filterDate">Lọc theo thời gian:</label>
                         <select id="filterDate" class="form-control">
@@ -66,328 +36,295 @@
                         </select>
                     </div>
                 </div>
-            </div>
-            <div class="row mt-3">
-                <div class="col-md-4">
-                    <label>Tổng tiền tối thiểu:</label>
-                    <input type="number" id="minTotal" class="form-control">
-                </div>
-                <div class="col-md-4">
-                    <label>Tổng tiền tối đa:</label>
-                    <input type="number" id="maxTotal" class="form-control">
-                </div>
-                <div class="col-md-4">
-                    <label>&nbsp;</label>
-                    <button type="button" id="btnFilterOrders" class="btn btn-primary form-control">Lọc đơn hàng</button>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="storeFilter">Lọc theo chi nhánh:</label>
+                        <select id="storeFilter" class="form-control">
+                            <option value="">Tất cả chi nhánh</option>
+                            @foreach (var store in ViewBag.Stores)
+                            {
+                                <option value="@store.Id">@store.Name</option>
+                            }
+                        </select>
+                    </div>
                 </div>
             </div>
-            <div class="row mt-3">
-                <div class="col-md-8">
+            <div class="row">
+                <div class="col-md-6">
                     <div class="chart">
-                        <canvas id="barChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
+                        <canvas id="revenueChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
                     </div>
                 </div>
-                <div class="col-md-4">
-                    <table class="table table-bordered">
-                        <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>Ngày</th>
-                                <th>Doanh thu</th>
-                            </tr>
-                        </thead>
-                        <tbody id="load_data"></tbody>
-                    </table>
+                <div class="col-md-6">
+                    <div class="chart">
+                        <canvas id="productOrderChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
+                    </div>
                 </div>
             </div>
-            <div class="card mt-3">
-                <div class="card-header">
-                    <h3 class="card-title">Top 5 sản phẩm bán chạy nhất</h3>
-                    <div class="card-tools">
-                        <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
-                            <i class="fas fa-minus"></i>
-                        </button>
-                        <button type="button" class="btn btn-tool" data-card-widget="remove" title="Remove">
-                            <i class="fas fa-times"></i>
-                        </button>
+            <div class="row mt-3">
+                <div class="col-md-12">
+                    <h4>Top 5 sản phẩm bán chạy nhất</h4>
+                    <div class="chart">
+                        <canvas id="topProductsChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
                     </div>
                 </div>
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="chart">
-                                <canvas id="pieChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <table class="table table-bordered">
-                                <thead>
-                                    <tr>
-                                        <th>Sản phẩm</th>
-                                        <th>Số lượng bán</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="product_data"></tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-                <!-- /.card-body -->
-                <div class="card-footer">
-                    Footer
-                </div>
-                <!-- /.card-footer-->
             </div>
-            <!-- /.card -->
-        @*</div>
-    </div>*@
+        </div>
+    </div>
 </section>
-<!-- /.content -->
 
 @section scripts{
     <script src="~/Content/clients/plugins/chart.js/Chart.min.js"></script>
     <script src="~/Content/assets/plugins/moment/moment.min.js"></script>
     <script>
-        $(function () {
-            var fromDate = '';
-            var toDate = '';
+$(function () {
+    function getDateRange(filter) {
+        var endDate = moment();
+        var startDate = moment();
 
-            // Function to get the date range based on the selected filter
-            function getDateRange(filter) {
-                var endDate = moment();
-                var startDate = moment();
-
-                if (filter === 'day') {
-                    startDate = endDate.clone().subtract(1, 'days');
-                } else if (filter === 'week') {
-                    startDate = endDate.clone().subtract(1, 'weeks');
-                } else if (filter === 'month') {
-                    startDate = endDate.clone().subtract(1, 'months');
-                } else if (filter === 'year') {
-                    startDate = endDate.clone().subtract(1, 'years');
-                }
-
-                return {
-                    fromDate: startDate.format('DD/MM/YYYY'),
-                    toDate: endDate.format('DD/MM/YYYY')
-                };
-            }
-
-            function loadCharts() {
-                var filter = $('#filterDate').val();
-                var dateRange = getDateRange(filter);
-
-                $.ajax({
-                    url: '@Url.Action("GetStatistical", "Statistical")',
-                    type: 'GET',
-                    data: { fromDate: dateRange.fromDate, toDate: dateRange.toDate },
-                    success: function (response) {
-                        // Prepare data for Product and Order Chart
-                        var productOrderLabels = [];
-                        var totalQuantityData = [];
-                        var orderCountData = [];
-
-                        $.each(response.ProductOrderData, function (i, item) {
-                            productOrderLabels.push(moment(item.Date).format('DD/MM/YYYY'));
-                            totalQuantityData.push(item.TotalQuantity);
-                            orderCountData.push(item.OrderCount);
-                        });
-
-                        var productOrderChartData = {
-                            labels: productOrderLabels,
-                            datasets: [
-                                {
-                                    label: 'Số lượng',
-                                    backgroundColor: 'rgba(60,141,188,0.9)',
-                                    borderColor: 'rgba(60,141,188,0.8)',
-                                    data: totalQuantityData
-                                },
-                                {
-                                    label: 'Số hóa đơn',
-                                    backgroundColor: 'rgba(210, 214, 222, 1)',
-                                    borderColor: 'rgba(210, 214, 222, 1)',
-                                    data: orderCountData
-                                }
-                            ]
-                        };
-
-                        var productOrderChartCanvas = $('#productOrderChart').get(0).getContext('2d');
-                        var productOrderChartOptions = {
-                            responsive: true,
-                            maintainAspectRatio: false,
-                            datasetFill: false
-                        };
-
-                        new Chart(productOrderChartCanvas, {
-                            type: 'bar',
-                            data: productOrderChartData,
-                            options: productOrderChartOptions
-                        });
-
-                        // Prepare data for Revenue Chart
-                        var revenueLabels = [];
-                        var revenueData = [];
-                        var profitData = [];
-
-                        $.each(response.RevenueData, function (i, item) {
-                            revenueLabels.push(moment(item.Date).format('DD/MM/YYYY'));
-                            revenueData.push(item.DoanhThu);
-                            profitData.push(item.LoiNhuan);
-                        });
-
-                        var revenueChartData = {
-                            labels: revenueLabels,
-                            datasets: [
-                                {
-                                    label: 'Doanh thu',
-                                    backgroundColor: 'rgba(60,141,188,0.9)',
-                                    borderColor: 'rgba(60,141,188,0.8)',
-                                    data: revenueData
-                                },
-                                {
-                                    label: 'Lợi nhuận',
-                                    backgroundColor: 'rgba(210, 214, 222, 1)',
-                                    borderColor: 'rgba(210, 214, 222, 1)',
-                                    data: profitData
-                                }
-                            ]
-                        };
-
-                        var revenueChartCanvas = $('#revenueChart').get(0).getContext('2d');
-                        var revenueChartOptions = {
-                            responsive: true,
-                            maintainAspectRatio: false,
-                            datasetFill: false
-                        };
-
-                        new Chart(revenueChartCanvas, {
-                            type: 'bar',
-                            data: revenueChartData,
-                            options: revenueChartOptions
-                        });
-
-                        // Prepare data for Top Products Chart
-                        var topProductsLabels = [];
-                        var topProductsData = [];
-
-                        $.each(response.TopProducts, function (i, item) {
-                            topProductsLabels.push(item.ProductName);
-                            topProductsData.push(item.TotalQuantity);
-                        });
-
-                        var topProductsChartData = {
-                            labels: topProductsLabels,
-                            datasets: [
-                                {
-                                    label: 'Số lượng bán',
-                                    backgroundColor: 'rgba(60,141,188,0.9)',
-                                    borderColor: 'rgba(60,141,188,0.8)',
-                                    data: topProductsData
-                                }
-                            ]
-                        };
-
-                        var topProductsChartCanvas = $('#topProductsChart').get(0).getContext('2d');
-                        var topProductsChartOptions = {
-                            responsive: true,
-                            maintainAspectRatio: false,
-                            datasetFill: false
-                        };
-
-                        new Chart(topProductsChartCanvas, {
-                            type: 'bar',
-                            data: topProductsChartData,
-                            options: topProductsChartOptions
-                        });
-                    }
-                });
-            }
-            function loadFilteredOrders(minTotal, maxTotal) {
-                $.ajax({
-                    url: '/Admin/Statistical/GetFilteredOrders',
-                    type: 'GET',
-                    data: { minTotal: minTotal, maxTotal: maxTotal },
-                    success: function (rs) {
-                        var strHtml = "";
-                        $.each(rs.Data, function (i, item) {
-                            var strDate = moment(item.CreatedDate).format('DD/MM/yyyy');
-                            strHtml += "<tr>";
-                            strHtml += "<td>" + (i + 1) + "</td>";
-                            strHtml += "<td>" + strDate + "</td>";
-                            strHtml += "<td>" + item.Total + "</td>";
-                            strHtml += "</tr>";
-                        });
-                        $('#load_data').html(strHtml);
-                    }
-                });
-            }
-              $.ajax({
-                url: '@Url.Action("GetProductStatistics", "Statistical")',
-                success: function (response) {
-                    var labels = [];
-                    var data = [];
-                    var rows = '';
-
-                    $.each(response.Data, function (i, item) {
-                        labels.push(item.ProductName);
-                        data.push(item.TotalQuantity);
-                        rows += '<tr><td>' + item.ProductName + '</td><td>' + item.TotalQuantity + '</td></tr>';
-                    });
-
-                    $('#product_data').html(rows);
-
-                    var pieData = {
-                        labels: labels,
-                        datasets: [
-                            {
-                                data: data,
-                                backgroundColor: ['#f56954', '#00a65a', '#f39c12', '#00c0ef', '#3c8dbc'],
-                            }
-                        ]
-                    }
-
-                    var pieOptions = {
-                        legend: {
-                            display: true
-                        },
-                        maintainAspectRatio: false,
-                        responsive: true
-                    }
-
-                    var pieChartCanvas = $('#pieChart').get(0).getContext('2d')
-                    new Chart(pieChartCanvas, {
-                        type: 'pie',
-                        data: pieData,
-                        options: pieOptions
-                    })
-                }
-            });
-            $('#btnFilterOrders').click(function () {
-                var minTotal = $('#minTotal').val();
-                var maxTotal = $('#maxTotal').val();
-                loadFilteredOrders(minTotal, maxTotal);
-            });
-             function load_data(data) {
-            var strHtml = "";
-            $.each(data, function (i, item) {
-                var strDate = moment(item.Date).format('DD/MM/yyyy');
-                strHtml += "<tr>";
-                strHtml += "<td>"+(i+1)+"</td>";
-                strHtml += "<td>" + strDate+"</td>";
-                strHtml += "<td>"+item.DoanhThu+"</td>";
-                strHtml += "<td>"+item.LoiNhuan+"</td>";
-                strHtml += "</tr>";
-            });
-            $('#load_data').html(strHtml);
+        if (filter === 'day') {
+            startDate = endDate.clone().subtract(1, 'days');
+        } else if (filter === 'week') {
+            startDate = endDate.clone().subtract(1, 'weeks');
+        } else if (filter === 'month') {
+            startDate = endDate.clone().subtract(1, 'months');
+        } else if (filter === 'year') {
+            startDate = endDate.clone().subtract(1, 'years');
         }
-            // Load charts initially
-            loadCharts();
 
-            // Reload charts when the filter is changed
-            $('#filterDate').change(function () {
-                loadCharts();
-            });
+        return {
+            fromDate: startDate.format('DD/MM/YYYY'),
+            toDate: endDate.format('DD/MM/YYYY')
+        };
+    }
 
+    function loadCharts() {
+        var filter = $('#filterDate').val();
+        var dateRange = getDateRange(filter);
+        var storeId = $('#storeFilter').val();
+
+        $.ajax({
+            url: '@Url.Action("GetStatistical", "Statistical")',
+            type: 'GET',
+            data: { fromDate: dateRange.fromDate, toDate: dateRange.toDate, storeId: storeId },
+            success: function (response) {
+                updateRevenueChart(response.RevenueData);
+                updateProductOrderChart(response.ProductOrderData);
+                updateTopProductsChart(response.TopProducts);
+            }
         });
+    }
+
+    function updateRevenueChart(data) {
+        var labels = [];
+        var revenueData = [];
+        var profitData = [];
+
+        $.each(data, function (i, item) {
+            labels.push(moment(item.Date).format('DD/MM/YYYY'));
+            revenueData.push(item.DoanhThu);
+            profitData.push(item.LoiNhuan);
+        });
+
+        var ctx = document.getElementById('revenueChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Doanh thu',
+                    data: revenueData,
+                    backgroundColor: 'rgba(60,141,188,0.9)',
+                    borderColor: 'rgba(60,141,188,0.8)',
+                    borderWidth: 1
+                },
+                {
+                    label: 'Lợi nhuận',
+                    data: profitData,
+                    backgroundColor: 'rgba(210, 214, 222, 1)',
+                    borderColor: 'rgba(210, 214, 222, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: getCommonChartOptions('Doanh thu và Lợi nhuận')
+        });
+    }
+
+    function updateProductOrderChart(data) {
+        var labels = [];
+        var quantityData = [];
+        var orderCountData = [];
+
+        $.each(data, function (i, item) {
+            labels.push(moment(item.Date).format('DD/MM/YYYY'));
+            quantityData.push(item.TotalQuantity);
+            orderCountData.push(item.OrderCount);
+        });
+
+        var ctx = document.getElementById('productOrderChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Số lượng sản phẩm',
+                    data: quantityData,
+                    borderColor: 'rgb(75, 192, 192)',
+                    tension: 0.1
+                },
+                {
+                    label: 'Số đơn hàng',
+                    data: orderCountData,
+                    borderColor: 'rgb(255, 99, 132)',
+                    tension: 0.1
+                }]
+            },
+            options: getCommonChartOptions('Số lượng sản phẩm và Đơn hàng')
+        });
+    }
+
+    function updateTopProductsChart(data) {
+        var labels = [];
+        var quantityData = [];
+        var backgroundColors = [
+            'rgba(255, 99, 132, 0.8)',
+            'rgba(54, 162, 235, 0.8)',
+            'rgba(255, 206, 86, 0.8)',
+            'rgba(75, 192, 192, 0.8)',
+            'rgba(153, 102, 255, 0.8)'
+        ];
+
+        $.each(data, function (i, item) {
+            labels.push(item.ProductName);
+            quantityData.push(item.TotalQuantity);
+        });
+
+        var ctx = document.getElementById('topProductsChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: labels,
+                datasets: [{
+                    data: quantityData,
+                    backgroundColor: backgroundColors,
+                    borderColor: backgroundColors.map(color => color.replace('0.8', '1')),
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Top 5 sản phẩm bán chạy nhất',
+                        font: {
+                            size: 16,
+                            weight: 'bold'
+                        }
+                    },
+                    legend: {
+                        position: 'right',
+                        labels: {
+                            font: {
+                                size: 14
+                            }
+                        }
+                    },
+                    tooltip: {
+                        bodyFont: {
+                            size: 14
+                        },
+                        titleFont: {
+                            size: 16
+                        },
+                        callbacks: {
+                            label: function (context) {
+                                var label = context.label || '';
+                                var value = context.parsed || 0;
+                                var total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                var percentage = ((value / total) * 100).toFixed(1);
+                                return `${label}: ${value} (${percentage}%)`;
+                            }
+                        }
+                    }
+                },
+                layout: {
+                    padding: {
+                        left: 10,
+                        right: 10,
+                        top: 20,
+                        bottom: 10
+                    }
+                }
+            }
+        });
+    }
+
+    function getCommonChartOptions(title) {
+        return {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                title: {
+                    display: true,
+                    text: title,
+                    font: {
+                        size: 16,
+                        weight: 'bold'
+                    }
+                },
+                legend: {
+                    labels: {
+                        font: {
+                            size: 14
+                        }
+                    }
+                },
+                tooltip: {
+                    bodyFont: {
+                        size: 14
+                    },
+                    titleFont: {
+                        size: 16
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    ticks: {
+                        font: {
+                            size: 12
+                        }
+                    }
+                },
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        font: {
+                            size: 12
+                        }
+                    }
+                }
+            },
+            layout: {
+                padding: {
+                    left: 10,
+                    right: 10,
+                    top: 20,
+                    bottom: 10
+                }
+            }
+        };
+    }
+
+    loadCharts();
+
+    $('#filterDate, #storeFilter').change(function () {
+        loadCharts();
+    });
+});
     </script>
 }
+
+

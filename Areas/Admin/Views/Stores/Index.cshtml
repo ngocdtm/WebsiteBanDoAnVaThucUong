@@ -1,4 +1,4 @@
-﻿﻿@model PagedList.PagedList<WebsiteBanDoAnVaThucUong.Models.EF.Store>
+﻿﻿@model PagedList.PagedList<WebsiteBanDoAnVaThucUong.Models.EF.StoreDTO>
 @using PagedList.Mvc
 @Html.AntiForgeryToken()
 @{
@@ -63,6 +63,7 @@
                                 <td>
                                     <a href="/admin/stores/edit/@item.Id" class="btn btn-sm btn-primary">Sửa</a>
                                     <a href="#" data-id="@item.Id" class="btn btn-sm btn-danger btnDelete">Xóa</a>
+                                    <a href="@Url.Action("Index", "StoreProducts", new { area = "Admin", storeId = item.Id })" class="btn btn-sm btn-info">Xem sản phẩm</a>
                                 </td>
 
                             </tr>
@@ -84,98 +85,78 @@
                     @Html.PagedListPager(Model, page => Url.Action("Index", new { page }))
                 </div>
             </div>
-
-        </div>
-        <!-- /.card-body -->
-        <div class="card-footer">
-
-        </div>
-        <!-- /.card-footer-->
-    </div>
-    <!-- /.card -->
+            <div class="row mt-4">
+                <div class="col-12">
+                    <div id="map" style="width:100%;height:400px">
+                    </div>
+                </div>
+            <div class="card-footer">
+            </div>
 
 </section>
-<!-- /.content -->
-<div id="dialog">
-    <iframe id="myIframe" style="border: 0; width: 100%; height: 10px;"></iframe>
-</div>
-
 @section scripts{
     <script src="~/Content/assets/js/store.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="~/lib/leaf/leaflet.js"></script>
+    <script src="~/lib/leaf/leaflet.min.js"></script>
+    <link href="~/lib/leaf/leaflet.min.css" rel="stylesheet" />
+    <link href="~/lib/leaf/leaflet.css" rel="stylesheet" />
+    
+        <script>
+   var map = L.map('map').setView([10.902522935042768, 106.5834090763168], 8);
+   L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+   attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+   }).addTo(map);
 
+   var jsModel = @Html.Raw(Json.Encode(Model));
+   console.log(jsModel)
 
-<script src="~/lib/leaf/leaflet.js"></script>
-<script src="~/lib/leaf/leaflet.min.js"></script>
-<link href="~/lib/leaf/leaflet.min.css" rel="stylesheet" />
-<link href="~/lib/leaf/leaflet.css" rel="stylesheet" />
-<div id="map" style="width:100%;height:400px"></div>
-<script>
-    var map = L.map('map').setView([10.902522935042768, 106.5834090763168], 8);
-    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-    }).addTo(map);
-
-
-    var jsModel = @Html.Raw(Json.Encode(Model));
-    console.log(jsModel)
-
-    //var settings = new JsonSerializerSettings
-    //{
-    //    ReferenceLoopHandling = ReferenceLoopHandling.Ignore
-    //};
-    //var jsModel = Html.Raw(JsonConvert.SerializeObject(Model, settings));
-
-    var myIcon = L.icon({
-        iconUrl: '/lib/leaf/images/location.png',
-        iconSize: [25, 45],
-        iconAnchor: [15, 45],
-        popupAnchor: [-3, -46],
-
-    });
-
-    for (i in jsModel)
-    {
-        item = jsModel[i]
-        if (item.long < 35) {
-            L.marker([item.Lat, item.Long], {icon:myIcon}).addTo(map).bindPopup(item.Name + '<br>' + item.Address)
-        }
-        else {
-            L.marker([item.Lat, item.Long]).addTo(map).bindPopup(item.Name + '<br>' + item.Address)
-        }
-
+   var myIcon = L.icon({
+   iconUrl: '/lib/leaf/images/location.png',
+   iconSize: [25, 45],
+   iconAnchor: [15, 45],
+   popupAnchor: [-3, -46],
+   });
+    for (i in jsModel) {
+     item = jsModel[i]
+         if (item.long < 35) {
+             L.marker([item.Lat, item.Long], {icon:myIcon}).addTo(map).bindPopup(item.Name + '<br>' + item.Address)
+          }
+         else {
+        L.marker([item.Lat, item.Long]).addTo(map).bindPopup(item.Name + '<br>' + item.Address)
+         }
     }
-
-</script>
-
-<script>
-    $(document).ready(function() {
-    $(document).on('click', '.btnDelete', function(e) {
-        e.preventDefault();
-        var id = $(this).data('id');
-        if (confirm("Bạn có chắc chắn muốn xóa chi nhánh này?")) {
-            $.ajax({
+        </script>
+    </div>
+    </div>
+    <script>
+        $(document).ready(function () {
+           $(document).on('click', '.btnDelete', function(e) {
+            e.preventDefault();
+                var id = $(this).data('id');
+           if (confirm("Bạn có chắc chắn muốn xóa chi nhánh này?")) {
+                $.ajax({
                 url: '@Url.Action("Delete", "Stores", new { area = "Admin" })/' + id,
                 type: 'POST',
                 dataType: 'json',
-                data: {
-                    __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
-                },
+                 data: {
+                __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+                  },
                 success: function(result) {
-                    if (result.success) {
-                        $('#trow_' + id).remove();
-                        alert(result.message);
-                    } else {
-                        alert(result.message);
+                if (result.success) {
+                $('#trow_' + id).remove();
+                 alert(result.message);
+                } else {
+                alert(result.message);
                     }
-                },
-                error: function(xhr, status, error) {
-                    console.log(xhr.responseText);
-                    alert('Có lỗi xảy ra trong quá trình xóa chi nhánh.');
-                }
+                        },
+             error: function(xhr, status, error) {
+             console.log(xhr.responseText);
+             alert('Có lỗi xảy ra trong quá trình xóa chi nhánh.');
+                    }
             });
-        }
-    });
+          }
+     });
 });
-</script>
+    </script>
 }

@@ -21,17 +21,29 @@ namespace WebsiteBanDoAnVaThucUong.Areas.Admin.Controllers
         // GET: Admin/Stores
         public ActionResult Index(int? page)
         {
-            IEnumerable<Store> items = db.Stores.OrderByDescending(x => x.Id);
             var pageSize = 10;
-            if (page == null)
-            {
-                page = 1;
-            }
-            var pageIndex = page.HasValue ? Convert.ToInt32(page) : 1;
-            items = items.ToPagedList(pageIndex, pageSize);
+            var pageIndex = page ?? 1;
+
+            var storeDTOs = db.Stores
+                .OrderByDescending(x => x.Id)
+                .Select(s => new StoreDTO
+                {
+                    Id = s.Id,
+                    Name = s.Name,
+                    Address = s.Address,
+                    Long = s.Long,
+                    Lat = s.Lat,
+                    Image = s.Image,
+                    Alias = s.Alias
+                })
+                .ToList();
+
+            var pagedStores = new PagedList<StoreDTO>(storeDTOs, pageIndex, pageSize);
+
             ViewBag.PageSize = pageSize;
-            ViewBag.Page = page;
-            return View(items);
+            ViewBag.Page = pageIndex;
+
+            return View(pagedStores);
         }
 
         // GET: Admin/Stores/Details/5
@@ -161,6 +173,23 @@ namespace WebsiteBanDoAnVaThucUong.Areas.Admin.Controllers
             }
         }
 
+        public ActionResult ProductsByStore(int storeId, int? page)
+        {
+            var items = db.StoreProducts
+                          .Where(sp => sp.StoreId == storeId)
+                          .Select(sp => sp.Product)
+                          .OrderByDescending(p => p.Id);
+
+            int pageSize = 10;
+            int pageIndex = page.HasValue ? Convert.ToInt32(page) : 1;
+            var pagedItems = items.ToPagedList(pageIndex, pageSize);
+
+            ViewBag.PageSize = pageSize;
+            ViewBag.Page = page;
+            ViewBag.StoreId = storeId; // Lưu trữ thông tin cửa hàng cho view
+
+            return View(pagedItems);
+        }
 
         protected override void Dispose(bool disposing)
         {

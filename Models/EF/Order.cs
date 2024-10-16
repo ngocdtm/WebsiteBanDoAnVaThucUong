@@ -13,6 +13,7 @@ namespace WebsiteBanDoAnVaThucUong.Models.EF
         public Order()
         {
             this.OrderDetails = new HashSet<OrderDetail>();
+            this.Stores = new HashSet<Store>();
         }
 
         [Key]
@@ -29,10 +30,12 @@ namespace WebsiteBanDoAnVaThucUong.Models.EF
         public decimal FinalAmount { get; set; }
         public int TypePayment { get; set; }
         public string CustomerId { get; set; }
+        public int StoreId { get; set; }
         public int OrderStatus { get; set; }
         public int ShippingStatus { get; set; }
         public virtual Voucher Vouchers { get; set; }
         public virtual ICollection<OrderDetail> OrderDetails { get; set; }
+        public virtual ICollection<Store> Stores { get; set; }
         public ApplicationUser User { get; set; }
     }
 }

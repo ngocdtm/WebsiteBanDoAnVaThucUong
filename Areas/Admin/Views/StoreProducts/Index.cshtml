@@ -1,0 +1,78 @@
+﻿@model PagedList.IPagedList<WebsiteBanDoAnVaThucUong.Models.EF.StoreProduct>
+@using PagedList.Mvc
+
+@{
+    ViewBag.Title = "Danh sách sản phẩm của " + ViewBag.StoreName;
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<h2>@ViewBag.Title</h2>
+
+<p>
+    @Html.ActionLink("Thêm sản phẩm mới", "Create", new { storeId = ViewBag.StoreId }, new
+{
+    @class = "btn btn-sm btn-info"
+})
+</p>
+
+<table class="table">
+    <tr>
+        <th>STT</th>
+        <th>Hình ảnh</th>
+        <th>Tên sản phẩm</th>
+        <th>Danh mục</th>
+        <th>Số lượng tồn</th>
+        <th>Số lượng bán</th>
+        <th>Giá gốc</th>
+        <th>Giá bán</th>
+        <th>Hiển thị</th>
+        <th>Thao tác</th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        var strCheck = item.Product.IsActive ? "<i class='fa fa-check text-success'></i>" : "<i class='fas fa-times text-danger'></i>";
+        var strImg = "";
+        var CheckImage = item.Product.ProductImage.FirstOrDefault(x => x.IsDefault);
+        if (CheckImage != null)
+        {
+            strImg = CheckImage.Image;
+        }
+        <tr>
+            <td>@item.Product.Id</td>
+            <td><img class="imgproduct" data-id="@item.Id" src="@strImg" width="50" /></td>
+            <td>@item.Product.Title</td>
+            <td>@item.Product.ProductCategory.Title</td>
+            <td>@item.StockCount</td>
+            <td>@item.SellCount</td>
+            <td>@WebsiteBanDoAnVaThucUong.Common.Common.FormatNumber(item.Product.OriginalPrice, 0)</td>
+            <td>@WebsiteBanDoAnVaThucUong.Common.Common.FormatNumber(item.Product.SalePrice, 0)</td>
+            <td class="text-center">
+                <a href='#' data-id="@item.Id" class="btnActive">@Html.Raw(strCheck)</a>
+            </td>
+            <td>
+                @Html.ActionLink("Sửa", "Edit", new { storeId = item.StoreId, productId = item.ProductId }, new
+           {
+               @class = "btn btn-success"
+           }) |
+                @Html.ActionLink("Chi tiết", "Details", new { storeId = item.StoreId, productId = item.ProductId }, new
+           {
+               @class = "btn btn-primary"
+           }) |
+                @Html.ActionLink("Xóa", "Delete", new { storeId = item.StoreId, productId = item.ProductId }, new
+           {
+               @class = "btn btn-danger"
+           })
+            </td>
+        </tr>
+    }
+</table>
+
+@Html.PagedListPager(Model, page => Url.Action("Index", new { page, storeId = ViewBag.StoreId }))
+
+<div>
+    @Html.ActionLink("Quay lại danh sách cửa hàng", "Index", "Stores", new
+{
+    @class = "btn btn-primary"
+})
+</div>
