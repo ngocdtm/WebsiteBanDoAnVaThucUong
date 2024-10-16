@@ -1,5 +1,6 @@
 ﻿﻿@model PagedList.PagedList<WebsiteBanDoAnVaThucUong.Models.EF.Voucher>
 @using PagedList.Mvc
+@using PagedList;
 @{
     ViewBag.Title = "Danh sách Voucher";
     Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
@@ -50,10 +51,12 @@
                 </thead>
                 <tbody>
                     @if (Model != null && Model.Any())
-                    {
-                        var i = ((ViewBag.Page - 1) * ViewBag.PageSize) + 1;
-                        foreach (var item in Model)
-                        {
+                                {
+
+                                    var i = 0;
+
+                                    foreach (var item in Model)
+                                    {
                             <tr id="trow_@item.Id">
                                 <td>@i</td>
                                 <td>@item.VoucherName</td>
@@ -79,12 +82,19 @@
                 </tbody>
             </table>
 
-            <div class="row">
+            @*<div class="row">
                 <div class="col-6"></div>
                 <div class="col-6" style="text-align:right;">
-                    @Html.PagedListPager(Model, page => Url.Action("Index", new { page }))
+                    @if (Model != null)
+                    {
+                        @Html.PagedListPager(Model, page => Url.Action("Index", new { page }))
+                    }
+                    else
+                    {
+                        <p>No vouchers found.</p>
+                    }
                 </div>
-            </div>
+            </div>*@
 
         </div>
         <!-- /.card-body -->
