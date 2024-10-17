@@ -12,6 +12,7 @@ namespace WebsiteBanDoAnVaThucUong.Models
     // You can add profile data for the user by adding more properties to your ApplicationUser class, please visit https://go.microsoft.com/fwlink/?LinkID=317594 to learn more.
     public class ApplicationUser : IdentityUser
     {
+        //DAPM
         public bool Status { get; set; }
         public string FullName { get; set; }
         //public string Phone {  get; set; }
@@ -87,11 +88,7 @@ namespace WebsiteBanDoAnVaThucUong.Models
         }
 
         public DbSet<OrderDetailPromotion> OrderDetailPromotion { get; set; }
-        //public DbSet<ComboPromotionProduct> ComboPromotionProduct { get; set; }
-        //public DbSet<ComboPromotion> ComboPromotion { get; set; }
         public DbSet<PromotionProduct> PromotionProducts { get; set; }
-        //public DbSet<PromotionType> PromotionType { get; set; }
-        //public DbSet<PromotionRule> PromotionRules { get; set; }
         public DbSet<Promotion> Promotions { get; set; }
         public DbSet<FeedBackLetter> FeedBackLetters { get; set; }
         public DbSet<Voucher> Vouchers { get; set; }
@@ -112,11 +109,13 @@ namespace WebsiteBanDoAnVaThucUong.Models
         public DbSet<Contact> Contacts { get; set; }
         public DbSet<Order> Orders { get; set; }
         public DbSet<OrderDetail> OrderDetails { get; set; }
-        public DbSet <Subscribe> Subscribe { get; set; }
-        
+        public DbSet<Subscribe> Subscribe { get; set; }
+        public DbSet<StoreProduct> StoreProducts { get; set; }
+        public DbSet<ProductViewHistory> ProductViewHistory { get; set; }
         public static ApplicationDbContext Create()
         {
             return new ApplicationDbContext();
         }
+
     }
 }

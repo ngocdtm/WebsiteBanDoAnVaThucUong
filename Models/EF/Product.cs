@@ -18,6 +18,7 @@ namespace WebsiteBanDoAnVaThucUong.Models.EF
             this.Review = new HashSet<ReviewProduct>();
             this.Wishlist = new HashSet<Wishlist>();
             this.PromotionProduct = new HashSet<PromotionProduct>();
+            this.StoreProducts = new HashSet<StoreProduct>();
         }
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -32,7 +33,7 @@ namespace WebsiteBanDoAnVaThucUong.Models.EF
         public string Alias { get; set; }
 
         public string Description { get; set; }
-    
+
         [AllowHtml]
         public string Detail { get; set; }
 
@@ -52,6 +53,7 @@ namespace WebsiteBanDoAnVaThucUong.Models.EF
         public virtual ICollection<ReviewProduct> Review { get; set; }
         public virtual ICollection<Wishlist> Wishlist { get; set; }
         public virtual ICollection<PromotionProduct> PromotionProduct { get; set; }
-    
+        public virtual ICollection<StoreProduct> StoreProducts { get; set; }
+
     }
 }

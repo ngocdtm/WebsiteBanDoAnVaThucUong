@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PagedList;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
@@ -16,9 +17,31 @@ namespace WebsiteBanDoAnVaThucUong.Controllers
         private ApplicationDbContext db = new ApplicationDbContext();
 
         // GET: Stores
-        public ActionResult Index()
+        public ActionResult Index(int? page)
         {
-            return View(db.Stores.ToList());
+            var pageSize = 10;
+            var pageIndex = page ?? 1;
+
+            var storeDTOs = db.Stores
+                .OrderByDescending(x => x.Id)
+                .Select(s => new StoreDTO
+                {
+                    Id = s.Id,
+                    Name = s.Name,
+                    Address = s.Address,
+                    Long = s.Long,
+                    Lat = s.Lat,
+                    Image = s.Image,
+                    Alias = s.Alias
+                })
+                .ToList();
+
+            var pagedStores = new PagedList<StoreDTO>(storeDTOs, pageIndex, pageSize);
+
+            ViewBag.PageSize = pageSize;
+            ViewBag.Page = pageIndex;
+
+            return View(pagedStores);
 
         }
 

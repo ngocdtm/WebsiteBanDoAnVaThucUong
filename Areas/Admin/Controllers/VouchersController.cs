@@ -25,15 +25,16 @@ namespace WebsiteBanDoAnVaThucUong.Areas.Admin.Controllers
                 if (User.IsInRole("Admin"))
                 {
                     var pageSize = 10;
-                    if (page == null)
+                    var pageNumber = page ?? 1;
+                    var items = db.Vouchers
+                        .OrderByDescending(x => x.Id)
+                        .ToPagedList(pageNumber, pageSize);
+                
+                    System.Diagnostics.Debug.WriteLine("Items count: " + items.Count());
+                    if (items == null || !items.Any())
                     {
-                        page = 1;
+                        items = new PagedList<Voucher>(new List<Voucher>(), pageNumber, pageSize);
                     }
-                    IEnumerable<Voucher> items = db.Vouchers.OrderByDescending(x => x.Id);
-                    var pageIndex = page.HasValue ? Convert.ToInt32(page) : 1;
-                    items = items.ToPagedList(pageIndex, pageSize);
-                    ViewBag.PageSize = pageSize;
-                    ViewBag.Page = page;
                     return View(items);
                 }
             }

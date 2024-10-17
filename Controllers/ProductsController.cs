@@ -25,15 +25,67 @@ namespace WebsiteBanDoAnVaThucUong.Controllers
             var item = db.Products.Find(id);
             if (item != null)
             {
+                // Update the product's view count
                 db.Products.Attach(item);
-                item.ViewCount = item.ViewCount + 1;
+                item.ViewCount += 1;
                 db.Entry(item).Property(x => x.ViewCount).IsModified = true;
                 db.SaveChanges();
+
+                // Save product to user's view history
+                var userId = User.Identity.GetUserId(); // Assuming you're using Identity or any other user identification
+
+                if (userId != null) // If the user is logged in
+                {
+                    var existingHistory = db.ProductViewHistory
+                        .FirstOrDefault(h => h.ProductId == id && h.UserId == userId);
+
+                    if (existingHistory == null) // Avoid duplicate entries in the history
+                    {
+                        var historyEntry = new ProductViewHistory
+                        {
+                            ProductId = id,
+                            UserId = userId,
+                            ViewedAt = DateTime.Now
+                        };
+
+                        db.ProductViewHistory.Add(historyEntry);
+                        db.SaveChanges();
+                    }
+                }
+                else
+                {
+                    // For guest users, store viewed product IDs in session
+                    List<int> viewedProducts = Session["ViewHistory"] as List<int> ?? new List<int>();
+                    if (!viewedProducts.Contains(id))
+                    {
+                        viewedProducts.Add(id);
+                        Session["ViewHistory"] = viewedProducts;
+                    }
+                }
             }
+
+            // Get the count of reviews
             var countReview = db.Reviews.Where(x => x.ProductId == id).Count();
             ViewBag.CountReview = countReview;
+
+            // Return the product details view
             return View(item);
         }
+
+        public ActionResult ViewHistory()
+        {
+            var userId = User.Identity.GetUserId();
+
+            var history = db.ProductViewHistory
+                .Where(h => h.UserId == userId)
+                .OrderByDescending(h => h.ViewedAt)
+                .Take(5) // 5 hui
+                .Select(h => h.Product) // Get the products
+                .ToList();
+
+            return View(history);
+        }
+
         public ActionResult ProductCategory(string alias, int id)
         {
             var items = db.Products.ToList();
@@ -64,16 +116,82 @@ namespace WebsiteBanDoAnVaThucUong.Controllers
                db.OrderDetails.Where(od => od.ProductId == product.Id).Sum(od => (int?)od.Quantity) > 10).ToList();
             return PartialView(filteredProducts);
         }
-
+        // tìm kiếm dựa theo từ khóa 
         [HttpGet]
-        public ActionResult Search(string searchString)
+        public ActionResult Search(string searchString, int page = 1, int pageSize = 10)
         {
-            IEnumerable<Product> items = db.Products.OrderByDescending(x => x.Id);
-            if (!string.IsNullOrEmpty(searchString))
+            var items = db.Products
+                .Where(x => x.Alias.Contains(searchString) || x.Title.Contains(searchString))
+                .OrderByDescending(x => x.Id)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+
+            ViewBag.CurrentPage = page;
+            ViewBag.TotalPages = Math.Ceiling((double)db.Products.Count(x => x.Alias.Contains(searchString) || x.Title.Contains(searchString)) / pageSize);
+
+            return View(items);
+        }
+
+        //Tìm kiếm dựa vào từ khóa nhưng sẽ gợi ý thêm các sản phẩm liên quan sẽ mở ra view 
+        [HttpGet]
+        public JsonResult SearchSuggestions(string searchString)
+        {
+            if (string.IsNullOrEmpty(searchString))
             {
-                items = items.Where(x => x.Alias.Contains(searchString) || x.Title.Contains(searchString));
+                return Json(new { success = false }, JsonRequestBehavior.AllowGet);
             }
-            return View(items.ToList());
-        }       
+
+            // tối đa 5 sp getdata sau đó dropdown 
+            var suggestions = db.Products
+                .Where(x => x.Alias.Contains(searchString) || x.Title.Contains(searchString))
+                .Select(x => new { x.Id, x.Title, x.Alias, x.SalePrice, x.ProductImage })
+                .Take(5)
+                .ToList();
+
+            return Json(new { success = true, data = suggestions }, JsonRequestBehavior.AllowGet);
+        }
+
+        public JsonResult GetProductSuggestions(string query)
+        {
+            var products = db.Products
+                             .Where(p => p.Title.Contains(query) || p.Alias.Contains(query))
+                             .Select(p => new
+                             {
+                                 p.Title,
+                                 p.Id,
+                                 p.Alias,
+                                 ImageUrl = p.ProductImage.FirstOrDefault(x => x.IsDefault).Image,
+                                 p.SalePrice
+                             })
+                             .Take(5) // giới hạn 5 sp 
+                             .ToList();
+
+            return Json(products, JsonRequestBehavior.AllowGet);
+        }
+
+        // Sản phẩm liên quan
+        public ActionResult RelatedProducts(int productId)
+        {
+            var currentProduct = db.Products.Find(productId);
+            if (currentProduct == null)
+            {
+                return HttpNotFound();
+            }
+
+            // Chia tiêu đề sản phẩm hiện tại thành các từ khóa
+            var keywords = currentProduct.Title.Split(' ');
+
+            // Tìm các sản phẩm có tiêu đề chứa các từ khóa này (loại bỏ sản phẩm hiện tại)
+            var relatedProducts = db.Products
+                                    .Where(p => p.Id != productId && keywords.Any(kw => p.Title.Contains(kw)))
+                                    .Take(5)  // Giới hạn số lượng sản phẩm liên quan
+                                    .ToList();
+
+            return PartialView("_RelatedProducts", relatedProducts);
+        }
+
     }
 }
+
+

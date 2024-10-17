@@ -2,12 +2,77 @@
     ViewBag.Title = "Food And Drink Store";
     ViewBag.SeoDescription = "Shop Online";
     Layout = "~/Views/Shared/_Layout.cshtml";
-   
+
+}
+
+
+@section Scripts {
+    <script>
+        console.log("Script started");
+        $(document).ready(function() {
+            console.log("Document ready");
+            $.ajax({
+                url: '@Url.Action("GetActiveVoucher", "Vouchers")',
+                type: 'GET',
+                dataType: 'json',
+                success: function(data) {
+                    console.log("Ajax success", data);
+                    if (data && data.voucherName) {
+                        $('#voucherName').text(data.voucherName);
+                        $('#voucherCoupon').text(data.coupon);
+                        $('#voucherDescription').text(data.description);
+                        $('#voucherDiscount').text((data.discount * 100) + '%');
+
+                        console.log("Attempting to show modal");
+                        var modal = $('#voucherModal');
+                        if (modal.length) {
+                            modal.modal('show');
+                            console.log("Modal shown");
+                        } else {
+                            console.error("Modal element not found");
+                        }
+                    } else {
+                        console.log("No active voucher found or invalid data");
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error("Ajax error:");
+                    console.error("Status:", status);
+                    console.error("Error:", error);
+                    console.error("Response Text:", xhr.responseText);
+                }
+            });
+        });
+    </script>
+
 }
 
 
 @*//Image Slider*@
+
 @Html.Action("Index", "ImageSliders")
+<div class="modal fade" id="voucherModal" tabindex="-1" role="dialog" aria-labelledby="voucherModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="voucherModalLabel">Voucher Đặc Biệt!</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <h4 id="voucherName"></h4>
+                <p>Mã giảm giá: <strong id="voucherCoupon"></strong></p>
+                <p id="voucherDescription"></p>
+                <p>Giảm giá: <strong id="voucherDiscount"></strong></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Banner -->
 @*@Html.Action("MenuProductCategory", "Menu")*@
 <!-- Store -->
@@ -17,6 +82,7 @@
 <div class="new_arrivals">
     <div class="container">
         @Html.Action("MenuArrivals", "Menu")
+
     </div>
 </div>
 

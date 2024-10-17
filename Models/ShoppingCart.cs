@@ -8,14 +8,15 @@ namespace WebsiteBanDoAnVaThucUong.Models
     public class ShoppingCart
     {
         public List<ShoppingCartItem> Items { get; set; }
+        public int StoreId { get; set; }
         public ShoppingCart()
         {
             this.Items = new List<ShoppingCartItem>();
         }
 
-        public void AddToCart(ShoppingCartItem item, int Quantity)
+        public void AddToCart(ShoppingCartItem item, int Quantity, int StoreId)
         {
-            var checkExits = Items.FirstOrDefault(x => x.ProductId == item.ProductId);
+            var checkExits = Items.FirstOrDefault(x => x.ProductId == item.ProductId && x.StoreId == StoreId);
             if (checkExits != null)
             {
                 checkExits.Quantity += Quantity;
@@ -23,6 +24,7 @@ namespace WebsiteBanDoAnVaThucUong.Models
             }
             else
             {
+                item.StoreId = StoreId;
                 Items.Add(item);
             }
         }
@@ -94,6 +96,7 @@ namespace WebsiteBanDoAnVaThucUong.Models
 
     public class ShoppingCartItem
     {
+        public int StoreId { get; set; }
         public int ProductId { get; set; }
         public string ProductName { get; set; }
         public string Alias { get; set; }

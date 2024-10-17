@@ -1,12 +1,16 @@
-﻿﻿@model IEnumerable<WebsiteBanDoAnVaThucUong.Models.EF.Product>
+﻿@model IEnumerable<WebsiteBanDoAnVaThucUong.Models.EF.StoreProduct>
 @using Microsoft.AspNet.Identity
+@Html.AntiForgeryToken()
 @{
-    ViewBag.Title = "Danh sách sản phẩm";
+    ViewBag.Title = ViewBag.StoreName;
 }
 <link rel="stylesheet" type="text/css" href="~/Content/assets/styles/categories_styles.css">
 <link rel="stylesheet" type="text/css" href="~/Content/assets/styles/categories_responsive.css">
+
 <div class="container product_section_container">
+    <h2>@ViewBag.Title</h2>
     <div class="row">
+
         <div class="col product_section clearfix">
 
             <!-- Breadcrumbs -->
@@ -29,7 +33,6 @@
                     </div>
                     @Html.Action("MenuLeft", "Menu")
                 </div>
-
                 <!-- Price Range Filtering -->
                 <!--<div class="sidebar_section">
                     <div class="sidebar_title">
@@ -40,14 +43,11 @@
                     </p>
                     <div id="slider-range"></div>
                     <div class="filter_button"><span>filter</span></div>
-
                     <hr />
                     @Html.Action("Refresh", "Home")
                 </div>-->
             </div>
-
             <!-- Main Content -->
-
             <div class="main_content">
 
                 <!-- Products -->
@@ -55,9 +55,7 @@
                 <div class="products_iso">
                     <div class="row">
                         <div class="col">
-
                             <!-- Product Sorting -->
-
                             <div class="product_sorting_container product_sorting_container_top">
                                 <ul class="product_sorting">
                                     <li>
@@ -94,13 +92,56 @@
                                 </div>
 
                             </div>
-
-                            <!-- Product Grid -->
                             <div class="product-grid">
-                                @Html.Action("Partial_ItemsByCateId", "Products")
+                                <!-- Product 1 -->
+                                @if (Model != null && Model.Any())
+                                {
+                                    foreach (var item in Model)
+                                    {
+
+                                        var strImge = "";
+                                        var img = item.Product.ProductImage.FirstOrDefault(x => x.IsDefault);
+                                        if (img != null)
+                                        {
+                                            strImge = img.Image;
+                                        }
+
+                                        <div class="product-item @item.Product.ProductCategory.Alias">
+                                            <div class="product discount product_filter">
+                                                <div class="product_image">
+                                                    <img src="@strImge" style="width: 190px; height: 170px; margin-left:15px" alt="@item.Product.Title">
+                                                </div>
+
+                                                @*<div data-id="@item.Id" class="favorite @(isWishlist ? "active" : "")" style="margin-right: 160px; font-size:20px"></div>*@
+
+                                                @if (item.Product.SalePrice > 0)
+                                                {
+                                                    <div class="product_bubble product_bubble_right product_bubble_red d-flex flex-column align-items-center"><span>sale</span></div>
+                                                }
+                                                @* <div class="product_bubble product_bubble_right product_bubble_red d-flex flex-column align-items-center"><span>-$20</span></div>*@
+                                                <div class="product_info">
+                                                    <h6 class="product_name"><a href="/chi-tiet/@item.Product.Alias-p@(item.Product.Id)">@item.Product.Title</a></h6>
+                                                    @if (item.Product.SalePrice > 0)
+                                                    {
+                                                        <div class="product_price">@WebsiteBanDoAnVaThucUong.Common.Common.FormatNumber(item.Product.SalePrice, 0)<span>@WebsiteBanDoAnVaThucUong.Common.Common.FormatNumber(item.Product.SalePrice, 0)</span></div>
+                                                        <div style="display:none;" class="in_product_price"> @item.Product.SalePrice</div>
+                                                    }
+                                                    else
+                                                    {
+                                                        <div class="product_price">@WebsiteBanDoAnVaThucUong.Common.Common.FormatNumber(item.Product.SalePrice, 0)</div>
+                                                        <div style="display:none;" class="in_product_price"> @item.Product.SalePrice</div>
+                                                    }
+                                                </div>
+                                            </div>
+                                            <div class="red_button add_to_cart_button"><a href="#" class="btnAddToCart" data-id="@item.Product.Id" data-storeid="@item.StoreId">add to cart</a></div>
+                                        </div>
+                                    }
+                                }
+
 
                             </div>
                         </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -110,5 +151,4 @@
 @section scripts{
     <script src="~/Content/assets/js/categories_custom.js"></script>
 
-    
 }

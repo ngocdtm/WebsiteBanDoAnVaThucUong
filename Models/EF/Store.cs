@@ -4,16 +4,17 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web;
+using PagedList;
 
 namespace WebsiteBanDoAnVaThucUong.Models.EF
 {
     [Table("Store")]
-    public class Store 
+    public class Store
     {
-        //public Store()
-        //{
-        //    this.WishlistStores = new HashSet<WishlistStore>();
-        //}
+        public Store()
+        {
+            this.StoreProducts = new HashSet<StoreProduct>();
+        }
         [Key]
         [DatabaseGeneratedAttribute(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
@@ -25,9 +26,12 @@ namespace WebsiteBanDoAnVaThucUong.Models.EF
         public double Lat { get; set; }
         [StringLength(250)]
         public string Image { get; set; }
+
         [Required]
         public string IdManager { get; set; }
         //public virtual ICollection<WishlistStore> WishlistStores { get; set; }
         public virtual ApplicationUser User { get; set; }
+        public virtual ICollection<StoreProduct> StoreProducts { get; set; }
+
     }
 }
