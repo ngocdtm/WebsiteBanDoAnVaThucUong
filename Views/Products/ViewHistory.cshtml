@@ -12,7 +12,7 @@
                     <img src="@item.Image" alt="@item.Title" />
                     <h4>@item.Title</h4>
                     <p>@WebsiteBanDoAnVaThucUong.Common.Common.FormatNumber(item.SalePrice, 0)</p>
-                    <a href="@Url.Action("Details", "Products", new { id = item.Id })">View Details</a>
+                    <a href="@Url.Action("Detail", "Products", new { id = item.Id })">View Details</a>
                 </div>
             }
         }
