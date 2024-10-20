@@ -1,5 +1,6 @@
 ﻿using System.Web;
 using System.Web.Mvc;
+using WebsiteBanDoAnVaThucUong.Filters;
 
 namespace WebsiteBanDoAnVaThucUong
 {
@@ -8,6 +9,7 @@ namespace WebsiteBanDoAnVaThucUong
         public static void RegisterGlobalFilters(GlobalFilterCollection filters)
         {
             filters.Add(new HandleErrorAttribute());
+            filters.Add(new StoreSelectorFilter());
         }
     }
 }

@@ -357,6 +357,7 @@
     <Compile Include="Controllers\VouchersController.cs" />
     <Compile Include="Controllers\WishlistController.cs" />
     <Compile Include="Controllers\WishlistStoresController.cs" />
+    <Compile Include="filters\StoreSelectorFilter.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
