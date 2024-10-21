@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="packages\EntityFramework.6.4.4\build\EntityFramework.props" Condition="Exists('packages\EntityFramework.6.4.4\build\EntityFramework.props')" />
   <Import Project="packages\Microsoft.SqlServer.Types.160.1000.6\build\net462\Microsoft.SqlServer.Types.props" Condition="Exists('packages\Microsoft.SqlServer.Types.160.1000.6\build\net462\Microsoft.SqlServer.Types.props')" />
@@ -347,6 +347,7 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ImageSlidersController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
+    <Compile Include="Controllers\MemberRankController.cs" />
     <Compile Include="Controllers\MenuController.cs" />
     <Compile Include="Controllers\NewsController.cs" />
     <Compile Include="Controllers\ProductsController.cs" />
@@ -357,14 +358,20 @@
     <Compile Include="Controllers\VouchersController.cs" />
     <Compile Include="Controllers\WishlistController.cs" />
     <Compile Include="Controllers\WishlistStoresController.cs" />
+    <Compile Include="filters\StoreSelectorFilter.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="IServiceCollection.cs" />
+    <Compile Include="Migrations\202410210625137_MemberRank.cs" />
+    <Compile Include="Migrations\202410210625137_MemberRank.Designer.cs">
+      <DependentUpon>202410210625137_MemberRank.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
+    <Compile Include="Models\EF\MemberRank.cs" />
     <Compile Include="Models\EF\ProductViewHistory.cs" />
     <Compile Include="Models\EF\StoreDTO.cs" />
     <Compile Include="Models\EF\StoreProduct.cs" />
+    <Compile Include="Models\RankingService.cs" />
     <Compile Include="Models\ViewModels\AccountViewModels.cs" />
     <Compile Include="Models\CommonAbstract.cs" />
     <Compile Include="Models\Common\Filter.cs" />
@@ -396,6 +403,7 @@
     <Compile Include="Models\EF\WishlistStore.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
+    <Compile Include="Models\ViewModels\MemberRankViewModel.cs" />
     <Compile Include="Models\ViewModels\OrderViewModel.cs" />
     <Compile Include="Models\Payments\VnPayLibrary.cs" />
     <Compile Include="Models\ShoppingCart.cs" />
@@ -3867,6 +3875,7 @@
     <Content Include="Views\StoreProducts\Index.cshtml" />
     <Content Include="Views\Products\_RelatedProducts.cshtml" />
     <Content Include="Views\Products\ViewHistory.cshtml" />
+    <Content Include="Views\MemberRank\MemberRank.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -3880,6 +3889,7 @@
     <Folder Include="Areas\Employee\Data\" />
     <Folder Include="Content\ckfinder\ckfinder\userfiles\" />
     <Folder Include="Reports\" />
+    <Folder Include="Views\Voucher\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -3889,6 +3899,11 @@
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Connected Services\" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\202410210625137_MemberRank.resx">
+      <DependentUpon>202410210625137_MemberRank.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

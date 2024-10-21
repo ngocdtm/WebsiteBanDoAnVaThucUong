@@ -6,6 +6,8 @@ using System.Web.Mvc;
 using WebsiteBanDoAnVaThucUong.Models;
 using Microsoft.AspNet.Identity;
 using WebsiteBanDoAnVaThucUong.Models.EF;
+using PagedList;
+using System.Data.Entity;
 
 namespace WebsiteBanDoAnVaThucUong.Controllers
 {
@@ -13,12 +15,51 @@ namespace WebsiteBanDoAnVaThucUong.Controllers
     {
         private ApplicationDbContext db = new ApplicationDbContext();
         // GET: Products
-        public ActionResult Index()
+        public ActionResult Index(int? storeId, int? page)
         {
-            var items = db.Products.ToList();
+            // Retrieve the selected store from either the parameter or the session
+            if (storeId == null)
+            {
+                storeId = Session["SelectedStoreId"] as int?;
+            }
 
-            return View(items);
+            IQueryable<StoreProduct> storeProducts;
+
+            if (storeId.HasValue)
+            {
+                // Filter products by storeId
+                storeProducts = db.StoreProducts
+                    .Where(sp => sp.StoreId == storeId)
+                .Include(sp => sp.Product)
+                .OrderBy(sp => sp.Product.Title);
+
+                ViewBag.StoreName = db.Stores.Find(storeId)?.Name;
+                ViewBag.StoreId = storeId;
+                ViewBag.StoreSelected = true;
+
+                // Store the storeId in the session for future use
+                Session["SelectedStoreId"] = storeId.Value;
+            }
+            else
+            {
+                // If no store is selected, retrieve all products
+                storeProducts = db.StoreProducts
+                    .Include(sp => sp.Product)
+                    .Include(sp => sp.Product.ProductImage)
+                    .Include(sp => sp.Product.ProductCategory);
+
+                ViewBag.StoreSelected = false;
+            }
+
+            // Apply ordering here before paging
+            storeProducts = storeProducts.OrderBy(sp => sp.Product.Title); // Order by any field you prefer
+
+            int pageSize = 6; // Show 6 products per page
+            int pageNumber = (page ?? 1);
+
+            return View(storeProducts.ToPagedList(pageNumber, pageSize));
         }
+
 
         public ActionResult Detail(string alias, int id)
         {
@@ -30,15 +71,12 @@ namespace WebsiteBanDoAnVaThucUong.Controllers
                 item.ViewCount += 1;
                 db.Entry(item).Property(x => x.ViewCount).IsModified = true;
                 db.SaveChanges();
-
                 // Save product to user's view history
                 var userId = User.Identity.GetUserId(); // Assuming you're using Identity or any other user identification
-
                 if (userId != null) // If the user is logged in
                 {
                     var existingHistory = db.ProductViewHistory
                         .FirstOrDefault(h => h.ProductId == id && h.UserId == userId);
-
                     if (existingHistory == null) // Avoid duplicate entries in the history
                     {
                         var historyEntry = new ProductViewHistory
@@ -47,7 +85,6 @@ namespace WebsiteBanDoAnVaThucUong.Controllers
                             UserId = userId,
                             ViewedAt = DateTime.Now
                         };
-
                         db.ProductViewHistory.Add(historyEntry);
                         db.SaveChanges();
                     }
@@ -63,26 +100,21 @@ namespace WebsiteBanDoAnVaThucUong.Controllers
                     }
                 }
             }
-
             // Get the count of reviews
             var countReview = db.Reviews.Where(x => x.ProductId == id).Count();
             ViewBag.CountReview = countReview;
-
             // Return the product details view
             return View(item);
         }
-
         public ActionResult ViewHistory()
         {
             var userId = User.Identity.GetUserId();
-
             var history = db.ProductViewHistory
                 .Where(h => h.UserId == userId)
                 .OrderByDescending(h => h.ViewedAt)
                 .Take(5) // 5 hui
                 .Select(h => h.Product) // Get the products
                 .ToList();
-
             return View(history);
         }
 
@@ -103,11 +135,30 @@ namespace WebsiteBanDoAnVaThucUong.Controllers
             return View(items);
         }
 
-        public ActionResult Partial_ItemsByCateId()
+        public ActionResult Partial_ItemsByCateId(int? categoryId)
         {
-            var items = db.Products.Where(x => x.IsActive).Take(12).ToList();
-            return PartialView(items);
+            // Assuming you filter products by category and storeId
+            var storeProducts = db.StoreProducts
+                .Include(sp => sp.Product)
+                .Include(sp => sp.Product.ProductImage)
+                .Include(sp => sp.Product.ProductCategory);
+
+            // Filter by categoryId if applicable
+            if (categoryId.HasValue)
+            {
+                storeProducts = storeProducts.Where(sp => sp.Product.ProductCategoryId == categoryId);
+            }
+
+            // Group by ProductId to avoid duplicates
+            var uniqueProducts = storeProducts
+                .GroupBy(sp => sp.Product.Id)
+                .Select(g => g.FirstOrDefault()) // Take only the first product per group
+                .ToList();
+
+            return PartialView(uniqueProducts);
         }
+
+
 
         public ActionResult Partial_ProductSales()
         {
@@ -193,5 +244,3 @@ namespace WebsiteBanDoAnVaThucUong.Controllers
 
     }
 }
-
-

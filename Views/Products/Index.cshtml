@@ -1,8 +1,92 @@
-﻿﻿@model IEnumerable<WebsiteBanDoAnVaThucUong.Models.EF.Product>
+﻿﻿@model IEnumerable<WebsiteBanDoAnVaThucUong.Models.EF.StoreProduct>
 @using Microsoft.AspNet.Identity
+
+@using WebsiteBanDoAnVaThucUong.Models.EF
 @{
     ViewBag.Title = "Danh sách sản phẩm";
+    ViewBag.Title = ViewBag.StoreName;
 }
+<style>
+    /* General modal styles */
+    #storeModal .modal-header {
+        background-color: #e63946;
+        color: white;
+    }
+
+    #storeModal .modal-title {
+        font-size: 1.5em;
+    }
+
+    #store-list {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        padding: 0;
+    }
+
+    /* Store card container */
+    .store-card {
+        background-color: #f9f9f9;
+        border-radius: 10px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        padding: 15px;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+        /* Hover effect on the store card */
+        .store-card:hover {
+            transform: scale(1.02);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+    /* Divider style */
+    .store-divider {
+        border: none;
+        height: 1px;
+        background-color: #e0e0e0; /* Change the color as needed */
+        margin: 10px 0; /* Space above and below the divider */
+    }
+
+    /* Store info text styles */
+    .store-info h5 {
+        margin: 0;
+        font-size: 1.2em;
+        color: #e63946;
+    }
+
+    .store-info p {
+        margin: 5px 0 0;
+        font-size: 0.9em;
+        color: #333;
+    }
+
+    .modal-footer .btn-secondary {
+        background-color: #f2f2f2;
+        color: #333;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        transition: background-color 0.3s ease;
+    }
+
+        .modal-footer .btn-secondary:hover {
+            background-color: #e63946;
+            color: #fff;
+        }
+
+    /* Responsive Styles */
+    @@media (max-width: 768px) {
+        .store-info h5 {
+            font-size: 1em;
+        }
+
+        .store-info p {
+            font-size: 0.8em;
+        }
+    }
+    }
+</style>
+<h2>@ViewBag.Title</h2>
 <link rel="stylesheet" type="text/css" href="~/Content/assets/styles/categories_styles.css">
 <link rel="stylesheet" type="text/css" href="~/Content/assets/styles/categories_responsive.css">
 <div class="container product_section_container">
@@ -28,6 +112,77 @@
                         <h5>Product Category</h5>
                     </div>
                     @Html.Action("MenuLeft", "Menu")
+                    <hr />
+                    <!-- Products -->
+                    <!-- Nút chọn cửa hàng -->
+                    <button type="button" class="btn btn-primary" id="open-store-modal">
+                        Chọn Cửa Hàng
+                    </button>
+                    <hr />
+                    @*Hiển thị thông tin cửa hàng đã chọn*@
+                    <div class="selected-store-info" id="selected-store-info">
+                        @if (Session["SelectedStoreId"] != null)
+                        {
+                            var storeId = (int)Session["SelectedStoreId"];
+                            var selectedStore = (ViewBag.Stores as List<StoreDTO>)?.FirstOrDefault(s => s.Id == storeId);
+                            if (selectedStore != null)
+                            {
+                                <div class="store-info">
+                                    <h5>@selectedStore.Name</h5>
+                                    <p>@selectedStore.Address</p>
+                                </div>
+                            }
+                        }
+                        else
+                        {
+
+                            <div class="store-details">
+                                <h3>Bạn chưa chọn cửa hàng!</h3>
+                            </div>
+                        }
+                    </div>
+
+                    <!-- Popup Modal để hiển thị danh sách cửa hàng -->
+                    <div class="modal" id="storeModal" tabindex="-1" role="dialog">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Danh sách cửa hàng</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <!-- Danh sách các cửa hàng -->
+                                    <ul id="store-list">
+                                        @if (ViewBag.Stores != null)
+                                        {
+                                            foreach (var store in ViewBag.Stores as List<StoreDTO>)
+                                            {
+                                                <div class="store-card">
+                                                    <a href="#" class="select-store" data-store-id="@store.Id" data-store-name="@store.Name" data-store-address="@store.Address">
+                                                        <div class="store-info">
+                                                            <h5>@store.Name</h5>
+                                                            <p>@store.Address</p>
+                                                        </div>
+                                                    </a>
+                                                </div>
+                                                <hr class="store-divider" />
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <p>Không có cửa hàng nào được tìm thấy.</p>
+                                        }
+                                    </ul>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
 
                 <!-- Price Range Filtering -->
@@ -49,9 +204,6 @@
             <!-- Main Content -->
 
             <div class="main_content">
-
-                <!-- Products -->
-
                 <div class="products_iso">
                     <div class="row">
                         <div class="col">
@@ -101,14 +253,55 @@
 
                             </div>
                         </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 
-@section scripts{
-    <script src="~/Content/assets/js/categories_custom.js"></script>
+    @section scripts{
+        <script src="~/Content/assets/js/categories_custom.js"></script>
+        <script>
+$(document).ready(function () {
+    $('#open-store-modal').click(function () {
+        console.log("Opening store modal...");
+        $('#storeModal').modal('show');
+    });
 
-    
-}
+    // Khi người dùng nhấn chọn một cửa hàng từ danh sách
+    $(document).on('click', '.select-store', function (e) {
+        e.preventDefault();
+
+        var storeId = $(this).data('store-id');
+        var storeName = $(this).data('store-name');
+        var storeAddress = $(this).data('store-address');
+
+        // Kiểm tra dữ liệu
+        console.log("Selected Store:", storeName, storeAddress);
+
+        // Cập nhật thông tin cửa hàng đã chọn trong giao diện
+        $('#selected-store-info').html(`
+            <div class="store-details">
+                <h4>${storeName}</h4>
+                <p>${storeAddress}</p>
+            </div>
+        `);
+
+        // Gửi AJAX để lưu lại cửa hàng đã chọn
+        $.ajax({
+            url: '@Url.Action("SelectStore", "StoreProducts")',
+            type: 'POST',
+            data: { storeId: storeId },
+            success: function (response) {
+                console.log("Store selected successfully:", response);
+                $('#storeModal').modal('hide');
+            },
+            error: function (xhr, status, error) {
+                console.log("Error setting selected store: " + error);
+            }
+        });
+    });
+});
+        </script>
+
+    }

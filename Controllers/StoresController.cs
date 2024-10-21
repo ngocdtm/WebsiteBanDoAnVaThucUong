@@ -9,9 +9,11 @@ using System.Web;
 using System.Web.Mvc;
 using WebsiteBanDoAnVaThucUong.Models;
 using WebsiteBanDoAnVaThucUong.Models.EF;
+using WebsiteBanDoAnVaThucUong.Filters;
 
 namespace WebsiteBanDoAnVaThucUong.Controllers
 {
+
     public class StoresController : Controller
     {
         private ApplicationDbContext db = new ApplicationDbContext();
@@ -21,6 +23,7 @@ namespace WebsiteBanDoAnVaThucUong.Controllers
         {
             var pageSize = 10;
             var pageIndex = page ?? 1;
+
 
             var storeDTOs = db.Stores
                 .OrderByDescending(x => x.Id)
@@ -35,7 +38,8 @@ namespace WebsiteBanDoAnVaThucUong.Controllers
                     Alias = s.Alias
                 })
                 .ToList();
-
+            // Set ViewBag.Stores with storeDTOs for the store selector
+            ViewBag.Stores = storeDTOs;
             var pagedStores = new PagedList<StoreDTO>(storeDTOs, pageIndex, pageSize);
 
             ViewBag.PageSize = pageSize;
