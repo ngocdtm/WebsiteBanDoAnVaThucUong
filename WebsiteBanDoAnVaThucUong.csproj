@@ -347,6 +347,7 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ImageSlidersController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
+    <Compile Include="Controllers\MemberRankController.cs" />
     <Compile Include="Controllers\MenuController.cs" />
     <Compile Include="Controllers\NewsController.cs" />
     <Compile Include="Controllers\ProductsController.cs" />
@@ -362,10 +363,16 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="IServiceCollection.cs" />
+    <Compile Include="Migrations\202410201552271_MemberRanks.cs" />
+    <Compile Include="Migrations\202410201552271_MemberRanks.Designer.cs">
+      <DependentUpon>202410201552271_MemberRanks.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
+    <Compile Include="Models\EF\MemberRanks.cs" />
     <Compile Include="Models\EF\ProductViewHistory.cs" />
     <Compile Include="Models\EF\StoreDTO.cs" />
     <Compile Include="Models\EF\StoreProduct.cs" />
+    <Compile Include="Models\RankingService.cs" />
     <Compile Include="Models\ViewModels\AccountViewModels.cs" />
     <Compile Include="Models\CommonAbstract.cs" />
     <Compile Include="Models\Common\Filter.cs" />
@@ -397,6 +404,7 @@
     <Compile Include="Models\EF\WishlistStore.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
+    <Compile Include="Models\ViewModels\MemberRankViewModel.cs" />
     <Compile Include="Models\ViewModels\OrderViewModel.cs" />
     <Compile Include="Models\Payments\VnPayLibrary.cs" />
     <Compile Include="Models\ShoppingCart.cs" />
@@ -3868,6 +3876,7 @@
     <Content Include="Views\StoreProducts\Index.cshtml" />
     <Content Include="Views\Products\_RelatedProducts.cshtml" />
     <Content Include="Views\Products\ViewHistory.cshtml" />
+    <Content Include="Views\MemberRank\MemberRank.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -3881,6 +3890,7 @@
     <Folder Include="Areas\Employee\Data\" />
     <Folder Include="Content\ckfinder\ckfinder\userfiles\" />
     <Folder Include="Reports\" />
+    <Folder Include="Views\RankingService\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -3890,6 +3900,11 @@
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Connected Services\" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\202410201552271_MemberRanks.resx">
+      <DependentUpon>202410201552271_MemberRanks.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
