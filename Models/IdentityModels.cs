@@ -112,6 +112,7 @@ namespace WebsiteBanDoAnVaThucUong.Models
         public DbSet<Subscribe> Subscribe { get; set; }
         public DbSet<StoreProduct> StoreProducts { get; set; }
         public DbSet<ProductViewHistory> ProductViewHistory { get; set; }
+        public DbSet<MemberRank> MemberRanks { get; set; }
         public static ApplicationDbContext Create()
         {
             return new ApplicationDbContext();

@@ -7,6 +7,7 @@ using System.Linq;
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
+using WebsiteBanDoAnVaThucUong.Filters;
 using WebsiteBanDoAnVaThucUong.Models;
 using WebsiteBanDoAnVaThucUong.Models.EF;
 
@@ -16,17 +17,14 @@ namespace WebsiteBanDoAnVaThucUong.Controllers
     {
         private ApplicationDbContext db = new ApplicationDbContext();
 
+        [StoreSelectorFilter]
         public ActionResult Index(int? storeId, int? page)
         {
+            storeId = Session["SelectedStoreId"] as int?;
+
             if (!storeId.HasValue)
             {
                 return RedirectToAction("Index", "Stores");
-            }
-
-            var store = db.Stores.Find(storeId);
-            if (store == null)
-            {
-                return HttpNotFound();
             }
 
             var storeProducts = db.StoreProducts
@@ -37,12 +35,18 @@ namespace WebsiteBanDoAnVaThucUong.Controllers
             int pageSize = 10;
             int pageNumber = (page ?? 1);
 
-            ViewBag.StoreName = store.Name;
+            ViewBag.StoreName = db.Stores.Find(storeId)?.Name;
             ViewBag.StoreId = storeId;
 
             return View(storeProducts.ToPagedList(pageNumber, pageSize));
         }
-
+        //ở trang cửa hàng và user muốn select store 
+        [HttpPost]
+        public ActionResult SelectStore(int storeId)
+        {
+            Session["SelectedStoreId"] = storeId;
+            return Json(new { success = true });
+        }
         public ActionResult Edit(int storeId, int productId)
         {
             var storeProduct = db.StoreProducts

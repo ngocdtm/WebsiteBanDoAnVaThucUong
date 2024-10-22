@@ -1,4 +1,4 @@
-﻿@model IEnumerable<WebsiteBanDoAnVaThucUong.Models.EF.Product>
+﻿@model IEnumerable<WebsiteBanDoAnVaThucUong.Models.EF.StoreProduct>
 @using Microsoft.AspNet.Identity
 @Html.AntiForgeryToken()
 @if (Model != null && Model.Any())
@@ -7,32 +7,32 @@
     {
         <!-- Product 1 -->
         var strImge = "";
-        var img = item.ProductImage.FirstOrDefault(x => x.IsDefault);
+        var img = item.Product.ProductImage.FirstOrDefault(x => x.IsDefault);
         if (img != null)
         {
             strImge = img.Image;
         }
-        var wishlist = item.Wishlist.FirstOrDefault(x => x.CustomerId == User.Identity.GetUserId());
+        var wishlist = item.Product.Wishlist.FirstOrDefault(x => x.CustomerId == User.Identity.GetUserId());
         var isWishlist = wishlist != null;
 
-        <div class="product-item @item.ProductCategory.Alias">
+        <div class="product-item @item.Product.ProductCategory.Alias">
             <div class="product discount product_filter">
                 <div class="product_image">
-                    <img src="@strImge"  style="width:220px; height:180px" alt="@item.Title">
+                    <img src="@strImge" style="width:220px; height:180px" alt="@item.Product.Title">
                 </div>
 
                 <div data-id="@item.Id" class="favorite @(isWishlist ? "active" : "")" style="margin-right: 160px; font-size:20px"></div>
 
                 @*@if (item.PriceSale > 0)
-                {
-                    <div class="product_bubble product_bubble_right product_bubble_red d-flex flex-column align-items-center"><span>sale</span></div>
-                }*@
+                    {
+                        <div class="product_bubble product_bubble_right product_bubble_red d-flex flex-column align-items-center"><span>sale</span></div>
+                    }*@
                 <div class="product_info">
-                    <h6 class="product_name"><a href="/chi-tiet/@item.Alias-p@(item.Id)">@item.Title</a></h6>
-                        <div class="product_price">@WebsiteBanDoAnVaThucUong.Common.Common.FormatNumber(item.SalePrice, 0)</div>
+                    <h6 class="product_name"><a href="/chi-tiet/@item.Product.Alias-p@(item.Id)">@item.Product.Title</a></h6>
+                    <div class="product_price">@WebsiteBanDoAnVaThucUong.Common.Common.FormatNumber(item.Product.SalePrice, 0)</div>
                 </div>
             </div>
-            <div class="red_button add_to_cart_button"><a href="#" class="btnAddToCart" data-id="@item.Id">add to cart</a></div>
+            <div class="red_button add_to_cart_button"><a href="#" class="btnAddToCart" data-id="@item.Product.Id" data-storeid="@item.StoreId">add to cart</a></div>
         </div>
     }
 }
@@ -58,7 +58,7 @@
                         } else {
                             alert(response.message);
                         }
-                    }, 
+                    },
                     error: function (error) {
                         console.log('Error removing from wishlist:', error); // Log any errors
                         alert('Error occurred while removing the item. Please try again.');

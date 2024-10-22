@@ -1,0 +1,149 @@
+﻿@model WebsiteBanDoAnVaThucUong.Models.ViewModels.MemberRankViewModel
+@{
+    ViewBag.Title = "MemberRank";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<hr />
+<hr />
+<hr />
+<hr />
+<hr />
+<hr />
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Thông tin thành viên</h4>
+                </div>
+                <div class="card-body">
+                    <div class="rank-info text-center mb-4">
+                        <h2 class="rank-title">
+                            Hạng @Model.Rank
+                            @{
+                                var badgeColor = Model.Rank == "Vàng" ? "text-warning" :
+                                                Model.Rank == "Bạc" ? "text-secondary" :
+                                                Model.Rank == "Đồng" ? "text-danger" :
+                                                Model.Rank == "Thành viên" ? "text-success" : "text-muted";
+                            }
+                            <i class="fas fa-crown @badgeColor"></i>
+                        </h2>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="info-box">
+                                <h5>Điểm tích lũy</h5>
+                                <p class="h3">@Model.Points điểm</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="info-box">
+                                <h5>Tổng chi tiêu</h5>
+                                <p class="h3">@String.Format("{0:N0}đ", Model.TotalSpent)</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    @if (Model.Rank != "Vàng")
+                    {
+                        <div class="progress-section mt-4">
+                            <h5>Còn @Model.PointsToNextRank điểm nữa để đạt hạng @Model.NextRank</h5>
+                            <div class="progress">
+                                @{
+                                    var progressPercent = 0;
+                                    if (Model.Points <= 5 && Model.Points > 0)
+                                    {
+                                        progressPercent = Model.Points * 100 / 5; // Tiến độ đến Đồng (5 điểm)
+                                    }
+                                    else if (Model.Points < 10 && Model.Points > 5)
+                                    {
+                                        progressPercent = (Model.Points - 5) * 100 / 5; // Tiến độ đến Bạc (từ 5-10 điểm)
+                                    }
+                                    else if (Model.Points >= 10 && Model.Points < 20)
+                                    {
+                                        progressPercent = (Model.Points - 10) * 100 / 10; // Tiến độ đến Vàng (từ 10-20 điểm)
+                                    }
+                                }
+                                <div class="progress-bar" role="progressbar" style="width: @progressPercent%"></div>
+                            </div>
+                        </div>
+                    }
+
+                    <div class="rank-benefits mt-4">
+                        <h5>Quyền lợi thành viên:</h5>
+                        <ul class="list-group">
+                            @switch (Model.Rank)
+                            {
+                                case "Vàng":
+                                    <li class="list-group-item">Giảm 15% cho mọi đơn hàng</li>
+                                    <li class="list-group-item">Tích điểm x3</li>
+                                    <li class="list-group-item">Ưu tiên xử lý đơn hàng</li>
+                                    break;
+                                case "Bạc":
+                                    <li class="list-group-item">Giảm 10% cho mọi đơn hàng</li>
+                                    <li class="list-group-item">Tích điểm x2</li>
+                                    <li class="list-group-item">Ưu tiên xử lý đơn hàng</li>
+                                    break;
+                                case "Đồng":
+                                    <li class="list-group-item">Giảm 5% cho mọi đơn hàng</li>
+                                    <li class="list-group-item">Tích điểm x1.5</li>
+                                    break;
+                                case "Thành viên":
+                                    <li class="list-group-item">Giảm 2% cho mọi đơn hàng</li>
+                                    <li class="list-group-item">Tích điểm cơ bản</li>
+                                    break;
+                                default:
+                                    <li class="list-group-item">Chưa có quyền lợi</li>
+                                    break;
+                            }
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<style>
+    .info-box {
+        padding: 20px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        text-align: center;
+    }
+
+    .rank-title {
+        font-size: 2.5rem;
+        margin-bottom: 20px;
+    }
+
+    .progress {
+        height: 20px;
+    }
+
+    .rank-benefits {
+        background-color: #f8f9fa;
+        padding: 20px;
+        border-radius: 8px;
+    }
+
+    .member-rank-gold {
+        color: #FFD700;
+    }
+
+    .member-rank-silver {
+        color: #C0C0C0;
+    }
+
+    .member-rank-bronze {
+        color: #CD7F32;
+    }
+
+    .progress-bar {
+        background-color: #007bff;
+        transition: width 0.6s ease;
+    }
+</style>

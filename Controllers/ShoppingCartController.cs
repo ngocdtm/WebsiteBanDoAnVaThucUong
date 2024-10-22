@@ -176,7 +176,12 @@ namespace WebsiteBanDoAnVaThucUong.Controllers
                                         });
                                     }
                                 }
-
+                                //điểm quy đổi ra rank 
+                                if (order.CustomerId != null)
+                                {
+                                    var rankingService = new RankingService(db);
+                                    rankingService.UpdateMemberRank(order.CustomerId, order.FinalAmount);
+                                }
                                 // Cập nhật số lượng tồn kho
                                 var storeProduct = db.StoreProducts.FirstOrDefault(sp => sp.ProductId == item.ProductId && sp.StoreId == storeId);
                                 if (storeProduct != null)

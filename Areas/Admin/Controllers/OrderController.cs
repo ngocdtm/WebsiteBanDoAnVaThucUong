@@ -51,9 +51,20 @@ namespace WebsiteBanDoAnVaThucUong.Areas.Admin.Controllers
             {
                 order.ShippingStatus = status;
                 order.ModifiedBy = User.Identity.GetUserId();
+                //điểm quy đổi ra rank 
+                if (status == 4)
+                {
+                    var rankingService = new RankingService(db);
+                    rankingService.UpdateMemberRank(order.CustomerId, order.FinalAmount);
+                }
+                else
+                {
+                    order.OrderStatus = status; // Cập nhật trạng thái khác
+                }
                 db.SaveChanges();
                 return Json(new { success = true });
             }
+
             return Json(new { success = false });
         }
 
