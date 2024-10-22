@@ -5,37 +5,60 @@
 {
     foreach (var item in Model)
     {
-        <!-- Product 1 -->
         var strImge = "";
         var img = item.Product.ProductImage.FirstOrDefault(x => x.IsDefault);
         if (img != null)
         {
             strImge = img.Image;
         }
+
         var wishlist = item.Product.Wishlist.FirstOrDefault(x => x.CustomerId == User.Identity.GetUserId());
         var isWishlist = wishlist != null;
 
-        <div class="product-item @item.Product.ProductCategory.Alias">
+        var stockInfo = ViewBag.StockInfo[item.ProductId];
+        var isSoldOut = stockInfo.IsSoldOut;
+
+        <div class="product-item @item.Product.ProductCategory.Alias @(isSoldOut ? "sold-out" : "")">
             <div class="product discount product_filter">
                 <div class="product_image">
                     <img src="@strImge" style="width:220px; height:180px" alt="@item.Product.Title">
                 </div>
-
                 <div data-id="@item.Id" class="favorite @(isWishlist ? "active" : "")" style="margin-right: 160px; font-size:20px"></div>
+                @if (isSoldOut)
+                {
+                    <div class="sold-out-overlay">
+                        <span>Hết hàng</span>
+                    </div>
+                }
+                else
+                {
+                    <div class="stock-count">
+                        Còn lại: @stockInfo.StockCount
+                    </div>
+                }
 
-                @*@if (item.PriceSale > 0)
-                    {
-                        <div class="product_bubble product_bubble_right product_bubble_red d-flex flex-column align-items-center"><span>sale</span></div>
-                    }*@
                 <div class="product_info">
                     <h6 class="product_name"><a href="/chi-tiet/@item.Product.Alias-p@(item.Id)">@item.Product.Title</a></h6>
                     <div class="product_price">@WebsiteBanDoAnVaThucUong.Common.Common.FormatNumber(item.Product.SalePrice, 0)</div>
                 </div>
             </div>
-            <div class="red_button add_to_cart_button"><a href="#" class="btnAddToCart" data-id="@item.Product.Id" data-storeid="@item.StoreId">add to cart</a></div>
+
+            @if (!isSoldOut)
+            {
+                <div class="red_button add_to_cart_button">
+                    <a href="#" class="btnAddToCart" data-id="@item.Product.Id" data-storeid="@item.StoreId">Thêm vào giỏ hàng</a>
+                </div>
+            }
+            else
+            {
+                <div class="sold-out-btn">
+                    <span>Hết hàng</span>
+                </div>
+            }
         </div>
     }
 }
+
 
 <script>
     $(document).ready(function () {
@@ -82,6 +105,24 @@
             }
         });
     });
+    function checkStockAndAddToCart(productId) {
+        $.ajax({
+            url: '/Products/CheckStockAvailability',
+            type: 'POST',
+            data: { productId: productId },
+            success: function (response) {
+                if (response.success) {
+                    // Proceed with adding to cart
+                    AddToCart(productId);
+                } else {
+                    alert(response.message);
+                }
+            },
+            error: function () {
+                alert('Có lỗi xảy ra. Vui lòng thử lại sau.');
+            }
+        });
+    }
 </script>
 
 <style>
@@ -93,4 +134,37 @@
         .favorite.active {
             color: red;
         }
+    /* Khi hết hàng thì sản phẩm sẽ có màu mờ */
+    .sold-out {
+        opacity: 0.7;
+    }
+
+    .sold-out-overlay {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: rgba(255, 0, 0, 0.7);
+        color: white;
+        padding: 10px 20px;
+        border-radius: 5px;
+        font-weight: bold;
+        cursor: not-allowed;
+    }
+
+    .stock-count {
+        position: absolute;
+        bottom: 10px;
+        right: 10px;
+        background-color: cadetblue;
+        color: white;
+        padding: 5px 10px;
+        border-radius: 3px;
+        font-size: 12px;
+    }
+
+    .sold-out-btn {
+        background-color: #ccc;
+        cursor: not-allowed;
+    }
 </style>

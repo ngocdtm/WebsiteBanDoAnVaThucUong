@@ -1,4 +1,4 @@
-﻿﻿@model IEnumerable<WebsiteBanDoAnVaThucUong.Models.EF.StoreProduct>
+﻿﻿﻿@model IEnumerable<WebsiteBanDoAnVaThucUong.Models.EF.StoreProduct>
 @using Microsoft.AspNet.Identity
 
 @using WebsiteBanDoAnVaThucUong.Models.EF
@@ -264,11 +264,10 @@
         <script>
 $(document).ready(function () {
     $('#open-store-modal').click(function () {
-        console.log("Opening store modal...");
         $('#storeModal').modal('show');
     });
 
-    // Khi người dùng nhấn chọn một cửa hàng từ danh sách
+    // Khi người dùng chọn cửa hàng
     $(document).on('click', '.select-store', function (e) {
         e.preventDefault();
 
@@ -276,10 +275,7 @@ $(document).ready(function () {
         var storeName = $(this).data('store-name');
         var storeAddress = $(this).data('store-address');
 
-        // Kiểm tra dữ liệu
-        console.log("Selected Store:", storeName, storeAddress);
-
-        // Cập nhật thông tin cửa hàng đã chọn trong giao diện
+        // Cập nhật UI
         $('#selected-store-info').html(`
             <div class="store-details">
                 <h4>${storeName}</h4>
@@ -287,17 +283,23 @@ $(document).ready(function () {
             </div>
         `);
 
-        // Gửi AJAX để lưu lại cửa hàng đã chọn
+        // Gửi AJAX để lưu store đã chọn
         $.ajax({
-            url: '@Url.Action("SelectStore", "StoreProducts")',
+            url: '/Products/SelectStore',
             type: 'POST',
             data: { storeId: storeId },
             success: function (response) {
-                console.log("Store selected successfully:", response);
-                $('#storeModal').modal('hide');
+                if (response.success) {
+                    $('#storeModal').modal('hide');
+                    // Reload trang để cập nhật danh sách sản phẩm
+                    window.location.href = '/Products/Index?storeId=' + storeId;
+                } else {
+                    alert('Có lỗi xảy ra khi chọn cửa hàng');
+                }
             },
             error: function (xhr, status, error) {
-                console.log("Error setting selected store: " + error);
+                console.error("Error selecting store:", error);
+                alert('Có lỗi xảy ra khi chọn cửa hàng');
             }
         });
     });

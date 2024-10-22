@@ -256,7 +256,11 @@
     <script src="~/Scripts/jsShopping.js"></script>
     @RenderSection("scripts", required: false)
 
-
+    <script src="https://www.gstatic.com/dialogflow-console/fast/messenger/bootstrap.js?v=1"></script>
+    <df-messenger intent="WELCOME"
+                  chat-title="Food&Drink"
+                  agent-id="497f3f8c-0aef-45d3-9802-ab13b2b60fb3"
+                  language-code="vi"></df-messenger>
 
     <script>
  $(document).ready(function () {

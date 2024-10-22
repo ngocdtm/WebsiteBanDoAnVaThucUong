@@ -176,12 +176,6 @@ namespace WebsiteBanDoAnVaThucUong.Controllers
                                         });
                                     }
                                 }
-                                //điểm quy đổi ra rank 
-                                if (order.CustomerId != null)
-                                {
-                                    var rankingService = new RankingService(db);
-                                    rankingService.UpdateMemberRank(order.CustomerId, order.FinalAmount);
-                                }
                                 // Cập nhật số lượng tồn kho
                                 var storeProduct = db.StoreProducts.FirstOrDefault(sp => sp.ProductId == item.ProductId && sp.StoreId == storeId);
                                 if (storeProduct != null)
@@ -265,7 +259,7 @@ namespace WebsiteBanDoAnVaThucUong.Controllers
                             contentAdmin = contentAdmin.Replace("{{TongTien}}", WebsiteBanDoAnVaThucUong.Common.Common.FormatNumber(TongTien, 0));
                             WebsiteBanDoAnVaThucUong.Common.Common.SendMail("ShopOnline", "Đơn hàng mới #" + order.Code, contentAdmin.ToString(), ConfigurationManager.AppSettings["EmailAdmin"]);
 
-                           
+
                             //var url = "";
                             if (req.TypePayment == 2)
                             {
@@ -415,12 +409,31 @@ namespace WebsiteBanDoAnVaThucUong.Controllers
         [HttpPost]
         public ActionResult AddToCart(int id, int quantity, int storeId)
         {
+
             var code = new { Success = false, msg = "", code = -1, Count = 0 };
             System.Diagnostics.Debug.WriteLine($"AddToCart called with id: {id}, quantity: {quantity}, storeId: {storeId}");
             try
             {
-               
+
                 var db = new ApplicationDbContext();
+                // Kiểm tra store có tồn tại không
+                var store = db.Stores.FirstOrDefault(s => s.Id == storeId);
+                if (store == null)
+                {
+                    return Json(new { Success = false, msg = "Cửa hàng không tồn tại!", code = -1, Count = 0 });
+                }
+                // Kiểm tra sản phẩm có trong store không
+                var storeProduct = db.StoreProducts.FirstOrDefault(sp => sp.ProductId == id && sp.StoreId == storeId);
+                if (storeProduct == null)
+                {
+                    return Json(new { Success = false, msg = "Sản phẩm không có sẵn tại cửa hàng này!", code = -1, Count = 0 });
+                }
+
+                //// Kiểm tra số lượng có đủ không
+                //if (storeProduct.Quantity < quantity)
+                //{
+                //    return Json(new { Success = false, msg = $"Chỉ còn {storeProduct.Quantity} sản phẩm trong kho!", code = -1, Count = 0 });
+                //}
                 var checkProduct = db.Products.FirstOrDefault(x => x.Id == id);
                 if (checkProduct != null)
                 {
@@ -429,6 +442,11 @@ namespace WebsiteBanDoAnVaThucUong.Controllers
                     {
                         cart = new ShoppingCart();
                     }
+                    // Kiểm tra nếu giỏ hàng đã có sản phẩm từ store khác
+                    if (cart.Items.Any() && cart.Items.First().StoreId != storeId)
+                    {
+                        return Json(new { Success = false, msg = "Bạn chỉ có thể mua hàng từ một cửa hàng trong một đơn hàng!", code = -1, Count = cart.Items.Count });
+                    }
                     ShoppingCartItem item = new ShoppingCartItem
                     {
                         ProductId = checkProduct.Id,
@@ -436,7 +454,7 @@ namespace WebsiteBanDoAnVaThucUong.Controllers
                         CategoryName = checkProduct.ProductCategory.Title,
                         Alias = checkProduct.Alias,
                         Quantity = quantity,
-                        StoreId = storeId
+                        StoreId = storeId,  // Thêm tên store để hiển thị
                     };
                     if (checkProduct.ProductImage.FirstOrDefault(x => x.IsDefault) != null)
                     {
@@ -491,7 +509,7 @@ namespace WebsiteBanDoAnVaThucUong.Controllers
             {
                 // Log the exception
                 Console.WriteLine($"Error in AddToCart: {ex.Message}");
-                return Json(new { Success = false, msg = "An error occurred", code = -1 });
+                return Json(new { Success = false, msg = "Đã xảy ra lỗi khi thêm vào giỏ hàng", code = -1 });
             }
             return Json(code);
         }

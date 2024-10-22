@@ -8,6 +8,7 @@ using Microsoft.AspNet.Identity;
 using WebsiteBanDoAnVaThucUong.Models.EF;
 using PagedList;
 using System.Data.Entity;
+using WebsiteBanDoAnVaThucUong.Filters;
 
 namespace WebsiteBanDoAnVaThucUong.Controllers
 {
@@ -15,10 +16,15 @@ namespace WebsiteBanDoAnVaThucUong.Controllers
     {
         private ApplicationDbContext db = new ApplicationDbContext();
         // GET: Products
+        [StoreSelectorFilter]
         public ActionResult Index(int? storeId, int? page)
         {
             // Retrieve the selected store from either the parameter or the session
-            if (storeId == null)
+            if (storeId.HasValue)
+            {
+                Session["SelectedStoreId"] = storeId.Value;
+            }
+            else
             {
                 storeId = Session["SelectedStoreId"] as int?;
             }
@@ -30,15 +36,18 @@ namespace WebsiteBanDoAnVaThucUong.Controllers
                 // Filter products by storeId
                 storeProducts = db.StoreProducts
                     .Where(sp => sp.StoreId == storeId)
-                .Include(sp => sp.Product)
-                .OrderBy(sp => sp.Product.Title);
+                    .Include(sp => sp.Product)
+                    .Include(sp => sp.Product.ProductImage)
+                    .Include(sp => sp.Product.ProductCategory)
+                    .OrderBy(sp => sp.Product.Title);
 
-                ViewBag.StoreName = db.Stores.Find(storeId)?.Name;
-                ViewBag.StoreId = storeId;
-                ViewBag.StoreSelected = true;
-
-                // Store the storeId in the session for future use
-                Session["SelectedStoreId"] = storeId.Value;
+                var store = db.Stores.Find(storeId);
+                if (store != null)
+                {
+                    ViewBag.StoreName = store.Name;
+                    ViewBag.StoreId = storeId;
+                    ViewBag.StoreSelected = true;
+                }
             }
             else
             {
@@ -46,20 +55,17 @@ namespace WebsiteBanDoAnVaThucUong.Controllers
                 storeProducts = db.StoreProducts
                     .Include(sp => sp.Product)
                     .Include(sp => sp.Product.ProductImage)
-                    .Include(sp => sp.Product.ProductCategory);
+                    .Include(sp => sp.Product.ProductCategory)
+                    .OrderBy(sp => sp.Product.Title);
 
                 ViewBag.StoreSelected = false;
             }
 
-            // Apply ordering here before paging
-            storeProducts = storeProducts.OrderBy(sp => sp.Product.Title); // Order by any field you prefer
-
-            int pageSize = 6; // Show 6 products per page
+            int pageSize = 6;
             int pageNumber = (page ?? 1);
 
             return View(storeProducts.ToPagedList(pageNumber, pageSize));
         }
-
 
         public ActionResult Detail(string alias, int id)
         {
@@ -137,11 +143,17 @@ namespace WebsiteBanDoAnVaThucUong.Controllers
 
         public ActionResult Partial_ItemsByCateId(int? categoryId)
         {
-            // Assuming you filter products by category and storeId
+            var storeId = Session["SelectedStoreId"] as int?;
             var storeProducts = db.StoreProducts
                 .Include(sp => sp.Product)
                 .Include(sp => sp.Product.ProductImage)
                 .Include(sp => sp.Product.ProductCategory);
+
+            // Filter by store if selected
+            if (storeId.HasValue)
+            {
+                storeProducts = storeProducts.Where(sp => sp.StoreId == storeId);
+            }
 
             // Filter by categoryId if applicable
             if (categoryId.HasValue)
@@ -152,13 +164,62 @@ namespace WebsiteBanDoAnVaThucUong.Controllers
             // Group by ProductId to avoid duplicates
             var uniqueProducts = storeProducts
                 .GroupBy(sp => sp.Product.Id)
-                .Select(g => g.FirstOrDefault()) // Take only the first product per group
+                .Select(g => g.FirstOrDefault())
                 .ToList();
+            // Pass stock information to view
+            var stockInfo = uniqueProducts.ToDictionary(
+            sp => sp.ProductId,
+            sp => new StoreInfo
+            {
+                StockCount = sp.StockCount,
+                IsSoldOut = sp.StockCount <= 0
+            }
+            );
+
+            ViewBag.StockInfo = stockInfo;
 
             return PartialView(uniqueProducts);
         }
+        // Add method to check stock before adding to cart
+        [HttpPost]
+        public JsonResult CheckStockAvailability(int productId)
+        {
+            var storeId = Session["SelectedStoreId"] as int?;
+            if (!storeId.HasValue)
+            {
+                return Json(new { success = false, message = "Vui lòng chọn cửa hàng" });
+            }
 
+            var storeProduct = db.StoreProducts
+                .FirstOrDefault(sp => sp.ProductId == productId && sp.StoreId == storeId);
 
+            if (storeProduct == null)
+            {
+                return Json(new { success = false, message = "Sản phẩm không có sẵn tại cửa hàng này" });
+            }
+
+            if (storeProduct.StockCount <= 0)
+            {
+                return Json(new { success = false, message = "Sản phẩm đã hết hàng" });
+            }
+
+            return Json(new { success = true, stockCount = storeProduct.StockCount });
+        }
+
+        [HttpPost]
+        public JsonResult SelectStore(int storeId)
+        {
+            try
+            {
+                Session["SelectedStoreId"] = storeId;
+                var store = db.Stores.Find(storeId);
+                return Json(new { success = true, storeName = store.Name });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
 
         public ActionResult Partial_ProductSales()
         {
