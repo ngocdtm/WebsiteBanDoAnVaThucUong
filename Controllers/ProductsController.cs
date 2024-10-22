@@ -169,7 +169,7 @@ namespace WebsiteBanDoAnVaThucUong.Controllers
             // Pass stock information to view
             var stockInfo = uniqueProducts.ToDictionary(
             sp => sp.ProductId,
-            sp => new StoreInfo
+            sp => new StockInfo
             {
                 StockCount = sp.StockCount,
                 IsSoldOut = sp.StockCount <= 0

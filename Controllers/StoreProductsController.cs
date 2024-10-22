@@ -38,7 +38,7 @@ namespace WebsiteBanDoAnVaThucUong.Controllers
 
             return View(storeProducts.ToPagedList(pageNumber, pageSize));
         }
-      
+
         public ActionResult Edit(int storeId, int productId)
         {
             var storeProduct = db.StoreProducts

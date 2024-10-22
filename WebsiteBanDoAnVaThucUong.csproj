@@ -362,18 +362,13 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="IServiceCollection.cs" />
-    <Compile Include="Migrations\202410201552271_MemberRanks.cs" />
-    <Compile Include="Migrations\202410201552271_MemberRanks.Designer.cs">
-      <DependentUpon>202410201552271_MemberRanks.cs</DependentUpon>
-    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\EF\MemberRanks.cs" />
     <Compile Include="Models\EF\ProductViewHistory.cs" />
     <Compile Include="Models\EF\StoreDTO.cs" />
     <Compile Include="Models\EF\StoreProduct.cs" />
     <Compile Include="Models\RankingService.cs" />
-    <Compile Include="Models\StoreInfo.cs" />
+    <Compile Include="Models\StockInfo.cs" />
     <Compile Include="Models\ViewModels\AccountViewModels.cs" />
     <Compile Include="Models\CommonAbstract.cs" />
     <Compile Include="Models\Common\Filter.cs" />
@@ -3901,11 +3896,6 @@
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Connected Services\" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Migrations\202410201552271_MemberRanks.resx">
-      <DependentUpon>202410201552271_MemberRanks.cs</DependentUpon>
-    </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
