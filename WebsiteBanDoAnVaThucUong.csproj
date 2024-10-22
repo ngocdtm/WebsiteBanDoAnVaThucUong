@@ -362,11 +362,6 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="IServiceCollection.cs" />
-    <Compile Include="Migrations\202410220129038_checkDB.cs" />
-    <Compile Include="Migrations\202410220129038_checkDB.Designer.cs">
-      <DependentUpon>202410220129038_checkDB.cs</DependentUpon>
-    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\EF\MemberRanks.cs" />
     <Compile Include="Models\EF\ProductViewHistory.cs" />
@@ -3900,11 +3895,6 @@
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Connected Services\" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Migrations\202410220129038_checkDB.resx">
-      <DependentUpon>202410220129038_checkDB.cs</DependentUpon>
-    </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
