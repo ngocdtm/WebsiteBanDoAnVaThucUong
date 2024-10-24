@@ -27,6 +27,7 @@ namespace WebsiteBanDoAnVaThucUong.Controllers
             else
             {
                 storeId = Session["SelectedStoreId"] as int?;
+                ViewBag.StoreRequiredMessage = "Vui lòng chọn cửa hàng trước khi xem chi tiết sản phẩm.";
             }
 
             IQueryable<StoreProduct> storeProducts;
@@ -69,49 +70,69 @@ namespace WebsiteBanDoAnVaThucUong.Controllers
 
         public ActionResult Detail(string alias, int id)
         {
-            var item = db.Products.Find(id);
-            if (item != null)
+            // Check if a store has been selected
+            var storeId = Session["SelectedStoreId"] as int?;
+            if (!storeId.HasValue)
             {
-                // Update the product's view count
-                db.Products.Attach(item);
-                item.ViewCount += 1;
-                db.Entry(item).Property(x => x.ViewCount).IsModified = true;
-                db.SaveChanges();
-                // Save product to user's view history
-                var userId = User.Identity.GetUserId(); // Assuming you're using Identity or any other user identification
-                if (userId != null) // If the user is logged in
+                ViewBag.StoreRequiredMessage = "Vui lòng chọn cửa hàng trước khi xem chi tiết sản phẩm.";
+                return RedirectToAction("Index");
+            }
+            var item = db.StoreProducts
+                         .Include(sp => sp.Product)
+                         .Include(sp => sp.Product.ProductCategory)
+                         .Include(sp => sp.Product.ProductImage)
+                         .FirstOrDefault(sp => sp.ProductId == id && sp.StoreId == storeId);
+
+            if (item == null)
+            {
+                ViewBag.ErrorMessage = "Sản phẩm không có sẵn trong cửa hàng này.";
+                return HttpNotFound();
+            }
+
+            // Update the product's view count
+            db.Products.Attach(item.Product);
+            item.Product.ViewCount += 1;
+            db.Entry(item.Product).Property(x => x.ViewCount).IsModified = true;
+            db.SaveChanges();
+
+            // Save product to user's view history
+            var userId = User.Identity.GetUserId(); // Assuming you're using Identity or any other user identification
+            if (userId != null) // If the user is logged in
+            {
+                var existingHistory = db.ProductViewHistory
+                    .FirstOrDefault(h => h.ProductId == id && h.UserId == userId);
+                if (existingHistory == null) // Avoid duplicate entries in the history
                 {
-                    var existingHistory = db.ProductViewHistory
-                        .FirstOrDefault(h => h.ProductId == id && h.UserId == userId);
-                    if (existingHistory == null) // Avoid duplicate entries in the history
+                    var historyEntry = new ProductViewHistory
                     {
-                        var historyEntry = new ProductViewHistory
-                        {
-                            ProductId = id,
-                            UserId = userId,
-                            ViewedAt = DateTime.Now
-                        };
-                        db.ProductViewHistory.Add(historyEntry);
-                        db.SaveChanges();
-                    }
-                }
-                else
-                {
-                    // For guest users, store viewed product IDs in session
-                    List<int> viewedProducts = Session["ViewHistory"] as List<int> ?? new List<int>();
-                    if (!viewedProducts.Contains(id))
-                    {
-                        viewedProducts.Add(id);
-                        Session["ViewHistory"] = viewedProducts;
-                    }
+                        ProductId = id,
+                        UserId = userId,
+                        ViewedAt = DateTime.Now
+                    };
+                    db.ProductViewHistory.Add(historyEntry);
+                    db.SaveChanges();
                 }
             }
+            else
+            {
+                // For guest users, store viewed product IDs in session
+                List<int> viewedProducts = Session["ViewHistory"] as List<int> ?? new List<int>();
+                if (!viewedProducts.Contains(id))
+                {
+                    viewedProducts.Add(id);
+                    Session["ViewHistory"] = viewedProducts;
+                }
+            }
+
             // Get the count of reviews
             var countReview = db.Reviews.Where(x => x.ProductId == id).Count();
             ViewBag.CountReview = countReview;
-            // Return the product details view
+
+            // Pass store product details to the view
             return View(item);
         }
+
+
         public ActionResult ViewHistory()
         {
             var userId = User.Identity.GetUserId();
@@ -126,10 +147,15 @@ namespace WebsiteBanDoAnVaThucUong.Controllers
 
         public ActionResult ProductCategory(string alias, int id)
         {
-            var items = db.Products.ToList();
+            var storeId = Session["SelectedStoreId"] as int?;
+            // Filter by store if selected
+
+            var items = db.StoreProducts.Include(sp => sp.Product)
+                .Include(sp => sp.Product.ProductImage)
+                .Include(sp => sp.Product.ProductCategory);
             if (id > 0)
             {
-                items = items.Where(x => x.ProductCategoryId == id).ToList();
+                items = items.Where(x => x.Product.ProductCategoryId == id);
             }
             var cate = db.ProductCategories.Find(id);
             if (cate != null)
@@ -138,7 +164,23 @@ namespace WebsiteBanDoAnVaThucUong.Controllers
             }
 
             ViewBag.CateId = id;
-            return View(items);
+            // Group by ProductId to avoid duplicates
+            var uniqueProducts = items
+                .GroupBy(sp => sp.Product.Id)
+                .Select(g => g.FirstOrDefault())
+                .ToList();
+            // Pass stock information to view
+            var stockInfo = uniqueProducts.ToDictionary(
+            sp => sp.ProductId,
+            sp => new StockInfo
+            {
+                StockCount = sp.StockCount,
+                IsSoldOut = sp.StockCount <= 0
+            }
+            );
+
+            ViewBag.StockInfo = stockInfo;
+            return View(uniqueProducts);
         }
 
         public ActionResult Partial_ItemsByCateId(int? categoryId)

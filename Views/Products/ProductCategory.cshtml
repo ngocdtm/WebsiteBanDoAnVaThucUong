@@ -1,4 +1,5 @@
-﻿﻿@model IEnumerable<WebsiteBanDoAnVaThucUong.Models.EF.Product>
+﻿﻿@model IEnumerable<WebsiteBanDoAnVaThucUong.Models.EF.StoreProduct>
+@using Microsoft.AspNet.Identity
 @{
     ViewBag.Title = "Danh sách sản phẩm";
 }
@@ -13,10 +14,10 @@
             <div class="breadcrumbs d-flex flex-row align-items-center">
                 <ul>
                     <li><a href="/home/index">Home</a></li>
-                    <li >
+                    <li>
                         <a href="/products/index"><i class="fa fa-angle-right" aria-hidden="true"></i>@ViewBag.Title</a>
                     </li>
-                    <li >
+                    <li>
                         <a href="#"><i class="fa fa-angle-right" aria-hidden="true"></i>@ViewBag.CateName</a>
                     </li>
                 </ul>
@@ -109,30 +110,36 @@
                                     foreach (var item in Model)
                                     {
                                         var strImge = "";
-                                        var img = item.ProductImage.FirstOrDefault(x => x.IsDefault);
+                                        var img = item.Product.ProductImage.FirstOrDefault(x => x.IsDefault);
                                         if (img != null)
                                         {
                                             strImge = img.Image;
                                         }
-                                        <div class="product-item @item.ProductCategory.Alias">
+                                        var wishlist = item.Product.Wishlist.FirstOrDefault(x => x.CustomerId == User.Identity.GetUserId());
+                                        var isWishlist = wishlist != null;
+
+                                        var stockInfo = ViewBag.StockInfo[item.ProductId];
+                                        var isSoldOut = stockInfo.IsSoldOut;
+                                        <div class="product-item @item.Product.ProductCategory.Alias @(isSoldOut ? "sold-out" : "")">
                                             <div class="product discount product_filter">
                                                 <div class="product_image">
-                                                    <img src="@strImge" alt="@item.Title">
+                                                    <img src="@strImge" alt="@item.Product.Title">
                                                 </div>
                                                 <div data-id="@item.Id" class="favorite favorite_left"></div>
                                                 @*@if (item.PriceSale > 0)
-                                                {
-                                                    <div class="product_bubble product_bubble_right product_bubble_red d-flex flex-column align-items-center"><span>sale</span></div>
-                                                }*@
+            {
+                <div class="product_bubble product_bubble_right product_bubble_red d-flex flex-column align-items-center"><span>sale</span></div>
+            }*@
                                                 @* <div class="product_bubble product_bubble_right product_bubble_red d-flex flex-column align-items-center"><span>-$20</span></div>*@
                                                 <div class="product_info">
-                                                    <h6 class="product_name"><a href="/chi-tiet/@item.Alias-p@(item.Id)">@item.Title</a></h6>
+                                                    <h6 class="product_name"><a href="/chi-tiet/@item.Product.Alias-p@(item.Id)">@item.Product.Title</a></h6>
 
-                                                        <div style="display:none;" class="in_product_price"> @item.SalePrice</div>
+                                                    <div class="product_price">@WebsiteBanDoAnVaThucUong.Common.Common.FormatNumber(item.Product.SalePrice, 0)</div>
 
                                                 </div>
                                             </div>
-                                            <div class="red_button add_to_cart_button"><a href="#" class="btnAddToCart" data-id="@item.Id">add to cart</a></div>
+                                            <div class="red_button add_to_cart_button"><a href="#" class="btnAddToCart" data-id="@item.Product.Id" data-storeid="@item.StoreId">add to cart</a></div>
+                                            @*<div class="red_button add_to_cart_button"><a href="#" class="btnAddToCart" data-id="@item.Id">add to cart</a></div>*@
                                         </div>
                                     }
                                 }
@@ -169,6 +176,6 @@
 
 
 
-   <script src="~/Content/assets/js/categories_custom.js"></script>
+<script src="~/Content/assets/js/categories_custom.js"></script>
 
 

@@ -54,7 +54,7 @@
                     @if (!item.IsGift)
                     {
                         <a href="#" data-id="@item.ProductId" class="btn btn-sm btn-danger btnDelete">Xóa</a>
-                        <a href="#" data-id="@item.ProductId" class="btn btn-sm btn-success btnUpdate">Cập nhật</a>
+                        <a href="#" data-id="@item.ProductId" data-storeid="@item.StoreId" class="btn btn-sm btn-success btnUpdate">Cập nhật</a>
                     }
                 </td>
             </tr>

@@ -3853,7 +3853,6 @@
     <Content Include="Views\Stores\Index.cshtml" />
     <Content Include="Views\ImageSliders\Index.cshtml" />
     <Content Include="Views\ShoppingCart\CheckOutSuccess.cshtml" />
-    <Content Include="Views\Products\_ProductItem.cshtml" />
     <Content Include="Views\Products\Search.cshtml" />
     <Content Include="Views\Products\_ProductList.cshtml" />
     <Content Include="Views\Home\FeedBackLetter.cshtml" />
@@ -3886,7 +3885,6 @@
     <Folder Include="Areas\Employee\Data\" />
     <Folder Include="Content\ckfinder\ckfinder\userfiles\" />
     <Folder Include="Reports\" />
-    <Folder Include="Views\RankingService\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
