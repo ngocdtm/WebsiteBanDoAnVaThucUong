@@ -4,26 +4,56 @@
         e.preventDefault();
         console.log('AddToCart button clicked'); // Add this line
         var id = $(this).data('id');
-        var storeId = $(this).data('storeid');
+        //var storeId = $(this).data('storeid');
+        var storeId = 1;
+
+
         var quantity = 1;
         var tQuantity = $('#quantity_value').text();
+        var selectedToppingIds = [];
         if (tQuantity != '') {
             quantity = parseInt(tQuantity);
+        }
+        var toppings = []; // Khởi tạo mảng toppings
+        $('input[name="selectedToppingIds"]:checked').each(function () {
+            toppings.push($(this).val()); // Thêm topping được chọn vào mảng
+        });
+        var Size = $('#selectedSizeId option:selected').text();  // Giả sử bạn có dropdown hoặc input với ID là 'sizeSelector'
+
+        if (Size === undefined || Size === "" || Size === null) {
+            Size = "S";
+        }
+
+        if (selectedToppingIds === undefined || selectedToppingIds.length === 0) {
+            selectedToppingIds = [];
+        } else {
+            selectedToppingIds = toppings
         }
 
         $.ajax({
             url: '/shoppingCart/AddToCart',
             type: 'POST',
-            data: { id: id, quantity: quantity, storeId: storeId },
+            data: {
+                id: id, quantity: quantity, selectedSizeId: Size,
+                selectedToppingIds: toppings, storeId: storeId
+            },
             success: function (rs) {
                 if (rs.Success) {
                     $('#checkout_items').html(rs.Count);
-                    alert(rs.msg);
+                    toastr.success(rs.msg); // Hiển thị thông báo thành công
                 } else {
+                  
                     alert("Có lỗi xảy ra: " + rs.msg);
                 }
             },
+             
             error: function (xhr, status, error) {
+                console.log("ID: " + id);
+                console.log("Quantity: " + quantity);
+                console.log("Selected Size ID: " + Size);
+                console.log("Selected Topping IDs: " + toppings);
+                console.log("Store ID: " + storeId);
+
                 console.error("AJAX Error: " + status + error);
                 alert("Có lỗi xảy ra khi thêm sản phẩm vào giỏ hàng");
             }

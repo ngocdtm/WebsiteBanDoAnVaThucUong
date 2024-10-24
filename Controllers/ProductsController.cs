@@ -8,6 +8,7 @@ using Microsoft.AspNet.Identity;
 using WebsiteBanDoAnVaThucUong.Models.EF;
 using PagedList;
 using System.Data.Entity;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.Menu;
 
 namespace WebsiteBanDoAnVaThucUong.Controllers
 {
@@ -60,52 +61,79 @@ namespace WebsiteBanDoAnVaThucUong.Controllers
             return View(storeProducts.ToPagedList(pageNumber, pageSize));
         }
 
-
         public ActionResult Detail(string alias, int id)
         {
-            var item = db.Products.Find(id);
-            if (item != null)
+            var item = db.Products
+                .Include(p => p.Sizes)
+                .Include(p => p.Toppings)
+                .FirstOrDefault(p => p.Id == id);
+
+            if (item == null)
             {
-                // Update the product's view count
-                db.Products.Attach(item);
-                item.ViewCount += 1;
-                db.Entry(item).Property(x => x.ViewCount).IsModified = true;
-                db.SaveChanges();
-                // Save product to user's view history
-                var userId = User.Identity.GetUserId(); // Assuming you're using Identity or any other user identification
-                if (userId != null) // If the user is logged in
-                {
-                    var existingHistory = db.ProductViewHistory
-                        .FirstOrDefault(h => h.ProductId == id && h.UserId == userId);
-                    if (existingHistory == null) // Avoid duplicate entries in the history
-                    {
-                        var historyEntry = new ProductViewHistory
-                        {
-                            ProductId = id,
-                            UserId = userId,
-                            ViewedAt = DateTime.Now
-                        };
-                        db.ProductViewHistory.Add(historyEntry);
-                        db.SaveChanges();
-                    }
-                }
-                else
-                {
-                    // For guest users, store viewed product IDs in session
-                    List<int> viewedProducts = Session["ViewHistory"] as List<int> ?? new List<int>();
-                    if (!viewedProducts.Contains(id))
-                    {
-                        viewedProducts.Add(id);
-                        Session["ViewHistory"] = viewedProducts;
-                    }
-                }
+                return HttpNotFound();
             }
-            // Get the count of reviews
+
+            // Tăng số lần xem sản phẩm
+            item.ViewCount += 1;
+            db.Entry(item).Property(x => x.ViewCount).IsModified = true;
+            db.SaveChanges();
+
+            // Lấy số lượng đánh giá
             var countReview = db.Reviews.Where(x => x.ProductId == id).Count();
             ViewBag.CountReview = countReview;
-            // Return the product details view
+
             return View(item);
         }
+        
+
+
+
+        //public ActionResult Detail(string alias, int id)
+        //{
+        //    var item = db.Products.Find(id);
+
+        //    if (item != null)
+        //    {
+        //        // Update the product's view count
+        //        db.Products.Attach(item);
+        //        item.ViewCount += 1;
+        //        db.Entry(item).Property(x => x.ViewCount).IsModified = true;
+        //        db.SaveChanges();
+        //        // Save product to user's view history
+        //        var userId = User.Identity.GetUserId(); // Assuming you're using Identity or any other user identification
+        //        if (userId != null) // If the user is logged in
+        //        {
+        //            var existingHistory = db.ProductViewHistory
+        //                .FirstOrDefault(h => h.ProductId == id && h.UserId == userId);
+        //            if (existingHistory == null) // Avoid duplicate entries in the history
+        //            {
+        //                var historyEntry = new ProductViewHistory
+        //                {
+        //                    ProductId = id,
+        //                    UserId = userId,
+        //                    ViewedAt = DateTime.Now
+        //                };
+        //                db.ProductViewHistory.Add(historyEntry);
+        //                db.SaveChanges();
+        //            }
+        //        }
+        //        else
+        //        {
+        //            // For guest users, store viewed product IDs in session
+        //            List<int> viewedProducts = Session["ViewHistory"] as List<int> ?? new List<int>();
+        //            if (!viewedProducts.Contains(id))
+        //            {
+        //                viewedProducts.Add(id);
+        //                Session["ViewHistory"] = viewedProducts;
+        //            }
+        //        }
+        //    }
+        //    // Get the count of reviews
+        //    var countReview = db.Reviews.Where(x => x.ProductId == id).Count();
+        //    ViewBag.CountReview = countReview;
+        //    // Return the product details view
+        //    return View(item);
+        //}
         public ActionResult ViewHistory()
         {
             var userId = User.Identity.GetUserId();
