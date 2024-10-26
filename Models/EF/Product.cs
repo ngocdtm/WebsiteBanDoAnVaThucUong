@@ -19,6 +19,8 @@ namespace WebsiteBanDoAnVaThucUong.Models.EF
             this.Wishlist = new HashSet<Wishlist>();
             this.PromotionProduct = new HashSet<PromotionProduct>();
             this.StoreProducts = new HashSet<StoreProduct>();
+            this.Sizes = new HashSet<Size>();
+            this.Toppings = new HashSet<Topping>();
         }
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -54,6 +56,8 @@ namespace WebsiteBanDoAnVaThucUong.Models.EF
         public virtual ICollection<Wishlist> Wishlist { get; set; }
         public virtual ICollection<PromotionProduct> PromotionProduct { get; set; }
         public virtual ICollection<StoreProduct> StoreProducts { get; set; }
+        public virtual ICollection<Size> Sizes { get; set; }
+        public virtual ICollection<Topping> Toppings { get; set; }
 
     }
 }

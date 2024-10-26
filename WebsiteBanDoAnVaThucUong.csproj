@@ -362,11 +362,26 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="IServiceCollection.cs" />
+    <Compile Include="Migrations\202410201201406_UpdateDatabaseWithSizeAndTopping.cs" />
+    <Compile Include="Migrations\202410201201406_UpdateDatabaseWithSizeAndTopping.designer.cs">
+      <DependentUpon>202410201201406_UpdateDatabaseWithSizeAndTopping.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202410230543226_Sizes.cs" />
+    <Compile Include="Migrations\202410230543226_Sizes.designer.cs">
+      <DependentUpon>202410230543226_Sizes.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202410230544431_Toppings.cs" />
+    <Compile Include="Migrations\202410230544431_Toppings.designer.cs">
+      <DependentUpon>202410230544431_Toppings.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\EF\MemberRanks.cs" />
     <Compile Include="Models\EF\ProductViewHistory.cs" />
+    <Compile Include="Models\EF\Size.cs" />
     <Compile Include="Models\EF\StoreDTO.cs" />
     <Compile Include="Models\EF\StoreProduct.cs" />
+    <Compile Include="Models\EF\Topping.cs" />
     <Compile Include="Models\RankingService.cs" />
     <Compile Include="Models\StockInfo.cs" />
     <Compile Include="Models\ViewModels\AccountViewModels.cs" />
@@ -3894,6 +3909,17 @@
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Connected Services\" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\202410201201406_UpdateDatabaseWithSizeAndTopping.resx">
+      <DependentUpon>202410201201406_UpdateDatabaseWithSizeAndTopping.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202410230543226_Sizes.resx">
+      <DependentUpon>202410230543226_Sizes.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202410230544431_Toppings.resx">
+      <DependentUpon>202410230544431_Toppings.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

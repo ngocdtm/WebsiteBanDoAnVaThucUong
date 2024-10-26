@@ -405,17 +405,106 @@ namespace WebsiteBanDoAnVaThucUong.Controllers
             }
         }
 
+
+        //public ActionResult AddToCart(int id, int quantity, int storeId)
+        //{
+        //    var code = new { Success = false, msg = "", code = -1, Count = 0 };
+        //    System.Diagnostics.Debug.WriteLine($"AddToCart called with id: {id}, quantity: {quantity}, storeId: {storeId}");
+        //    try
+        //    {
+
+        //        var db = new ApplicationDbContext();
+        //        var checkProduct = db.Products.FirstOrDefault(x => x.Id == id);
+        //        if (checkProduct != null)
+        //        {
+        //            ShoppingCart cart = (ShoppingCart)Session["Cart"];
+        //            if (cart == null)
+        //            {
+        //                cart = new ShoppingCart();
+        //            }
+        //            ShoppingCartItem item = new ShoppingCartItem
+        //            {
+        //                ProductId = checkProduct.Id,
+        //                ProductName = checkProduct.Title,
+        //                CategoryName = checkProduct.ProductCategory.Title,
+        //                Alias = checkProduct.Alias,
+        //                Quantity = quantity,
+        //                StoreId = storeId
+        //            };
+        //            if (checkProduct.ProductImage.FirstOrDefault(x => x.IsDefault) != null)
+        //            {
+        //                item.ProductImg = checkProduct.ProductImage.FirstOrDefault(x => x.IsDefault).Image;
+        //            }
+        //            item.Price = checkProduct.SalePrice;
+        //            item.TotalPrice = item.Quantity * item.Price;
+        //            cart.AddToCart(item, quantity, storeId);
+        //            Session["Cart"] = cart;
+        //            code = new { Success = true, msg = "Thêm sản phẩm vào giỏ hàng thành công!", code = 1, Count = cart.Items.Count };
+
+        //            // Kiểm tra điều kiện "Mua 2 tặng 1"
+        //            var promotion = db.Promotions.FirstOrDefault(p => p.DiscountType == 3 && p.IsActive);
+        //            if (promotion != null)
+        //            {
+        //                var eligibleProducts = db.PromotionProducts
+        //                    .Where(pp => pp.PromotionId == promotion.Id && pp.IsBuyProduct)
+        //                    .Select(pp => pp.ProductId)
+        //                    .ToList();
+
+        //                if (eligibleProducts.Contains(id))
+        //                {
+        //                    var cartItems = cart.Items.Where(i => eligibleProducts.Contains(i.ProductId)).ToList();
+        //                    if (cartItems.Sum(i => i.Quantity) >= 2)
+        //                    {
+        //                        var giftProduct = db.PromotionProducts
+        //                            .FirstOrDefault(pp => pp.PromotionId == promotion.Id && !pp.IsBuyProduct);
+        //                        if (giftProduct != null)
+        //                        {
+        //                            var giftItem = new ShoppingCartItem
+        //                            {
+        //                                ProductId = giftProduct.ProductId,
+        //                                ProductName = giftProduct.Product.Title,
+        //                                Alias = giftProduct.Product.Alias,
+        //                                CategoryName = giftProduct.Product.ProductCategory.Title,
+        //                                Quantity = 1,
+        //                                Price = 0,
+        //                                OriginalPrice = giftProduct.Product.SalePrice,
+        //                                TotalPrice = 0,
+        //                                ProductImg = giftProduct.Product.ProductImage.FirstOrDefault(x => x.IsDefault)?.Image,
+        //                                IsGift = true
+        //                            };
+        //                            cart.AddToCart(giftItem, 1, storeId);
+        //                        }
+        //                    }
+        //                }
+        //            }
+        //        }
+
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        // Log the exception
+        //        Console.WriteLine($"Error in AddToCart: {ex.Message}");
+        //        return Json(new { Success = false, msg = "An error occurred", code = -1 });
+        //    }
+        //    return Json(code);
+        //}
+
         [AllowAnonymous]
         [HttpPost]
-        public ActionResult AddToCart(int id, int quantity, int storeId)
+        public ActionResult AddToCart(int id, int quantity, int storeId, string selectedSize, List<int> selectedToppingIds)
         {
 
             var code = new { Success = false, msg = "", code = -1, Count = 0 };
             System.Diagnostics.Debug.WriteLine($"AddToCart called with id: {id}, quantity: {quantity}, storeId: {storeId}");
             try
             {
-
                 var db = new ApplicationDbContext();
+
+                var checkProduct = db.Products
+                    .Include(p => p.Sizes) // Đảm bảo bao gồm kích thước
+                    .Include(p => p.Toppings) // Đảm bảo bao gồm topping
+                    .FirstOrDefault(x => x.Id == id);
+
                 // Kiểm tra store có tồn tại không
                 var store = db.Stores.FirstOrDefault(s => s.Id == storeId);
                 if (store == null)
@@ -442,6 +531,39 @@ namespace WebsiteBanDoAnVaThucUong.Controllers
                     {
                         cart = new ShoppingCart();
                     }
+
+                    // Xử lý kích thước đã chọn
+                    decimal totalPriceSizeTopping = checkProduct.SalePrice;
+                    if (selectedSize == "S" || selectedSize == null)
+                    {
+                        totalPriceSizeTopping += 1500;
+                    }
+                    else if (selectedSize == "M")
+                    {
+                        totalPriceSizeTopping += 2500;
+                    }
+                    else {
+                        totalPriceSizeTopping += 3500;
+                    }
+
+                    //Xử lý topping đã chọn
+                    if (selectedToppingIds == null || selectedToppingIds.Count == 0)
+                    {
+                        totalPriceSizeTopping += 0;
+                    }
+                    else { 
+                         var selectedToppings = checkProduct.Toppings
+                       .Where(t => selectedToppingIds.Contains(t.Id))
+                       .ToList();
+
+                    foreach (var topping in selectedToppings)
+                    {
+                            totalPriceSizeTopping += topping.PriceTopping;
+                    }
+                    }
+
+                    Console.Write(totalPriceSizeTopping);
+                    // Tạo ShoppingCartItem
                     // Kiểm tra nếu giỏ hàng đã có sản phẩm từ store khác
                     if (cart.Items.Any() && cart.Items.First().StoreId != storeId)
                     {
@@ -454,19 +576,20 @@ namespace WebsiteBanDoAnVaThucUong.Controllers
                         CategoryName = checkProduct.ProductCategory.Title,
                         Alias = checkProduct.Alias,
                         Quantity = quantity,
+                        Size = selectedSize,
+                        Toppings = (selectedToppingIds != null && selectedToppingIds.Count > 0)  ? checkProduct.Toppings.Where(t => selectedToppingIds.Contains(t.Id)).Select(t => t.NameTopping).ToList(): new List<string> { "Khong them topping" },
+                        StoreId = storeId,
+                        Price =  totalPriceSizeTopping, // Sử dụng tổng giá đã tính
+                        TotalPrice = quantity * totalPriceSizeTopping, // Tổng giá dựa trên số lượng
+                        ProductImg = checkProduct.ProductImage.FirstOrDefault(x => x.IsDefault)?.Image
                         StoreId = storeId,  // Thêm tên store để hiển thị
                     };
-                    if (checkProduct.ProductImage.FirstOrDefault(x => x.IsDefault) != null)
-                    {
-                        item.ProductImg = checkProduct.ProductImage.FirstOrDefault(x => x.IsDefault).Image;
-                    }
-                    item.Price = checkProduct.SalePrice;
-                    item.TotalPrice = item.Quantity * item.Price;
+
                     cart.AddToCart(item, quantity, storeId);
                     Session["Cart"] = cart;
                     code = new { Success = true, msg = "Thêm sản phẩm vào giỏ hàng thành công!", code = 1, Count = cart.Items.Count };
 
-                    // Kiểm tra điều kiện "Mua 2 tặng 1"
+                    // Kiểm tra chương trình khuyến mãi "Mua 2 tặng 1"
                     var promotion = db.Promotions.FirstOrDefault(p => p.DiscountType == 3 && p.IsActive);
                     if (promotion != null)
                     {
@@ -503,16 +626,17 @@ namespace WebsiteBanDoAnVaThucUong.Controllers
                         }
                     }
                 }
-
             }
             catch (Exception ex)
             {
                 // Log the exception
                 Console.WriteLine($"Error in AddToCart: {ex.Message}");
+               // return Json(new { Success = false, msg = "Đã xảy ra lỗi", code = -1 });
                 return Json(new { Success = false, msg = "Đã xảy ra lỗi khi thêm vào giỏ hàng", code = -1 });
             }
             return Json(code);
         }
+
 
 
         [HttpPost]

@@ -78,7 +78,21 @@
                             <li><i class="fa fa-star" aria-hidden="true"></i></li>
                             <li><i class="fa fa-star-o" aria-hidden="true"></i></li>
                         </ul>*@
+                    <div class="quantity d-flex flex-column">
+    <!-- Phần số lượng -->
+    <span style="display: block; margin-bottom: 10px;">Quantity:</span>
+    <div class="quantity_selector" style="margin-bottom: 20px;">
+        <span class="minus" style="margin-right: 10px;"><i class="fa fa-minus" aria-hidden="true"></i></span>
+        <span id="quantity_value" style="margin-right: 10px;">1</span>
+        <span class="plus"><i class="fa fa-plus" aria-hidden="true"></i></span>
+    </div>
 
+
+    <!-- Phần size -->
+    <div class="form-group" style="display: block; margin-bottom: 20px;">
+        <label style="display: block; margin-bottom: 10px;">Select Size</label>
+        @Html.DropDownList("selectedSizeId", new SelectList(Model.Sizes, "Id", "NameSize"), "Select a size", new { @class = "form-control", @id = "selectedSizeId" })
+    </div>
                     <div class="quantity d-flex flex-column flex-sm-row align-items-sm-center">
                         <span>Quantity:</span>
                         <div class="quantity_selector">
@@ -97,67 +111,133 @@
             </div>
         </div>
 
+
+    <!-- Phần toppings -->
+    <div class="form-group" style="display: block; margin-bottom: 20px;">
+        <label style="display: block; margin-bottom: 10px;">Select Toppings</label>
+        @foreach (var topping in Model.Toppings)
+        {
+            <div class="checkbox" style="display: block; margin-bottom: 10px;">
+                <label>
+                    <input type="checkbox" name="selectedToppingIds" value="@topping.Id" />
+                    @topping.NameTopping - @topping.PriceTopping.ToString("C")
+                </label>
+            </div>
+        }
     </div>
 
-    <div class="tabs_section_container">
+    <!-- Nút thêm vào giỏ hàng -->
+    <div class="form-group" style="margin-bottom: 20px;">
+        <input type="hidden" name="storeId" value="@ViewBag.StoreId" />
+        <div class="btn btn-danger" style="display: block; margin-bottom: 10px;">
+            <a href="#" class="btnAddToCart" data-id="@Model.Id">ADD TO CART</a>
+        </div>
+    </div>
+</div>
 
-        <div class="container">
-            <div class="row">
-                <div class="col">
-                    <div class="tabs_container">
-                        <ul class="tabs d-flex flex-sm-row flex-column align-items-left align-items-md-center justify-content-center">
-                            <li class="tab active" data-active-tab="tab_1"><span>Description</span></li>
-                            @*<li class="tab" data-active-tab="tab_2"><span>Additional Information</span></li>*@
-                            <li class="tab" data-active-tab="tab_3"><span>Reviews (@ViewBag.CountReview)</span></li>
-                        </ul>
+                <!--<div class="quantity d-flex flex-column flex-sm-row align-items-sm-center">
+                    <span>Quantity:</span>
+                    <div class="quantity_selector">
+                        <span class="minus"><i class="fa fa-minus" aria-hidden="true"></i></span>
+                        <span id="quantity_value">1</span>
+                        <span class="plus"><i class="fa fa-plus" aria-hidden="true"></i></span>
+                    </div>-->
+                    @*size*@
+                    <!--<div class="form-group">
+                        <label>Select Size</label>
+                        @Html.DropDownList("selectedSizeId", new SelectList(Model.Sizes, "Id", "NameSize"), "Select a size", new { @class = "form-control" })
                     </div>
+                    <br />-->
+
+                    @*<div class="form-group">
+            <label>Select Toppings</label>
+            @foreach (var topping in Model.Toppings)
+            {
+                <div class="checkbox">
+                    <label>
+                        <input type="checkbox" name="selectedToppingIds" value="@topping.Id" />
+                        @topping.NameTopping - @topping.PriceTopping.ToString("C")
+                    </label>
+                </div>
+            }
+        </div>*@
+
+                    <!--<div class="form-group">
+                        <input type="hidden" name="storeId" value="@ViewBag.StoreId" />
+                        <div class="btn btn-danger"><a href="#" class="btnAddToCart" data-id="@Model.Id">ADD TO CART</a></div>-->
+                        @*<div class="product_favorite d-flex flex-column align-items-center justify-content-center"></div>*@
+                    <!--</div>
+                </div>-->
                 </div>
             </div>
-            <div class="row">
-                <div class="col">
 
-                    <!-- Tab Description -->
+        </div>
+
+        <div class="tabs_section_container">
+
+            <div class="container">
+                <div class="row">
+                    <div class="col">
+                        <div class="tabs_container">
+                            <ul class="tabs d-flex flex-sm-row flex-column align-items-left align-items-md-center justify-content-center">
+                                <li class="tab active" data-active-tab="tab_1"><span>Description</span></li>
+                                @*<li class="tab" data-active-tab="tab_2"><span>Additional Information</span></li>*@
+                                <li class="tab" data-active-tab="tab_3"><span>Reviews (@ViewBag.CountReview)</span></li>
+                            </ul>
 
                     <div id="tab_1" class="tab_container active">
                         <div class="row">
                             @Html.Raw(Model.Product.Detail)
                         </div>
                     </div>
-                    <!-- Tab Additional Info -->
-                    <!-- Tab Reviews -->
+                </div>
+                <div class="row">
+                    <div class="col">
 
-                    <div id="tab_3" class="tab_container">
-                        <div class="row">
+                        <!-- Tab Description -->
 
-                            <!-- User Reviews -->
-
-                            <div class="col-lg-6 reviews_col">
-                                @Html.Action("_Load_Review", "Review", new { productId = Model.Id })
+                        <div id="tab_1" class="tab_container active">
+                            <div class="row">
+                                @Html.Raw(Model.Detail)
                             </div>
+                        </div>
+                        <!-- Tab Additional Info -->
+                        <!-- Tab Reviews -->
 
-                            <!-- Add Review -->
-                            <div class="col-lg-6 add_review_col">
-                                @Html.Action("_Review", "Review", new { productId = Model.Id })
+                        <div id="tab_3" class="tab_container">
+                            <div class="row">
+
+                                <!-- User Reviews -->
+
+                                <div class="col-lg-6 reviews_col">
+                                    @Html.Action("_Load_Review", "Review", new { productId = Model.Id })
+                                </div>
+
+                                <!-- Add Review -->
+                                <div class="col-lg-6 add_review_col">
+                                    @Html.Action("_Review", "Review", new { productId = Model.Id })
+                                </div>
+
+
                             </div>
-
-
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="row">
-                <div class="col">
-                    @Html.Action("RelatedProducts", new { productId = Model.Id })
+                <div class="row">
+                    <div class="col">
+                        @Html.Action("RelatedProducts", new { productId = Model.Id })
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        @Html.Action("ViewHistory", new { productId = Model.Id })
+                    </div>
                 </div>
             </div>
-            <div class="row">
-                <div class="col">
-                    @Html.Action("ViewHistory", new { productId = Model.Id })
-                </div>
-            </div>
-        </div>
 
+        </div>
     </div>
+   
 
 }
 

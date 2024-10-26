@@ -7,6 +7,8 @@
         <th>Ảnh sản phẩm</th>
         <th>Tên sản phẩm</th>
         <th>Danh mục</th>
+        <th>Size</th>
+        <th>Topping</th>
         <th>Giá</th>
 
         <th style="width:100px;">Số lượng</th>
@@ -37,6 +39,20 @@
                     }
                 </td>
                 <td>@item.CategoryName</td>
+                @if (string.IsNullOrEmpty(item.Size) || item.Size == "S")
+                {
+                    <td>S</td>
+                }
+                else if (item.Size == "M")
+                {
+                    <td>M</td>
+                }
+                else if (item.Size == "L")
+                {
+                    <td>L</td>
+                }
+
+                <td>@string.Join(", ", item.Toppings)</td>
                 <td>
                     @if (item.IsGift)
                     {
@@ -49,7 +65,7 @@
                     }
                 </td>
                 <td><input type="number" class="form-control" id="Quantity_@item.ProductId" value="@item.Quantity" @(item.IsGift ? "disabled" : "") /></td>
-                <th>@Common.FormatNumber(item.TotalPrice, 2)</th>
+                <th>@Common.FormatNumber(item.TotalPrice, 1)</th>
                 <td>
                     @if (!item.IsGift)
                     {
