@@ -1,4 +1,4 @@
-﻿﻿@model IEnumerable<WebsiteBanDoAnVaThucUong.Models.EF.StoreProduct>
+﻿﻿﻿@model IEnumerable<WebsiteBanDoAnVaThucUong.Models.EF.StoreProduct>
 @using Microsoft.AspNet.Identity
 
 @using WebsiteBanDoAnVaThucUong.Models.EF
@@ -89,7 +89,15 @@
 <h2>@ViewBag.Title</h2>
 <link rel="stylesheet" type="text/css" href="~/Content/assets/styles/categories_styles.css">
 <link rel="stylesheet" type="text/css" href="~/Content/assets/styles/categories_responsive.css">
+
 <div class="container product_section_container">
+    @if (ViewBag.StoreRequiredMessage != null)
+    {
+        <div class="alert alert-warning">
+            @ViewBag.StoreRequiredMessage
+        </div>
+    }
+
     <div class="row">
         <div class="col product_section clearfix">
 
@@ -260,48 +268,85 @@
     </div>
 
     @section scripts{
-        <script src="~/Content/assets/js/categories_custom.js"></script>
+  
         <script>
-$(document).ready(function () {
-    $('#open-store-modal').click(function () {
-        console.log("Opening store modal...");
-        $('#storeModal').modal('show');
-    });
+            $(document).ready(function () {
+                $('#open-store-modal').click(function () {
+                    $('#storeModal').modal('show');
+                });
 
-    // Khi người dùng nhấn chọn một cửa hàng từ danh sách
-    $(document).on('click', '.select-store', function (e) {
-        e.preventDefault();
+                // Khi người dùng chọn cửa hàng
+                $(document).on('click', '.select-store', function (e) {
+                    e.preventDefault();
 
-        var storeId = $(this).data('store-id');
-        var storeName = $(this).data('store-name');
-        var storeAddress = $(this).data('store-address');
+                    var storeId = $(this).data('store-id');
+                    var storeName = $(this).data('store-name');
+                    var storeAddress = $(this).data('store-address');
 
-        // Kiểm tra dữ liệu
-        console.log("Selected Store:", storeName, storeAddress);
+                    // Cập nhật UI
+                    $('#selected-store-info').html(`
+                                                    <div class="store-details">
+                                                        <h4>${storeName}</h4>
+                                                        <p>${storeAddress}</p>
+                                                    </div>
+                                                `);
 
-        // Cập nhật thông tin cửa hàng đã chọn trong giao diện
-        $('#selected-store-info').html(`
-            <div class="store-details">
-                <h4>${storeName}</h4>
-                <p>${storeAddress}</p>
+                    // Gửi AJAX để lưu store đã chọn
+                    $.ajax({
+                        url: '/Products/SelectStore',
+                        type: 'POST',
+                        data: { storeId: storeId },
+                        success: function (response) {
+                            if (response.success) {
+                                $('#storeModal').modal('hide');
+                                // Reload trang để cập nhật danh sách sản phẩm
+                                window.location.href = '/Products/Index?storeId=' + storeId;
+                            } else {
+                                alert('Có lỗi xảy ra khi chọn cửa hàng');
+                            }
+                        },
+                        error: function (xhr, status, error) {
+                            console.error("Error selecting store:", error);
+                            alert('Có lỗi xảy ra khi chọn cửa hàng');
+                        }
+                    });
+                });
+            });
+
+        </script>
+        <script>
+$(document).ready(function() {
+    var storeRequiredMessage = '@ViewBag.StoreRequiredMessage';
+    if (storeRequiredMessage !== "") {
+        $('#storeToast').toast({ delay: 5000 });
+        $('#storeToast').toast('show');
+    }
+});
+    <div aria-live="polite" aria-atomic="true" style="position: relative; min-height: 200px;">
+        <div class="toast" style="position: absolute; top: 0; right: 0;" role="alert" aria-live="assertive" aria-atomic="true" id="storeToast">
+            <div class="toast-header">
+                <strong class="mr-auto">Thông báo</strong>
+                <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
             </div>
-        `);
+            <div class="toast-body">
+                Vui lòng chọn cửa hàng trước khi xem chi tiết sản phẩm.
+            </div>
+        </div>
+    </div>
 
-        // Gửi AJAX để lưu lại cửa hàng đã chọn
-        $.ajax({
-            url: '@Url.Action("SelectStore", "StoreProducts")',
-            type: 'POST',
-            data: { storeId: storeId },
-            success: function (response) {
-                console.log("Store selected successfully:", response);
-                $('#storeModal').modal('hide');
-            },
-            error: function (xhr, status, error) {
-                console.log("Error setting selected store: " + error);
+        </script>
+        <script>
+    $(document).ready(function () {
+        $('.product-link').click(function (e) {
+            var selectedStore = '@Session["SelectedStoreId"]';
+            if (!selectedStore) {
+                e.preventDefault(); // Ngăn không cho chuyển trang
+                alert('Vui lòng chọn cửa hàng trước khi xem chi tiết sản phẩm.');
             }
         });
     });
-});
         </script>
 
     }

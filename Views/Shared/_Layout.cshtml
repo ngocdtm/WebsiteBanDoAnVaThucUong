@@ -172,6 +172,7 @@
                                 <a href="/account/profile"><i class="fa fa-user"></i> Thông tin cá nhân</a>
                                 <a href="/review/lichsudonhang"><i class="fa fa-sticky-note"></i> Lịch sử đơn hàng</a>
                                 <a href="/wishlist/index"><i class="fa fa-heart"></i> Danh sách yêu thích</a>
+                                <a href="/memberrank/memberrank"><i class="fa fa-trophy"></i> Xem hạng thành viên</a>
                                 <a href="javascript:document.getElementById('logOffForm').submit()"><i class="fa fa-sign-out"></i> Đăng xuất</a>
                             </div>
                         </div>
@@ -259,7 +260,11 @@
     <script src="~/Scripts/jsShopping.js"></script>
     @RenderSection("scripts", required: false)
 
-
+    <script src="https://www.gstatic.com/dialogflow-console/fast/messenger/bootstrap.js?v=1"></script>
+    <df-messenger intent="WELCOME"
+                  chat-title="Food&Drink"
+                  agent-id="497f3f8c-0aef-45d3-9802-ab13b2b60fb3"
+                  language-code="vi"></df-messenger>
 
     <script>
  $(document).ready(function () {

@@ -118,6 +118,7 @@ namespace WebsiteBanDoAnVaThucUong.Models
         public DbSet<ProductViewHistory> ProductViewHistory { get; set; }
         public DbSet<Size> Sizes { get; set; }
         public DbSet<Topping> Toppings { get; set; }
+        public DbSet<MemberRank> MemberRanks { get; set; }
         public static ApplicationDbContext Create()
         {
             return new ApplicationDbContext();
