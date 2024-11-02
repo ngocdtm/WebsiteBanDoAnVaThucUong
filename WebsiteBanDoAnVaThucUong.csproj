@@ -426,6 +426,12 @@
     <Compile Include="Startup.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Content\assets\images\clock.jpg" />
+    <Content Include="Content\assets\images\dinhvi.jpg" />
+    <Content Include="Content\assets\images\discount.jpg" />
+    <Content Include="Content\assets\images\home.jpg" />
+    <Content Include="Content\assets\images\motorbike.jpg" />
+    <Content Include="Content\assets\images\phone.png" />
     <Content Include="Content\bootstrap-grid.css" />
     <Content Include="Content\bootstrap-grid.min.css" />
     <Content Include="Content\bootstrap-grid.rtl.css" />
