@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using WebsiteBanDoAnVaThucUong.Migrations;
+using WebsiteBanDoAnVaThucUong.Models.EF;
 
 namespace WebsiteBanDoAnVaThucUong.Models
 {
@@ -9,9 +11,11 @@ namespace WebsiteBanDoAnVaThucUong.Models
     {
         public List<ShoppingCartItem> Items { get; set; }
         public int StoreId { get; set; }
+      
         public ShoppingCart()
         {
             this.Items = new List<ShoppingCartItem>();
+           
         }
 
         public void AddToCart(ShoppingCartItem item, int Quantity, int StoreId)
@@ -25,6 +29,8 @@ namespace WebsiteBanDoAnVaThucUong.Models
             else
             {
                 item.StoreId = StoreId;
+                item.Size = item.Size; // Gán kích thước
+                item.Toppings = item.Toppings; // Gán topping
                 Items.Add(item);
             }
         }
@@ -91,7 +97,10 @@ namespace WebsiteBanDoAnVaThucUong.Models
             return Items.Sum(x => x.DiscountAmount);
         }
 
-
+        //internal void AddToCart(ShoppingCartItem item, int quantity, int storeId)
+        //{
+        //    throw new NotImplementedException();
+        //}
     }
 
     public class ShoppingCartItem
@@ -108,5 +117,8 @@ namespace WebsiteBanDoAnVaThucUong.Models
         public decimal TotalPrice { get; set; }
         public decimal OriginalPrice { get; set; }
         public bool IsGift { get; set; }
+        public string Size { get; set; }
+        public List<string> Toppings { get; set; } = new List<string>();
+
     }
 }

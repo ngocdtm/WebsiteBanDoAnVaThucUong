@@ -347,6 +347,7 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ImageSlidersController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
+    <Compile Include="Controllers\MemberRankController.cs" />
     <Compile Include="Controllers\MenuController.cs" />
     <Compile Include="Controllers\NewsController.cs" />
     <Compile Include="Controllers\ProductsController.cs" />
@@ -362,10 +363,27 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="IServiceCollection.cs" />
+    <Compile Include="Migrations\202410201201406_UpdateDatabaseWithSizeAndTopping.cs" />
+    <Compile Include="Migrations\202410201201406_UpdateDatabaseWithSizeAndTopping.designer.cs">
+      <DependentUpon>202410201201406_UpdateDatabaseWithSizeAndTopping.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202410230543226_Sizes.cs" />
+    <Compile Include="Migrations\202410230543226_Sizes.designer.cs">
+      <DependentUpon>202410230543226_Sizes.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202410230544431_Toppings.cs" />
+    <Compile Include="Migrations\202410230544431_Toppings.designer.cs">
+      <DependentUpon>202410230544431_Toppings.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
+    <Compile Include="Models\EF\MemberRanks.cs" />
     <Compile Include="Models\EF\ProductViewHistory.cs" />
+    <Compile Include="Models\EF\Size.cs" />
     <Compile Include="Models\EF\StoreDTO.cs" />
     <Compile Include="Models\EF\StoreProduct.cs" />
+    <Compile Include="Models\EF\Topping.cs" />
+    <Compile Include="Models\RankingService.cs" />
+    <Compile Include="Models\StockInfo.cs" />
     <Compile Include="Models\ViewModels\AccountViewModels.cs" />
     <Compile Include="Models\CommonAbstract.cs" />
     <Compile Include="Models\Common\Filter.cs" />
@@ -397,6 +415,7 @@
     <Compile Include="Models\EF\WishlistStore.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
+    <Compile Include="Models\ViewModels\MemberRankViewModel.cs" />
     <Compile Include="Models\ViewModels\OrderViewModel.cs" />
     <Compile Include="Models\Payments\VnPayLibrary.cs" />
     <Compile Include="Models\ShoppingCart.cs" />
@@ -3855,7 +3874,6 @@
     <Content Include="Views\Stores\Index.cshtml" />
     <Content Include="Views\ImageSliders\Index.cshtml" />
     <Content Include="Views\ShoppingCart\CheckOutSuccess.cshtml" />
-    <Content Include="Views\Products\_ProductItem.cshtml" />
     <Content Include="Views\Products\Search.cshtml" />
     <Content Include="Views\Products\_ProductList.cshtml" />
     <Content Include="Views\Home\FeedBackLetter.cshtml" />
@@ -3874,6 +3892,7 @@
     <Content Include="Views\StoreProducts\Index.cshtml" />
     <Content Include="Views\Products\_RelatedProducts.cshtml" />
     <Content Include="Views\Products\ViewHistory.cshtml" />
+    <Content Include="Views\MemberRank\MemberRank.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -3896,6 +3915,17 @@
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Connected Services\" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\202410201201406_UpdateDatabaseWithSizeAndTopping.resx">
+      <DependentUpon>202410201201406_UpdateDatabaseWithSizeAndTopping.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202410230543226_Sizes.resx">
+      <DependentUpon>202410230543226_Sizes.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202410230544431_Toppings.resx">
+      <DependentUpon>202410230544431_Toppings.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

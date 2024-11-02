@@ -1,9 +1,8 @@
 ﻿@model IEnumerable<WebsiteBanDoAnVaThucUong.Models.EF.StoreProduct>
 @using Microsoft.AspNet.Identity
 @Html.AntiForgeryToken()
-@if (Model != null && Model.Any())
-{
-    foreach (var item in Model)
+<div class="product-grid">
+    @if (Model != null && Model.Any())
     {
         <!-- Product 1 -->
         var strImge = "";
@@ -55,63 +54,114 @@
     </div>
 </div>
     }
-}
+</div>
+    <script>
 
-<script>
-    $(document).ready(function () {
-        $('.favorite').click(function (e) {
-            e.preventDefault();
-            var productId = $(this).data('id');
-            var $heartIcon = $(this);
+        $(document).ready(function () {
+            $('.favorite').click(function (e) {
+                e.preventDefault();
+                var productId = $(this).data('id');
+                var $heartIcon = $(this);
 
-            if ($heartIcon.hasClass('active')) {
-                // Xóa khỏi danh sách yêu thích
-                $.ajax({
-                    url: '/Wishlist/RemoveFromWishlist',
-                    type: 'POST',
-                    data: { productId: productId },
-                    success: function (response) {
-                        console.log('Remove response:', response); // Log server response
-                        if (response.success) {
-                            $heartIcon.removeClass('active');
-                            alert(response.message);
-                        } else {
-                            alert(response.message);
+                if ($heartIcon.hasClass('active')) {
+                    // Xóa khỏi danh sách yêu thích
+                    $.ajax({
+                        url: '/Wishlist/RemoveFromWishlist',
+                        type: 'POST',
+                        data: { productId: productId },
+                        success: function (response) {
+                            console.log('Remove response:', response); // Log server response
+                            if (response.success) {
+                                $heartIcon.removeClass('active');
+                                alert(response.message);
+                            } else {
+                                alert(response.message);
+                            }
+                        },
+                        error: function (error) {
+                            console.log('Error removing from wishlist:', error); // Log any errors
+                            alert('Error occurred while removing the item. Please try again.');
                         }
-                    },
-                    error: function (error) {
-                        console.log('Error removing from wishlist:', error); // Log any errors
-                        alert('Error occurred while removing the item. Please try again.');
-                    }
-                });
-            } else {
-                // Thêm vào danh sách yêu thích
-                $.ajax({
-                    url: '/Wishlist/AddToWishlist',
-                    type: 'POST',
-                    data: { productId: productId },
-                    success: function (response) {
-                        if (response.success) {
-                            $heartIcon.addClass('active');
-                            alert(response.message);
-                        } else {
-                            alert(response.message);
+                    });
+                } else {
+                    // Thêm vào danh sách yêu thích
+                    $.ajax({
+                        url: '/Wishlist/AddToWishlist',
+                        type: 'POST',
+                        data: { productId: productId },
+                        success: function (response) {
+                            if (response.success) {
+                                $heartIcon.addClass('active');
+                                alert(response.message);
+                            } else {
+                                alert(response.message);
+                            }
                         }
-                    }
-                });
-            }
+                    });
+                }
+            });
         });
-    });
-</script>
+        function checkStockAndAddToCart(productId) {
+            $.ajax({
+                url: '/Products/CheckStockAvailability',
+                type: 'POST',
+                data: { productId: productId },
+                success: function (response) {
+                    if (response.success) {
+                        // Proceed with adding to cart
+                        AddToCart(productId);
+                    } else {
+                        alert(response.message);
+                    }
+                },
+                error: function () {
+                    alert('Có lỗi xảy ra. Vui lòng thử lại sau.');
+                }
+            });
+        }
+    </script>
 
-<style>
-    .favorite {
-        cursor: pointer;
-        transition: color 0.3s ease;
-    }
+    <style>
+        .favorite {
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
 
-        .favorite.active {
-            color: red;
+            .favorite.active {
+                color: red;
+            }
+        /* Khi hết hàng thì sản phẩm sẽ có màu mờ */
+        .sold-out {
+            opacity: 0.7;
+        }
+
+        .sold-out-overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(255, 0, 0, 0.7);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: not-allowed;
+        }
+
+        .stock-count {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            background-color: cadetblue;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 3px;
+            font-size: 12px;
+        }
+
+        .sold-out-btn {
+            background-color: #ccc;
+            cursor: not-allowed;
         }
 
     .product_image {

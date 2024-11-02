@@ -5,15 +5,16 @@
 {
     foreach (var item in Model)
     {
-        <!-- Product 1 -->
-        var strImge = "";
-        var img = item.ProductImage.FirstOrDefault(x => x.IsDefault);
-        if (img != null)
-        {
-            strImge = img.Image;
-        }
-        var wishlist = item.Wishlist.FirstOrDefault(x => x.CustomerId == User.Identity.GetUserId());
-        var isWishlist = wishlist != null;
+     
+            var strImge = "";
+            var img = item.ProductImage.FirstOrDefault(x => x.IsDefault);
+            if (img != null)
+            {
+                strImge = img.Image;
+            }
+            var wishlist = item.Wishlist.FirstOrDefault(x => x.CustomerId == User.Identity.GetUserId());
+            var isWishlist = wishlist != null;
+        
 
         <div class="product-item @item.ProductCategory.Alias">
             <div class="product discount product_filter">
@@ -23,21 +24,18 @@
 
                 <div data-id="@item.Id" class="favorite @(isWishlist ? "active" : "")" style="margin-right: 160px; font-size:20px"></div>
 
-                @*@if (item.PriceSale > 0)
-                    {
-                        <div class="product_bubble product_bubble_right product_bubble_red d-flex flex-column align-items-center"><span>sale</span></div>
-                    }*@
                 <div class="product_info">
                     <h6 class="product_name"><a href="/chi-tiet/@item.Alias-p@(item.Id)">@item.Title</a></h6>
                     <div class="product_price">@WebsiteBanDoAnVaThucUong.Common.Common.FormatNumber(item.SalePrice, 0)</div>
                 </div>
             </div>
-            <div class="red_button add_to_cart_button"><a href="#" class="btnAddToCart" data-id="@item.Id">add to cart</a></div>
+            <div class="red_button add_to_cart_button"><a href="# ""class="btnAddToCart" data-id="@item.Id>add to cart</a></div>
         </div>
     }
 }
 
-<script>$(document).ready(function () {
+<script>
+    $(document).ready(function () {
         $('.favorite').click(function (e) {
             e.preventDefault();
             var productId = $(this).data('id');

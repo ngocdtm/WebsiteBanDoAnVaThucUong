@@ -23,6 +23,10 @@ namespace WebsiteBanDoAnVaThucUong.Models
         public virtual ICollection<Order> Orders { get; set; }
         public virtual ICollection<FeedBackLetter> FeedBackLetters { get; set; }
         public virtual ICollection<Store> Stores { get; set; }
+        public virtual ICollection<Size> Sizes { get; set; }
+       
+        public List<string> Toppings { get; set; } = new List<string>();
+
         public async Task<ClaimsIdentity> GenerateUserIdentityAsync(UserManager<ApplicationUser> manager)
         {
             // Note the authenticationType must match the one defined in CookieAuthenticationOptions.AuthenticationType
@@ -112,6 +116,9 @@ namespace WebsiteBanDoAnVaThucUong.Models
         public DbSet<Subscribe> Subscribe { get; set; }
         public DbSet<StoreProduct> StoreProducts { get; set; }
         public DbSet<ProductViewHistory> ProductViewHistory { get; set; }
+        public DbSet<Size> Sizes { get; set; }
+        public DbSet<Topping> Toppings { get; set; }
+        public DbSet<MemberRank> MemberRanks { get; set; }
         public static ApplicationDbContext Create()
         {
             return new ApplicationDbContext();

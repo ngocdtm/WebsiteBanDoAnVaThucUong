@@ -5,7 +5,6 @@
 
 }
 
-
 @section Scripts {
     <script>
         console.log("Script started");
@@ -15,37 +14,58 @@
                 url: '@Url.Action("GetActiveVoucher", "Vouchers")',
                 type: 'GET',
                 dataType: 'json',
-                success: function(data) {
-                    console.log("Ajax success", data);
-                    if (data && data.voucherName) {
-                        $('#voucherName').text(data.voucherName);
-                        $('#voucherCoupon').text(data.coupon);
-                        $('#voucherDescription').text(data.description);
-                        $('#voucherDiscount').text((data.discount * 100) + '%');
-
-                        console.log("Attempting to show modal");
-                        var modal = $('#voucherModal');
-                        if (modal.length) {
-                            modal.modal('show');
-                            console.log("Modal shown");
-                        } else {
-                            console.error("Modal element not found");
-                        }
-                    } else {
-                        console.log("No active voucher found or invalid data");
+                success: function (vouchers) {
+                    if (vouchers && vouchers.length > 0) {
+                        var container = $('#voucherContainer');
+                        vouchers.forEach(function (voucher, index) {
+                            var item = $('<div>').addClass('carousel-item' + (index === 0 ? ' active' : ''))
+                                .append($('<div>').addClass('voucher-content')
+                                    .append($('<h4>').text(voucher.voucherName))
+                                    .append($('<p>').html('Mã giảm giá: <strong>' + voucher.coupon + '</strong>'))
+                                    .append($('<p>').text(voucher.description))
+                                    .append($('<p>').html('Giảm giá: <strong>' + (voucher.discount * 100) + '%</strong>')));
+                            container.append(item);
+                        });
+                        $('#voucherModal').modal('show');
                     }
                 },
-                error: function(xhr, status, error) {
-                    console.error("Ajax error:");
-                    console.error("Status:", status);
-                    console.error("Error:", error);
-                    console.error("Response Text:", xhr.responseText);
+                error: function (xhr, status, error) {
+                    console.error("Error fetching vouchers:", error);
                 }
             });
         });
     </script>
 
 }
+<style>
+    .carousel-control-prev, .carousel-control-next {
+        background-color: rgba(0, 0, 0, 0.3);
+        width: 10px;
+        height: 30px;
+        border-radius: 10%;
+        position: absolute; /* Đảm bảo vị trí tuyệt đối so với khung */
+        bottom: 10%; /* Đặt các nút ở vị trí giữa theo chiều cao */
+        transform: translateY(300%); /* Dịch chuyển nút lên giữa chính xác */
+        z-index: 1; /* Đảm bảo nút hiển thị trên nội dung */
+    }
+
+    .carousel-control-prev {
+        left: -200px; /* Điều chỉnh vị trí bên trái của nút prev */
+    }
+
+    .carousel-control-next {
+        right: -5000px; /* Điều chỉnh vị trí bên phải của nút next */
+    }
+
+    .modal-body {
+        position: relative; /* Đảm bảo nút nằm trong modal-body */
+    }
+
+    .voucher-content {
+        padding: 20px;
+        text-align: center;
+    }
+</style>
 
 
 @*//Image Slider*@
@@ -55,16 +75,25 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="voucherModalLabel">Voucher Đặc Biệt!</h5>
+                <h5 class="modal-title" id="voucherModalLabel">Danh sách Voucher</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body">
-                <h4 id="voucherName"></h4>
-                <p>Mã giảm giá: <strong id="voucherCoupon"></strong></p>
-                <p id="voucherDescription"></p>
-                <p>Giảm giá: <strong id="voucherDiscount"></strong></p>
+                <div id="voucherCarousel" class="carousel slide" data-ride="carousel">
+                    <div class="carousel-inner" id="voucherContainer">
+                        <!-- Vouchers will be inserted here -->
+                    </div>
+                    <a class="carousel-control-prev" href="#voucherCarousel" role="button" data-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="sr-only">Previous</span>
+                    </a>
+                    <a class="carousel-control-next" href="#voucherCarousel" role="button" data-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="sr-only">Next</span>
+                    </a>
+                </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
@@ -261,9 +290,3 @@
         </div>
     </div>
 </div>
-
-
-
-
-
-

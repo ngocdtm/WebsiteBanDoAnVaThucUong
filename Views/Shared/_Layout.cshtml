@@ -11,6 +11,10 @@
     <link href="~/Content/assets/plugins/font-awesome-4.7.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
     <link rel="stylesheet" type="text/css" href="~/Content/assets/styles/main_styles.css">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css">
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
     <style>
         .header {
             display: flex;
@@ -119,7 +123,7 @@
     @*@Styles.Render("~/Content/css")*@
     @Scripts.Render("~/bundles/modernizr")
     <script src="~/Content/assets/js/jquery-3.2.1.min.js"></script>
-
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     @Scripts.Render("~/bundles/jqueryval")
 
 
@@ -168,6 +172,7 @@
                                 <a href="/account/profile"><i class="fa fa-user"></i> Thông tin cá nhân</a>
                                 <a href="/review/lichsudonhang"><i class="fa fa-sticky-note"></i> Lịch sử đơn hàng</a>
                                 <a href="/wishlist/index"><i class="fa fa-heart"></i> Danh sách yêu thích</a>
+                                <a href="/memberrank/memberrank"><i class="fa fa-trophy"></i> Xem hạng thành viên</a>
                                 <a href="javascript:document.getElementById('logOffForm').submit()"><i class="fa fa-sign-out"></i> Đăng xuất</a>
                             </div>
                         </div>
@@ -255,7 +260,11 @@
     <script src="~/Scripts/jsShopping.js"></script>
     @RenderSection("scripts", required: false)
 
-
+    <script src="https://www.gstatic.com/dialogflow-console/fast/messenger/bootstrap.js?v=1"></script>
+    <df-messenger intent="WELCOME"
+                  chat-title="Food&Drink"
+                  agent-id="497f3f8c-0aef-45d3-9802-ab13b2b60fb3"
+                  language-code="vi"></df-messenger>
 
     <script>
  $(document).ready(function () {

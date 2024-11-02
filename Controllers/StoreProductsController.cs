@@ -20,8 +20,6 @@ namespace WebsiteBanDoAnVaThucUong.Controllers
         [StoreSelectorFilter]
         public ActionResult Index(int? storeId, int? page)
         {
-            storeId = Session["SelectedStoreId"] as int?;
-
             if (!storeId.HasValue)
             {
                 return RedirectToAction("Index", "Stores");
@@ -40,13 +38,7 @@ namespace WebsiteBanDoAnVaThucUong.Controllers
 
             return View(storeProducts.ToPagedList(pageNumber, pageSize));
         }
-        //ở trang cửa hàng và user muốn select store 
-        [HttpPost]
-        public ActionResult SelectStore(int storeId)
-        {
-            Session["SelectedStoreId"] = storeId;
-            return Json(new { success = true });
-        }
+
         public ActionResult Edit(int storeId, int productId)
         {
             var storeProduct = db.StoreProducts
