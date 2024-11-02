@@ -947,7 +947,7 @@ section
 }
 .new_arrivals_title
 {
-	margin-top: 74px;
+	margin-top: 30px;
 }
 
 /*********************************
@@ -1684,3 +1684,48 @@ section
 {
 	color: #fe4c50;
 }
+
+.line-auto {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 10px;
+	border-radius: 5px;
+	background-color: #f8f8f8;
+	font-size: 16px;
+	gap: 10px;
+	margin: 50px auto;
+	width: 50%;
+	background-color: transparent;
+}
+
+	.line-auto i {
+		font-size: 24px;
+		cursor: pointer;
+		color: #333;
+	}
+
+#text-container {
+	flex-grow: 1;
+	text-align: center;
+	position: relative;
+	height: 30px; /* Đảm bảo kích thước container để tránh nhảy layout */
+	overflow: hidden;
+	display: flex;
+	justify-content: center; /* Căn giữa theo chiều ngang */
+	align-items: center; /* Căn giữa theo chiều dọc */
+}
+
+.text {
+	font-weight: bold;
+	position: absolute;
+	width: 100%; /* Văn bản căn giữa và chiếm hết chiều ngang */
+	text-align: center; /* Căn giữa nội dung văn bản */
+	opacity: 0;
+	transition: opacity 0.5s ease-in-out; /* Hiệu ứng mờ dần */
+	display: none; /* Đảm bảo chỉ có một span hiển thị */
+}
+
+
+
+
