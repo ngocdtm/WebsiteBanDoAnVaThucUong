@@ -2,9 +2,17 @@
 @{
     ViewBag.Title = "Thêm mới";
     Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+
+
+
 }
 
-
+<style>
+    .select2-container--disabled {
+        opacity: 0.6;
+        pointer-events: none;
+    }
+</style>
 
 @section naviheader{
     <!-- Left navbar links -->
@@ -52,6 +60,14 @@
                                 <div class="tab-content">
                                     <div class="active tab-pane" id="activity">
                                         <div class="form-group">
+                                            <label for="ProductTypeId">Loại sản phẩm</label>
+                                            @Html.DropDownListFor(x => x.ProductTypeId,
+                                                ViewBag.ProductType as SelectList,
+                                                "-Chọn loại sản phẩm-",
+                                                new { @class = "form-control", @id = "productTypeDropdown" })
+                                            @Html.ValidationMessageFor(x => x.ProductTypeId, null, new { @class = "text-danger" })
+                                        </div>
+                                        <div class="form-group">
                                             <label for="exampleInputEmail1">Tên sản phẩm</label>
                                             @Html.TextBoxFor(x => x.Title, new { @class = "form-control", @placeholder = "Tên sản phẩm" })
                                             @Html.ValidationMessageFor(x => x.Title, null, new { @class = "text-danger" })
@@ -63,10 +79,36 @@
                                         </div>
 
                                         <div class="form-group">
-                                            <label for="exampleInputEmail1">Danh mục</label>
-                                            @Html.DropDownListFor(x => x.ProductCategoryId, ViewBag.ProductCategory as SelectList, "-Chọn danh mục sản phẩm-", new { @class = "form-control", @placeholder = "Mã mã phẩm" })
+                                            <label for="ProductCategoryId">Danh mục</label>
+                                            @Html.DropDownListFor(x => x.ProductCategoryId,
+                                                (ViewBag.ProductCategory as SelectList) ?? new SelectList(Enumerable.Empty<SelectListItem>(), "Id", "Title"),
+                                                "-Chọn danh mục sản phẩm-",
+                                                new { @class = "form-control", @id = "productCategoryDropdown" })
                                             @Html.ValidationMessageFor(x => x.ProductCategoryId, null, new { @class = "text-danger" })
                                         </div>
+                                        <div id="toppingSizeFields" style="display:none;">
+                                            <div class="form-group">
+                                                <label for="topping">Topping</label>
+                                                @Html.ListBoxFor(x => x.SelectedToppingIds,
+                                                    ViewBag.ProductTopping as MultiSelectList ?? new MultiSelectList(Enumerable.Empty<SelectListItem>()),
+                                                    new { @class = "form-control select2" })
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="size">Size</label>
+                                                @Html.ListBoxFor(x => x.SelectedSizeIds,
+                                                    ViewBag.ProductSize as MultiSelectList ?? new MultiSelectList(Enumerable.Empty<SelectListItem>()),
+                                                    new { @class = "form-control select2" })
+                                            </div>
+                                        </div>
+                                        <div id="toppingExtraFields" style="display:none;">
+                                            <div class="form-group">
+                                                <label for="extra">Extra</label>
+                                                @Html.ListBoxFor(x => x.SelectedExtraIds,
+                                                    ViewBag.ProductExtra as MultiSelectList ?? new MultiSelectList(Enumerable.Empty<SelectListItem>()),
+                                                    new { @class = "form-control select2" })
+                                            </div>
+                                        </div>
+
                                         <div class="form-group">
                                             <label for="exampleInputEmail1">Mô tả</label>
                                             @Html.TextAreaFor(x => x.Description, new { @class = "form-control", @placeholder = "Mã mã phẩm" })
@@ -93,7 +135,7 @@
                                                     @Html.ValidationMessageFor(x => x.SalePrice, null, new { @class = "text-danger" })
                                                 </div>
                                             </div>
-                                           
+
                                             <div class="col-3">
                                                 <div class="form-group">
                                                     <label for="exampleInputEmail1">Giá gốc</label>
@@ -114,7 +156,7 @@
 
 
                                                 </div>
-                                            </div>                                           
+                                            </div>
                                         </div>
                                     </div>
                                     <!-- /.tab-pane -->
@@ -209,19 +251,19 @@
             var str = "";
             if (currentId == 1) {
                 str += `<tr id="trow_${currentId}">
-                                    <td class="text-center">${currentId}</td>
-                                    <td class="text-center"><img width="80" src="${url}" /> <input type='hidden' value="${url}" name="Images"/></td>
-                                    <td class="text-center"><input type="radio" name="rDefault" value="${currentId}" checked="checked"/></td>
-                                    <td class="text-center"><a href="#" data-id="${currentId}" class="btn btn-sm btn-danger btnXoaAnh">Xóa</a></td>
-                                    </tr>`;
+                                                        <td class="text-center">${currentId}</td>
+                                                        <td class="text-center"><img width="80" src="${url}" /> <input type='hidden' value="${url}" name="Images"/></td>
+                                                        <td class="text-center"><input type="radio" name="rDefault" value="${currentId}" checked="checked"/></td>
+                                                        <td class="text-center"><a href="#" data-id="${currentId}" class="btn btn-sm btn-danger btnXoaAnh">Xóa</a></td>
+                                                        </tr>`;
             }
             else {
                 str += `<tr id="trow_${currentId}">
-                                    <td class="text-center">${currentId}</td>
-                                    <td class="text-center"><img width="80" src="${url}" /> <input type='hidden' value="${url}" name="Images"/></td>
-                                    <td class="text-center"><input type="radio" name="rDefault" value="${currentId}"/></td>
-                                    <td class="text-center"><a href="#" data-id="${currentId}" class="btn btn-sm btn-danger btnXoaAnh">Xóa</a></td>
-                                    </tr>`;
+                                                        <td class="text-center">${currentId}</td>
+                                                        <td class="text-center"><img width="80" src="${url}" /> <input type='hidden' value="${url}" name="Images"/></td>
+                                                        <td class="text-center"><input type="radio" name="rDefault" value="${currentId}"/></td>
+                                                        <td class="text-center"><a href="#" data-id="${currentId}" class="btn btn-sm btn-danger btnXoaAnh">Xóa</a></td>
+                                                        </tr>`;
             }
             $('#tbHtml').append(str);
             $('#tCurrentId').val(currentId);
@@ -242,8 +284,192 @@
         }
 
     </script>
+    <script>
+$(document).ready(function () {
+    // Khởi tạo Select2 với các tùy chọn mở rộng
+    function initializeSelect2() {
+        $('select[multiple]').select2({
+            placeholder: "Chọn các tùy chọn",
+            allowClear: true,
+            width: '100%',
+            language: {
+                noResults: function() {
+                    return "Không có kết quả phù hợp";
+                }
+            }
+        });
+    }
 
-    
+    // Khởi tạo Select2 khi trang load
+    initializeSelect2();
+
+    // Xử lý sự kiện thay đổi loại sản phẩm
+    $('#productTypeDropdown').change(function () {
+        var selectedType = $(this).val();
+
+        // Reset và ẩn tất cả các trường
+        $('#toppingSizeFields, #toppingExtraFields').hide();
+        clearMultiSelects();
+
+        // Hiển thị loading state
+        showLoading();
+
+        if (selectedType == '2') { // Đồ uống
+            $('#toppingSizeFields').show();
+            Promise.all([
+                loadToppings(),
+                loadSizes()
+            ]).then(() => {
+                hideLoading();
+                initializeSelect2();
+            }).catch(handleError);
+        }
+        else if (selectedType == '1') { // Thức ăn
+            $('#toppingExtraFields').show();
+            loadExtras()
+                .then(() => {
+                    hideLoading();
+                    initializeSelect2();
+                })
+                .catch(handleError);
+        }
+
+        loadCategories(selectedType);
+    });
+
+    function clearMultiSelects() {
+        $('select[multiple]').each(function() {
+            $(this).val(null).trigger('change');
+        });
+    }
+
+    // Chuyển các hàm load thành Promise
+    function loadToppings() {
+        return new Promise((resolve, reject) => {
+            $.ajax({
+                url: '@Url.Action("GetToppings", "Product")',
+                type: 'GET',
+                success: function(data) {
+                    updateSelect2Options($('#SelectedToppingIds'), data);
+                    resolve(data);
+                },
+                error: reject
+            });
+        });
+    }
+
+    function loadSizes() {
+        return new Promise((resolve, reject) => {
+            $.ajax({
+                url: '@Url.Action("GetSizes", "Product")',
+                type: 'GET',
+                success: function(data) {
+                    updateSelect2Options($('#SelectedSizeIds'), data);
+                    resolve(data);
+                },
+                error: reject
+            });
+        });
+    }
+
+    function loadExtras() {
+        return new Promise((resolve, reject) => {
+            $.ajax({
+                url: '@Url.Action("GetExtras", "Product")',
+                type: 'GET',
+                success: function(data) {
+                    updateSelect2Options($('#SelectedExtraIds'), data);
+                    resolve(data);
+                },
+                error: reject
+            });
+        });
+    }
+
+    function updateSelect2Options($select, data) {
+        $select.empty();
+
+        // Thêm placeholder option
+        $select.append(new Option('', '', false, false));
+
+        $.each(data, function(index, item) {
+            var option = new Option(item.text, item.value, false, false);
+            $select.append(option);
+        });
+
+        // Trigger change để Select2 cập nhật UI
+        $select.trigger('change.select2');
+    }
+
+    function loadCategories(productTypeId) {
+        $.ajax({
+            url: '@Url.Action("GetCategoriesByProductType", "Product")',
+            type: 'GET',
+            data: { productTypeId: productTypeId },
+            success: function(categories) {
+                var $categoryDropdown = $('#productCategoryDropdown');
+                var currentValue = $categoryDropdown.val();
+
+                $categoryDropdown.empty();
+                $categoryDropdown.append('<option value="">-Chọn danh mục sản phẩm-</option>');
+
+                $.each(categories, function(index, category) {
+                    var selected = (category.Id == currentValue) ? 'selected' : '';
+                    $categoryDropdown.append(
+                        $('<option>', {
+                            value: category.Id,
+                            text: category.Title,
+                            selected: selected
+                        })
+                    );
+                });
+
+                // Trigger change để cập nhật UI
+                $categoryDropdown.trigger('change');
+            },
+            error: handleError
+        });
+    }
+
+    // Thêm loading state
+    function showLoading() {
+        // Thêm overlay loading nếu cần
+        $('select[multiple]').prop('disabled', true);
+    }
+
+    function hideLoading() {
+        $('select[multiple]').prop('disabled', false);
+    }
+
+    // Xử lý lỗi tập trung
+    function handleError(error) {
+        console.error('Error:', error);
+        hideLoading();
+        // Hiển thị thông báo lỗi cho người dùng
+        alert('Có lỗi xảy ra. Vui lòng thử lại sau.');
+    }
+
+    // Thêm validation trước khi submit form
+    $('form').on('submit', function(e) {
+        var productType = $('#productTypeDropdown').val();
+
+        if (productType == '2') { // Đồ uống
+            if (!$('#SelectedToppingIds').val()?.length && !$('#SelectedSizeIds').val()?.length) {
+                e.preventDefault();
+                alert('Vui lòng chọn ít nhất một Topping hoặc Size cho đồ uống');
+                return false;
+            }
+        }
+        else if (productType == '1') { // Thức ăn
+            if (!$('#SelectedExtraIds').val()?.length) {
+                e.preventDefault();
+                alert('Vui lòng chọn ít nhất một Extra cho thức ăn');
+                return false;
+            }
+        }
+    });
+});
+    </script>
 
     <script src="~/Scripts/jsConvert.js"></script>
 }

@@ -5,7 +5,8 @@
 ﻿@{
 
     Layout = null;
-
+    var isFood = Model.Product.ProductTypeId == 1;
+    var isBeverage = Model.Product.ProductTypeId == 2;
 }
 
 
@@ -29,7 +30,6 @@
 
             </div>
         </div>
-
         <div class="row">
             <div class="col-lg-7">
                 @if (Model.Product.ProductImage != null && Model.Product.ProductImage.Any())
@@ -70,29 +70,77 @@
                         <p>@Model.Product.Description</p>
                         <p>Lượt xem: <b>@Model.Product.ViewCount</b></p>
                     </div>
-                    <div class="product_price">@WebsiteBanDoAnVaThucUong.Common.Common.FormatNumber(Model.Product.SalePrice, 0)</div>
-                    @*<ul class="star_rating">
-                            <li><i class="fa fa-star" aria-hidden="true"></i></li>
-                            <li><i class="fa fa-star" aria-hidden="true"></i></li>
-                            <li><i class="fa fa-star" aria-hidden="true"></i></li>
-                            <li><i class="fa fa-star" aria-hidden="true"></i></li>
-                            <li><i class="fa fa-star-o" aria-hidden="true"></i></li>
-                        </ul>*@
-                    <div class="quantity d-flex flex-column">
-    <!-- Phần số lượng -->
-    <span style="display: block; margin-bottom: 10px;">Quantity:</span>
-    <div class="quantity_selector" style="margin-bottom: 20px;">
-        <span class="minus" style="margin-right: 10px;"><i class="fa fa-minus" aria-hidden="true"></i></span>
-        <span id="quantity_value" style="margin-right: 10px;">1</span>
-        <span class="plus"><i class="fa fa-plus" aria-hidden="true"></i></span>
-    </div>
-
-
-    <!-- Phần size -->
-    <div class="form-group" style="display: block; margin-bottom: 20px;">
-        <label style="display: block; margin-bottom: 10px;">Select Size</label>
-        @Html.DropDownList("selectedSizeId", new SelectList(Model.Sizes, "Id", "NameSize"), "Select a size", new { @class = "form-control", @id = "selectedSizeId" })
-    </div>
+                    @*<input type="hidden" id="basePrice" value="@Model.Product.SalePrice" />*@
+                    @*Base price display*@
+                    <div class="product_price" id="totalPrice">
+                        @WebsiteBanDoAnVaThucUong.Common.Common.FormatNumber(Model.Product.SalePrice, 0)
+                    </div>
+                    <!-- Size Selection -->
+                    @if (Model.Product.ProductSize.Any())
+                    {
+                        <div class="size-options">
+                            <h4>Chọn Size</h4>
+                            <div class="options-container">
+                                @foreach (var size in Model.Product.ProductSize)
+                                {
+                                    <div class="option-item">
+                                        <input type="radio"
+                                               class="size-option"
+                                               name="size"
+                                               id="size_@size.Id"
+                                               value="@size.Id"
+                                               data-price="@size.Size.PriceSize" />
+                                        <label for="size_@size.Id">
+                                            @size.Size.NameSize (+@WebsiteBanDoAnVaThucUong.Common.Common.FormatNumber(size.Size.PriceSize, 0))
+                                        </label>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    }
+                    @if (Model.Product.ProductTopping.Any())
+                    {
+                        <div class="topping-options">
+                            <h4>Chọn Topping</h4>
+                            <div class="options-container">
+                                @foreach (var topping in Model.Product.ProductTopping)
+                                {
+                                    <div class="option-item">
+                                        <input type="checkbox"
+                                               class="topping-option"
+                                               id="topping_@topping.Id"
+                                               value="@topping.Id"
+                                               data-price="@topping.Topping.PriceTopping" />
+                                        <label for="topping_@topping.Id">
+                                            @topping.Topping.NameTopping (+@WebsiteBanDoAnVaThucUong.Common.Common.FormatNumber(topping.Topping.PriceTopping, 0))
+                                        </label>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    }
+                    <!-- Extra Selection -->
+                    @if (Model.Product.ProductExtra.Any())
+                    {
+                        <div class="extra-options">
+                            <h4>Chọn Extra</h4>
+                            <div class="options-container">
+                                @foreach (var extra in Model.Product.ProductExtra)
+                                {
+                                    <div class="option-item">
+                                        <input type="checkbox"
+                                               class="extra-option"
+                                               id="extra_@extra.Id"
+                                               value="@extra.Id"
+                                               data-price="@extra.Extra.Price" />
+                                        <label for="extra_@extra.Id">
+                                            @extra.Extra.Name (+@WebsiteBanDoAnVaThucUong.Common.Common.FormatNumber(extra.Extra.Price, 0))
+                                        </label>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    }
                     <div class="quantity d-flex flex-column flex-sm-row align-items-sm-center">
                         <span>Quantity:</span>
                         <div class="quantity_selector">
@@ -111,133 +159,189 @@
             </div>
         </div>
 
-
-    <!-- Phần toppings -->
-    <div class="form-group" style="display: block; margin-bottom: 20px;">
-        <label style="display: block; margin-bottom: 10px;">Select Toppings</label>
-        @foreach (var topping in Model.Toppings)
-        {
-            <div class="checkbox" style="display: block; margin-bottom: 10px;">
-                <label>
-                    <input type="checkbox" name="selectedToppingIds" value="@topping.Id" />
-                    @topping.NameTopping - @topping.PriceTopping.ToString("C")
-                </label>
-            </div>
-        }
     </div>
 
-    <!-- Nút thêm vào giỏ hàng -->
-    <div class="form-group" style="margin-bottom: 20px;">
-        <input type="hidden" name="storeId" value="@ViewBag.StoreId" />
-        <div class="btn btn-danger" style="display: block; margin-bottom: 10px;">
-            <a href="#" class="btnAddToCart" data-id="@Model.Id">ADD TO CART</a>
-        </div>
-    </div>
-</div>
+    <div class="tabs_section_container">
 
-                <!--<div class="quantity d-flex flex-column flex-sm-row align-items-sm-center">
-                    <span>Quantity:</span>
-                    <div class="quantity_selector">
-                        <span class="minus"><i class="fa fa-minus" aria-hidden="true"></i></span>
-                        <span id="quantity_value">1</span>
-                        <span class="plus"><i class="fa fa-plus" aria-hidden="true"></i></span>
-                    </div>-->
-                    @*size*@
-                    <!--<div class="form-group">
-                        <label>Select Size</label>
-                        @Html.DropDownList("selectedSizeId", new SelectList(Model.Sizes, "Id", "NameSize"), "Select a size", new { @class = "form-control" })
+        <div class="container">
+            <div class="row">
+                <div class="col">
+                    <div class="tabs_container">
+                        <ul class="tabs d-flex flex-sm-row flex-column align-items-left align-items-md-center justify-content-center">
+                            <li class="tab active" data-active-tab="tab_1"><span>Description</span></li>
+                            @*<li class="tab" data-active-tab="tab_2"><span>Additional Information</span></li>*@
+                            <li class="tab" data-active-tab="tab_3"><span>Reviews (@ViewBag.CountReview)</span></li>
+                        </ul>
                     </div>
-                    <br />-->
-
-                    @*<div class="form-group">
-            <label>Select Toppings</label>
-            @foreach (var topping in Model.Toppings)
-            {
-                <div class="checkbox">
-                    <label>
-                        <input type="checkbox" name="selectedToppingIds" value="@topping.Id" />
-                        @topping.NameTopping - @topping.PriceTopping.ToString("C")
-                    </label>
-                </div>
-            }
-        </div>*@
-
-                    <!--<div class="form-group">
-                        <input type="hidden" name="storeId" value="@ViewBag.StoreId" />
-                        <div class="btn btn-danger"><a href="#" class="btnAddToCart" data-id="@Model.Id">ADD TO CART</a></div>-->
-                        @*<div class="product_favorite d-flex flex-column align-items-center justify-content-center"></div>*@
-                    <!--</div>
-                </div>-->
                 </div>
             </div>
+            <div class="row">
+                <div class="col">
 
-        </div>
-
-        <div class="tabs_section_container">
-
-            <div class="container">
-                <div class="row">
-                    <div class="col">
-                        <div class="tabs_container">
-                            <ul class="tabs d-flex flex-sm-row flex-column align-items-left align-items-md-center justify-content-center">
-                                <li class="tab active" data-active-tab="tab_1"><span>Description</span></li>
-                                @*<li class="tab" data-active-tab="tab_2"><span>Additional Information</span></li>*@
-                                <li class="tab" data-active-tab="tab_3"><span>Reviews (@ViewBag.CountReview)</span></li>
-                            </ul>
+                    <!-- Tab Description -->
 
                     <div id="tab_1" class="tab_container active">
                         <div class="row">
                             @Html.Raw(Model.Product.Detail)
                         </div>
                     </div>
-                </div>
-                <div class="row">
-                    <div class="col">
+                    <!-- Tab Additional Info -->
+                    <!-- Tab Reviews -->
 
-                        <!-- Tab Description -->
+                    <div id="tab_3" class="tab_container">
+                        <div class="row">
 
-                        <div id="tab_1" class="tab_container active">
-                            <div class="row">
-                                @Html.Raw(Model.Detail)
+                            <!-- User Reviews -->
+
+                            <div class="col-lg-6 reviews_col">
+                                @Html.Action("_Load_Review", "Review", new { productId = Model.Id })
                             </div>
-                        </div>
-                        <!-- Tab Additional Info -->
-                        <!-- Tab Reviews -->
 
-                        <div id="tab_3" class="tab_container">
-                            <div class="row">
-
-                                <!-- User Reviews -->
-
-                                <div class="col-lg-6 reviews_col">
-                                    @Html.Action("_Load_Review", "Review", new { productId = Model.Id })
-                                </div>
-
-                                <!-- Add Review -->
-                                <div class="col-lg-6 add_review_col">
-                                    @Html.Action("_Review", "Review", new { productId = Model.Id })
-                                </div>
-
-
+                            <!-- Add Review -->
+                            <div class="col-lg-6 add_review_col">
+                                @Html.Action("_Review", "Review", new { productId = Model.Id })
                             </div>
+
+
                         </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col">
-                        @Html.Action("RelatedProducts", new { productId = Model.Id })
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col">
-                        @Html.Action("ViewHistory", new { productId = Model.Id })
                     </div>
                 </div>
             </div>
-
+            <div class="row">
+                <div class="col">
+                    @Html.Action("RelatedProducts", new { productId = Model.Id })
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    @Html.Action("ViewHistory", new { productId = Model.Id })
+                </div>
+            </div>
         </div>
+
     </div>
-   
 
 }
 
+<script src="~/Scripts/alertify.min.js"></script>
+<link href="~/Content/alertify.min.css" rel="stylesheet" />
+<script>
+$(document).ready(function() {
+    let basePrice = @Model.Product.SalePrice;
+
+    function calculateTotalPrice() {
+        let total = basePrice;
+        let quantity = parseInt($('#quantity_value').text()) || 1;
+
+        // Add size price
+        const selectedSize = $('.size-option:checked');
+        if (selectedSize.length > 0) {
+            total += parseFloat(selectedSize.data('price')) ||0;
+        }
+
+        // Add topping prices
+        $('.topping-option:checked').each(function() {
+            total += parseFloat($(this).data('price')) ||0;
+        });
+
+        // Add extra prices
+        $('.extra-option:checked').each(function() {
+            total += parseFloat($(this).data('price')) || 0;
+        });
+
+        // Multiply by quantity
+        total *= quantity;
+
+        // Update price display with formatted currency
+        $('#totalPrice').text(formatCurrency(total));
+        return total;
+    }
+
+    // Format currency function
+    function formatCurrency(amount) {
+        return new Intl.NumberFormat('vi-VN', {
+            style: 'currency',
+            currency: 'VND'
+        }).format(amount);
+    }
+
+    // Event listeners for price updates
+    $('.size-option, .topping-option, .extra-option').change(calculateTotalPrice);
+
+
+
+    //// Add to Cart functionality
+    //$('.btnAddToCart').click(function(e) {
+    //    e.preventDefault();
+
+    //    const productId = $(this).data('id');
+    //    const storeId = $(this).data('storeid');
+    //    const quantity = parseInt($('#quantity_value').text());
+
+    //    // Collect selected options
+    //    const selectedSize = $('.size-option:checked').val();
+    //    const selectedToppings = $('.topping-option:checked').map(function() {
+    //        return $(this).val();
+    //    }).get();
+    //    const selectedExtras = $('.extra-option:checked').map(function() {
+    //        return $(this).val();
+    //    }).get();
+
+    //    // Create cart item object
+    //    const cartItem = {
+    //        id: productId,
+    //        quantity: quantity,
+    //        storeId: storeId,
+    //        sizeId: selectedSize,
+    //        toppingIds: selectedToppings,
+    //        extraIds: selectedExtras
+    //    };
+
+    //    // Send AJAX request
+    //    $.ajax({
+    //        url: '/shoppingcart/AddToCart',
+    //        type: 'POST',
+    //        data: cartItem,
+    //        success: function(rs) {
+    //            if (rs.Success) {
+    //                $('#checkout_items').html(rs.Count);
+
+    //                // Show success message with selected options
+    //                let message = `Đã thêm sản phẩm vào giỏ hàng:\n`;
+    //                message += `- Số lượng: ${quantity}\n`;
+
+    //                if (selectedSize) {
+    //                    const sizeName = $(`input[value="${selectedSize}"]`).next('label').text().trim();
+    //                    message += `- Size: ${sizeName}\n`;
+    //                }
+
+    //                if (selectedToppings.length > 0) {
+    //                    message += `- Toppings: ${selectedToppings.map(id =>
+    //                        $(`input[value="${id}"]`).next('label').text().trim()
+    //                    ).join(', ')}\n`;
+    //                }
+
+    //                if (selectedExtras.length > 0) {
+    //                    message += `- Extras: ${selectedExtras.map(id =>
+    //                        $(`input[value="${id}"]`).next('label').text().trim()
+    //                    ).join(', ')}\n`;
+    //                }
+
+    //                message += `- Tổng tiền: ${$('#totalPrice').text()}`;
+
+    //                alert(message);
+    //            } else {
+    //                alert(rs.msg);
+    //            }
+    //        },
+    //        error: function(xhr, status, error) {
+    //            console.error("AJAX Error:", error);
+    //            alert("Có lỗi xảy ra khi thêm vào giỏ hàng");
+    //        }
+    //    });
+    //});
+
+    //// Initialize price on page load
+    //calculateTotalPrice();
+});
+</script>

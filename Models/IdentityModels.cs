@@ -12,10 +12,9 @@ namespace WebsiteBanDoAnVaThucUong.Models
     // You can add profile data for the user by adding more properties to your ApplicationUser class, please visit https://go.microsoft.com/fwlink/?LinkID=317594 to learn more.
     public class ApplicationUser : IdentityUser
     {
-        //DAPM
         public bool Status { get; set; }
         public string FullName { get; set; }
-        //public string Phone {  get; set; }
+        public string Phone { get; set; }
         public string Address { get; set; }
         public virtual ICollection<New> News { get; set; }
         public virtual ICollection<Wishlist> Wishlists { get; set; }
@@ -23,10 +22,6 @@ namespace WebsiteBanDoAnVaThucUong.Models
         public virtual ICollection<Order> Orders { get; set; }
         public virtual ICollection<FeedBackLetter> FeedBackLetters { get; set; }
         public virtual ICollection<Store> Stores { get; set; }
-        public virtual ICollection<Size> Sizes { get; set; }
-       
-        public List<string> Toppings { get; set; } = new List<string>();
-
         public async Task<ClaimsIdentity> GenerateUserIdentityAsync(UserManager<ApplicationUser> manager)
         {
             // Note the authenticationType must match the one defined in CookieAuthenticationOptions.AuthenticationType
@@ -71,13 +66,6 @@ namespace WebsiteBanDoAnVaThucUong.Models
                .WithRequired(y => y.User)
                .HasForeignKey(y => y.CustomerId);
 
-            // Khóa ngoại Voucher
-            //modelBuilder.Entity<ApplicationUser>()
-            //    .HasMany(u => u.Vouchers)
-            //    .WithRequired(y => y.User)
-            //    .HasForeignKey(y => y.CreatedBy);
-
-
             // Khóa ngoại FeedBackLetter
             modelBuilder.Entity<ApplicationUser>()
                 .HasMany(u => u.FeedBackLetters)
@@ -89,6 +77,33 @@ namespace WebsiteBanDoAnVaThucUong.Models
                 .HasMany(u => u.Stores)
                 .WithRequired(y => y.User)
                 .HasForeignKey(y => y.IdManager);
+            modelBuilder.Entity<ProductExtra>()
+     .HasKey(pe => new { pe.ProductId, pe.ExtraId });
+
+            modelBuilder.Entity<ProductExtra>()
+                .HasRequired(pe => pe.Product)
+                .WithMany(p => p.ProductExtra)
+                .HasForeignKey(pe => pe.ProductId)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<ProductTopping>()
+                .HasKey(pt => new { pt.ProductId, pt.ToppingId });
+
+            modelBuilder.Entity<ProductTopping>()
+                .HasRequired(pt => pt.Product)
+                .WithMany(p => p.ProductTopping)
+                .HasForeignKey(pt => pt.ProductId)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<ProductSize>()
+                .HasKey(ps => new { ps.ProductId, ps.SizeId });
+
+            modelBuilder.Entity<ProductSize>()
+                .HasRequired(ps => ps.Product)
+                .WithMany(p => p.ProductSize)
+                .HasForeignKey(ps => ps.ProductId)
+                .WillCascadeOnDelete(false);
+
         }
 
         public DbSet<OrderDetailPromotion> OrderDetailPromotion { get; set; }
@@ -98,7 +113,6 @@ namespace WebsiteBanDoAnVaThucUong.Models
         public DbSet<Voucher> Vouchers { get; set; }
         public DbSet<ImageSlider> ImageSlider { get; set; }
         public DbSet<Store> Stores { get; set; }
-        //public DbSet<WishlistStore> WishlistStores { get; set; }
         public DbSet<Wishlist> Wishlists { get; set; }
         public DbSet<ReviewProduct> Reviews { get; set; }
         public DbSet<ThongKe> ThongKes { get; set; }
@@ -116,9 +130,17 @@ namespace WebsiteBanDoAnVaThucUong.Models
         public DbSet<Subscribe> Subscribe { get; set; }
         public DbSet<StoreProduct> StoreProducts { get; set; }
         public DbSet<ProductViewHistory> ProductViewHistory { get; set; }
-        public DbSet<Size> Sizes { get; set; }
-        public DbSet<Topping> Toppings { get; set; }
         public DbSet<MemberRank> MemberRanks { get; set; }
+        public DbSet<Combo> Combo { get; set; }
+        public DbSet<ComboDetail> ComboDetail { get; set; }
+        public DbSet<Extra> Extra { get; set; }
+        public DbSet<ProductExtra> ProductExtra { get; set; }
+        public DbSet<ProductSize> ProductSize { get; set; }
+        public DbSet<Size> Size { get; set; }
+        public DbSet<Topping> Topping { get; set; }
+        public DbSet<ProductTopping> ProductTopping { get; set; }
+        public DbSet<ProductType> ProductType { get; set; }
+
         public static ApplicationDbContext Create()
         {
             return new ApplicationDbContext();

@@ -4,120 +4,73 @@
 @if (Model != null && Model.Any())
 {
     <h3>GIỎ HÀNG <span style="float:right;position:relative"><small>@*@Model.Count()*@</small></span></h3>
+
     var i = 0;
     var tongtien = decimal.Zero;
     var tongsl = 0;
     var soluong = 0;
     var thanhtien = decimal.Zero;
+    <div style="border:1px solid #808080; width:470px; height:600px">
+        <table class="table">
+            <tr>
+                <td></td>
+                <th style="width:100px;">Tên sản phẩm</th>
+                <th style="width:100px;">Món thêm</th>
+                <th style="width:100px;">Giá</th>
+                <th style="width:100px;">Số lượng</th>
+                <th style="width:100px;">Thành tiền</th>
+                <td style="width:200px;">
+                </td>
+            </tr>
+            @foreach (var item in Model)
+            {
+                soluong = item.Quantity;
+                thanhtien = item.TotalPrice;
+                tongtien += item.TotalPrice;
+                tongsl += item.Quantity;
+                <tr>
+                    <td></td>
+                    <td>@item.ProductName @item.FormattedSizeNames</td>
+                    <td>@item.FormattedToppingNames @item.FormattedExtraNames</td>
+                    <td>@Common.FormatNumber(item.Price, 0)</td>
+                    <td>@soluong</td>
+                    <td>@Common.FormatNumber(thanhtien, 0)</td>
+                </tr>
+            }
+            <tr>
+                <td>Tổng số lượng</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td>@tongsl</td>
+            </tr>
+            <tr id="originalTotalRow">
+                <td>Tổng tiền</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td id="originalTotal">@Common.FormatNumber(tongtien, 0)</td>
+            </tr>
+            <tr id="discountRow" style="display:none;">
+                <td>Giảm giá</td>
+                <td></td>
+                <td></td>
+                <td id="discountAmount"></td>
+            </tr>
+            <tr id="newTotalRow" style="display:none;">
+                <td>Tổng tiền sau giảm giá</td>
+                <td></td>
+                <td></td>
+                <td id="newTotal"></td>
+            </tr>
 
-        <div style="border:1px solid #808080; width:380px; height:450px; overflow-y:auto;">
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>Sản phẩm</th>
-                        <th>Giá</th>
-                        <th>Số lượng</th>
-                        <th>Thành tiền</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var item in Model)
-                    {
-                        soluong = item.Quantity;
-                        thanhtien = item.TotalPrice;
-                        tongtien += item.TotalPrice;
-                        tongsl += item.Quantity;
-                        <tr>
-                            <td>@item.ProductName</td>
-                            <td>@Common.FormatNumber(item.Price, 0) VND</td>
-                            <td>@soluong</td>
-                            <td>@Common.FormatNumber(thanhtien, 0) VND</td>
-                        </tr>
-                    }
-                </tbody>
-                <tfoot>
-                    <tr>
-                        <td><strong>Tổng số lượng</strong></td>
-                        <td></td>
-                        <td><strong>@tongsl</strong></td>
-                        <td></td>
-                    </tr>
-                    <tr id="originalTotalRow">
-                        <td><strong>Tổng tiền</strong></td>
-                        <td></td>
-                        <td></td>
-                        <td id="originalTotal">@Common.FormatNumber(tongtien, 0) VND</td>
-                    </tr>
-                    <tr id="discountRow" style="display:none;">
-                        <td><strong>Giảm giá</strong></td>
-                        <td></td>
-                        <td></td>
-                        <td id="discountAmount"></td>
-                    </tr>
-                    <tr id="newTotalRow" style="display:none;">
-                        <td><strong>Tổng tiền sau giảm giá</strong></td>
-                        <td></td>
-                        <td></td>
-                        <td id="newTotal"></td>
-                    </tr>
-                </tfoot>
-            </table>
-        </div>
+        </table>
+    </div>
 
-        <div style="margin-top: 20px;">
-            <a href="@Url.Action("CheckOut", "ShoppingCart")" class="btn btn-success">Thanh toán</a>
-            <a href="@Url.Action("Index", "Products")" class="btn btn-primary">Tiếp tục mua hàng</a>
-        </div>
-    }
-    else
-    {
-        <p>Giỏ hàng của bạn hiện đang trống. <a href="@Url.Action("Index", "Products")">Tiếp tục mua sắm</a></p>
-    }
+}
+else
+{
 
-    @*<div style="border:1px solid #808080; width:380px; height:450px">
-                <table class="table">
-                    @foreach (var item in Model)
-                    {
-                        soluong = item.Quantity;
-                        thanhtien = item.TotalPrice;
-                        tongtien += item.TotalPrice;
-                        tongsl += item.Quantity;
-                        <tr>
-                            <td>@item.ProductName</td>
-                            <td>@Common.FormatNumber(item.Price, 0)</td>
-                            <td>@soluong</td>
-                            <td>@Common.FormatNumber(thanhtien, 0)</td>
-                        </tr>
-                    }
-                    <tr>
-                        <td>Tổng số lượng</td>
-                        <td></td>
-                        <td>@tongsl</td>
-                    </tr>
-                    <tr id="originalTotalRow">
-                        <td>Tổng tiền</td>
-                        <td></td>
-                        <td></td>
-                        <td id="originalTotal">@Common.FormatNumber(tongtien, 0)</td>
-                    </tr>
-                    <tr id="discountRow" style="display:none;">
-                        <td>Giảm giá</td>
-                        <td></td>
-                        <td></td>
-                        <td id="discountAmount"></td>
-                    </tr>
-                    <tr id="newTotalRow" style="display:none;">
-                        <td>Tổng tiền sau giảm giá</td>
-                        <td></td>
-                        <td></td>
-                        <td id="newTotal"></td>
-                    </tr>
-
-                </table>
-            </div>
-
-        }
-        else
-        {
-
-        }*@
+}

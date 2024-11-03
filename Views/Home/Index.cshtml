@@ -35,7 +35,54 @@
             });
         });
     </script>
-
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const texts = document.querySelectorAll('.text');
+            const prev = document.getElementById('prev');
+            const next = document.getElementById('next');
+            let currentIndex = 0;
+            const displayTime = 5000; // Thời gian đứng yên (5000 ms)
+            const fadeDuration = 500; // Thời gian hiệu ứng mờ dần (500 ms)
+            let intervalId; // ID của interval để có thể xóa nó khi cần
+            // Hiển thị text đầu tiên
+            texts[currentIndex].style.display = 'inline';
+            texts[currentIndex].style.opacity = '1';
+            function showText(index) {
+                // Ẩn text hiện tại
+                texts[currentIndex].style.opacity = '0';
+                setTimeout(() => {
+                    texts[currentIndex].style.display = 'none';
+                    // Cập nhật chỉ số mới
+                    currentIndex = index;
+                    // Hiển thị text mới
+                    texts[currentIndex].style.display = 'inline';
+                    setTimeout(() => (texts[currentIndex].style.opacity = '1'), 100); // Hiệu ứng hiện ra
+                }, fadeDuration); // Thời gian mờ dần
+            }
+            function resetInterval() {
+                clearInterval(intervalId); // Xóa interval cũ
+                intervalId = setInterval(() => {
+                    const nextIndex = (currentIndex + 1) % texts.length;
+                    showText(nextIndex);
+                }, displayTime + fadeDuration);
+            }
+            next.addEventListener('click', function () {
+                const nextIndex = (currentIndex + 1) % texts.length;
+                showText(nextIndex);
+                resetInterval(); // Khởi động lại interval khi bấm vào next
+            });
+            prev.addEventListener('click', function () {
+                const prevIndex = (currentIndex - 1 + texts.length) % texts.length;
+                showText(prevIndex);
+                resetInterval(); // Khởi động lại interval khi bấm vào prev
+            });
+            // Tự động chuyển text sau mỗi displayTime
+            intervalId = setInterval(() => {
+                const nextIndex = (currentIndex + 1) % texts.length;
+                showText(nextIndex);
+            }, displayTime + fadeDuration);
+        });
+    </script>
 }
 <style>
     .carousel-control-prev, .carousel-control-next {
@@ -65,12 +112,75 @@
         padding: 20px;
         text-align: center;
     }
-</style>
 
+    .line-auto {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px;
+        border-radius: 5px;
+        background-color: #f8f8f8;
+        font-size: 16px;
+        gap: 10px;
+        margin: 50px auto;
+        width: 50%;
+        background-color: transparent;
+    }
+
+        .line-auto i {
+            font-size: 24px;
+            cursor: pointer;
+            color: #333;
+        }
+
+    #text-container {
+        flex-grow: 1;
+        text-align: center;
+        position: relative;
+        height: 30px; /* Đảm bảo kích thước container để tránh nhảy layout */
+        overflow: hidden;
+        display: flex;
+        justify-content: center; /* Căn giữa theo chiều ngang */
+        align-items: center; /* Căn giữa theo chiều dọc */
+    }
+
+    .text {
+        font-weight: bold;
+        position: absolute;
+        width: 100%; /* Văn bản căn giữa và chiếm hết chiều ngang */
+        text-align: center; /* Căn giữa nội dung văn bản */
+        opacity: 0;
+        transition: opacity 0.5s ease-in-out; /* Hiệu ứng mờ dần */
+        display: none; /* Đảm bảo chỉ có một span hiển thị */
+    }
+</style>
 
 @*//Image Slider*@
 
 @Html.Action("Index", "ImageSliders")
+<div class="line-auto">
+    <i class="fa fa-chevron-left" id="prev"></i>
+    <div id="text-container">
+        <span class="text" style="opacity: 1; display: inline;">
+            <img src="~/Content/assets/images/motorbike.jpg" alt="Miễn phí vận chuyển" style="vertical-align: middle; width: 25px; height: 25px; margin-right: 10px;">
+            Miễn phí vận chuyển
+        </span>
+        <span class="text">
+            <img src="~/Content/assets/images/discount.jpg" alt="Giảm 10% khi mua hàng lần đầu" style="vertical-align: middle; width: 25px; height: 25px; margin-right: 10px;">
+            Giảm 10% khi mua hàng lần đầu
+        </span>
+        <span class="text">
+            <img src="~/Content/assets/images/home.jpg" alt="Giao hàng tận nơi" style="vertical-align: middle; width: 25px; height: 25px; margin-right: 10px;">
+            Giao hàng tận nơi
+        </span>
+        <span class="text">
+            <img src="~/Content/assets/images/clock.jpg" alt="Nhận hàng từ 1-2h trong ngày" style="vertical-align: middle; width: 25px; height: 25px; margin-right: 10px;">
+            Nhận hàng từ 1-2h trong ngày
+        </span>
+    </div>
+    <i class="fa fa-chevron-right" id="next"></i>
+</div>
+
 <div class="modal fade" id="voucherModal" tabindex="-1" role="dialog" aria-labelledby="voucherModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -101,7 +211,7 @@
         </div>
     </div>
 </div>
-
+<!-- Line Auto -->
 <!-- Banner -->
 @*@Html.Action("MenuProductCategory", "Menu")*@
 <!-- Store -->

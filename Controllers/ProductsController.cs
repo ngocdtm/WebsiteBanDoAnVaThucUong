@@ -8,7 +8,6 @@ using Microsoft.AspNet.Identity;
 using WebsiteBanDoAnVaThucUong.Models.EF;
 using PagedList;
 using System.Data.Entity;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.Menu;
 using WebsiteBanDoAnVaThucUong.Filters;
 
 namespace WebsiteBanDoAnVaThucUong.Controllers
@@ -71,140 +70,118 @@ namespace WebsiteBanDoAnVaThucUong.Controllers
 
         public ActionResult Detail(string alias, int id)
         {
-            var item = db.Products
-                .Include(p => p.Sizes)
-                .Include(p => p.Toppings)
-                .FirstOrDefault(p => p.Id == id);
-
-            if (item == null)
+            try
             {
-                return HttpNotFound();
-            }
-
-            // Tăng số lần xem sản phẩm
-            item.ViewCount += 1;
-            db.Entry(item).Property(x => x.ViewCount).IsModified = true;
-            db.SaveChanges();
-
-            // Lấy số lượng đánh giá
-            var countReview = db.Reviews.Where(x => x.ProductId == id).Count();
-            ViewBag.CountReview = countReview;
-
-            return View(item);
-        }
-        
-
-
-
-        //public ActionResult Detail(string alias, int id)
-        //{
-        //    var item = db.Products.Find(id);
-
-        //    if (item != null)
-        //    {
-        //        // Update the product's view count
-        //        db.Products.Attach(item);
-        //        item.ViewCount += 1;
-        //        db.Entry(item).Property(x => x.ViewCount).IsModified = true;
-        //        db.SaveChanges();
-        //        // Save product to user's view history
-        //        var userId = User.Identity.GetUserId(); // Assuming you're using Identity or any other user identification
-        //        if (userId != null) // If the user is logged in
-        //        {
-        //            var existingHistory = db.ProductViewHistory
-        //                .FirstOrDefault(h => h.ProductId == id && h.UserId == userId);
-        //            if (existingHistory == null) // Avoid duplicate entries in the history
-        //            {
-        //                var historyEntry = new ProductViewHistory
-        //                {
-        //                    ProductId = id,
-        //                    UserId = userId,
-        //                    ViewedAt = DateTime.Now
-        //                };
-        //                db.ProductViewHistory.Add(historyEntry);
-        //                db.SaveChanges();
-        //            }
-        //        }
-        //        else
-        //        {
-        //            // For guest users, store viewed product IDs in session
-        //            List<int> viewedProducts = Session["ViewHistory"] as List<int> ?? new List<int>();
-        //            if (!viewedProducts.Contains(id))
-        //            {
-        //                viewedProducts.Add(id);
-        //                Session["ViewHistory"] = viewedProducts;
-        //            }
-        //        }
-        //    }
-        //    // Get the count of reviews
-        //    var countReview = db.Reviews.Where(x => x.ProductId == id).Count();
-        //    ViewBag.CountReview = countReview;
-        //    // Return the product details view
-        //    return View(item);
-        //}
-            // Check if a store has been selected
-            var storeId = Session["SelectedStoreId"] as int?;
-            if (!storeId.HasValue)
-            {
-                ViewBag.StoreRequiredMessage = "Vui lòng chọn cửa hàng trước khi xem chi tiết sản phẩm.";
-                return RedirectToAction("Index");
-            }
-            var item = db.StoreProducts
-                         .Include(sp => sp.Product)
-                         .Include(sp => sp.Product.ProductCategory)
-                         .Include(sp => sp.Product.ProductImage)
-                         .FirstOrDefault(sp => sp.ProductId == id && sp.StoreId == storeId);
-
-            if (item == null)
-            {
-                ViewBag.ErrorMessage = "Sản phẩm không có sẵn trong cửa hàng này.";
-                return HttpNotFound();
-            }
-
-            // Update the product's view count
-            db.Products.Attach(item.Product);
-            item.Product.ViewCount += 1;
-            db.Entry(item.Product).Property(x => x.ViewCount).IsModified = true;
-            db.SaveChanges();
-
-            // Save product to user's view history
-            var userId = User.Identity.GetUserId(); // Assuming you're using Identity or any other user identification
-            if (userId != null) // If the user is logged in
-            {
-                var existingHistory = db.ProductViewHistory
-                    .FirstOrDefault(h => h.ProductId == id && h.UserId == userId);
-                if (existingHistory == null) // Avoid duplicate entries in the history
+                // Check if a store has been selected
+                var storeId = Session["SelectedStoreId"] as int?;
+                if (!storeId.HasValue)
                 {
-                    var historyEntry = new ProductViewHistory
+                    TempData["Message"] = "Vui lòng chọn cửa hàng trước khi xem chi tiết sản phẩm.";
+                    return RedirectToAction("Index");
+                }
+
+                // Load product details with eager loading
+                var item = db.StoreProducts
+                    .Include(sp => sp.Product.ProductCategory)
+                    .Include(sp => sp.Product.ProductImage)
+                    .Include(sp => sp.Product.ProductTopping)
+                    .Include(sp => sp.Product.ProductSize)
+                    .Include(sp => sp.Product.ProductExtra)
+                    .FirstOrDefault(sp => sp.ProductId == id && sp.StoreId == storeId);
+
+                if (item == null)
+                {
+                    return HttpNotFound("Sản phẩm không có sẵn trong cửa hàng này.");
+                }
+
+                // Update view count
+                UpdateViewCount(id);
+
+                // Save to view history
+                SaveToViewHistory(id);
+
+                // Get review count
+                ViewBag.CountReview = db.Reviews.Count(x => x.ProductId == id);
+
+                return View(item);
+            }
+            catch (Exception ex)
+            {
+                // Log the exception
+                System.Diagnostics.Debug.WriteLine($"Error in Detail action: {ex.Message}");
+                throw;
+            }
+        }
+        private void UpdateViewCount(int productId)
+        {
+            try
+            {
+                using (var context = new ApplicationDbContext())
+                {
+                    // Use ExecuteSqlCommand for direct update
+                    context.Database.ExecuteSqlCommand(
+                        "UPDATE Products SET ViewCount = ViewCount + 1 WHERE Id = @p0",
+                        productId
+                    );
+                }
+            }
+            catch (Exception ex)
+            {
+                // Log the error but don't throw it since view count is not critical
+                System.Diagnostics.Debug.WriteLine($"Error updating view count: {ex.Message}");
+            }
+        }
+        private void SaveToViewHistory(int productId)
+        {
+            try
+            {
+                var userId = User.Identity.GetUserId();
+                if (!string.IsNullOrEmpty(userId))
+                {
+                    using (var context = new ApplicationDbContext())
                     {
-                        ProductId = id,
-                        UserId = userId,
-                        ViewedAt = DateTime.Now
-                    };
-                    db.ProductViewHistory.Add(historyEntry);
-                    db.SaveChanges();
+                        var existingHistory = context.ProductViewHistory
+                            .FirstOrDefault(h => h.ProductId == productId && h.UserId == userId);
+
+                        if (existingHistory == null)
+                        {
+                            var historyEntry = new ProductViewHistory
+                            {
+                                ProductId = productId,
+                                UserId = userId,
+                                ViewedAt = DateTime.Now
+                            };
+
+                            context.ProductViewHistory.Add(historyEntry);
+                            context.SaveChanges();
+                        }
+                        else
+                        {
+                            // Update existing entry's timestamp using SQL
+                            context.Database.ExecuteSqlCommand(
+                                "UPDATE ProductViewHistory SET ViewedAt = @p0 WHERE ProductId = @p1 AND UserId = @p2",
+                                DateTime.Now, productId, userId
+                            );
+                        }
+                    }
                 }
-            }
-            else
-            {
-                // For guest users, store viewed product IDs in session
-                List<int> viewedProducts = Session["ViewHistory"] as List<int> ?? new List<int>();
-                if (!viewedProducts.Contains(id))
+                else
                 {
-                    viewedProducts.Add(id);
-                    Session["ViewHistory"] = viewedProducts;
+                    // For guest users
+                    var viewedProducts = Session["ViewHistory"] as List<int> ?? new List<int>();
+                    if (!viewedProducts.Contains(productId))
+                    {
+                        viewedProducts.Add(productId);
+                        Session["ViewHistory"] = viewedProducts;
+                    }
                 }
             }
-
-            // Get the count of reviews
-            var countReview = db.Reviews.Where(x => x.ProductId == id).Count();
-            ViewBag.CountReview = countReview;
-
-            // Pass store product details to the view
-            return View(item);
+            catch (Exception ex)
+            {
+                // Log the error but don't throw it since view history is not critical
+                System.Diagnostics.Debug.WriteLine($"Error saving view history: {ex.Message}");
+            }
         }
-
-
         public ActionResult ViewHistory()
         {
             var userId = User.Identity.GetUserId();
@@ -416,6 +393,13 @@ namespace WebsiteBanDoAnVaThucUong.Controllers
 
             return PartialView("_RelatedProducts", relatedProducts);
         }
-
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                db.Dispose();
+            }
+            base.Dispose(disposing);
+        }
     }
 }

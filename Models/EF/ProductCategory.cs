@@ -26,8 +26,13 @@ namespace WebsiteBanDoAnVaThucUong.Models.EF
         [StringLength(200, ErrorMessage = "Description Không được vượt quá 50 ký tự")]
         public string Description { get; set; }
         [StringLength(100, ErrorMessage = "Icon Không được vượt quá 50 ký tự")]
-        public string Icon {  get; set; }
+        public string Icon { get; set; }
+        [Required]
+        public int ProductTypeId { get; set; }
 
-        public ICollection<Product> Products { get; set; }
+        [ForeignKey("ProductTypeId")]
+        public virtual ProductType ProductType { get; set; }
+
+        public virtual ICollection<Product> Products { get; set; }
     }
 }

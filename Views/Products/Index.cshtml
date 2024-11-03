@@ -268,7 +268,7 @@
     </div>
 
     @section scripts{
-  
+
         <script>
             $(document).ready(function () {
                 $('#open-store-modal').click(function () {
@@ -285,11 +285,11 @@
 
                     // Cập nhật UI
                     $('#selected-store-info').html(`
-                                                    <div class="store-details">
-                                                        <h4>${storeName}</h4>
-                                                        <p>${storeAddress}</p>
-                                                    </div>
-                                                `);
+                                                                    <div class="store-details">
+                                                                        <h4>${storeName}</h4>
+                                                                        <p>${storeAddress}</p>
+                                                                    </div>
+                                                                `);
 
                     // Gửi AJAX để lưu store đã chọn
                     $.ajax({

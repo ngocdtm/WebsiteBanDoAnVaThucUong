@@ -1,121 +1,102 @@
-﻿﻿@model IEnumerable<WebsiteBanDoAnVaThucUong.Models.EF.ProductImage>
+﻿@model IEnumerable<WebsiteBanDoAnVaThucUong.Models.EF.ProductImage>
 @{
-    ViewBag.Title = "Ảnh sản phảm";
-    Layout = "~/Areas/Admin/Views/Shared/_LayoutEmpty.cshtml";
-
-
+    ViewBag.Title = "Ảnh sản phẩm";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
 }
-<style>
-    .glImage {
-        list-style: none;
-        margin: 0;
-        padding: 0;
-        display: flex;
-    }
 
-        .glImage li {
-            /*flex-direction:*/
-            display: inline-block;
-            position: relative;
-        }
-
-    .box-btn {
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        width: 100%;
-        text-align: center;
-    }
-</style>
-<!-- Main content -->
-<section class="content">
-
-    <!-- Default box -->
-    <div class="card">
-        <div class="card-header">
-            <h3 class="card-title">Ảnh sản phẩm</h3>
-
-            <div class="card-tools">
-                <button type="button" class="btn btn-danger" title="Collapse">
-                    Xóa hết
-                </button>
-
-                <input type="button" value="Tải ảnh" class="btn btn-success" onclick="BrowseServer('txtImage');" />
-            </div>
+<div class="row">
+    <div class="col-12">
+        <h1>Ảnh sản phẩm</h1>
+        <div class="text-right">
+            <a href="#" id="btnDeleteAll" class="btn btn-danger">Xóa hết</a>
         </div>
-        <div class="card-body">
-            <ul class="glImage">
-                @if (Model != null)
-                {
-                    foreach (var item in Model)
-                    {
-                        <li id="trow_@item.Id">
-                            <img src="@item.Image" width="200" />
-                            <div class="box-btn">
-                                <a href="#" data-id="@item.Id" class="btn btn-sm btn-danger btnDelete"><i class="fa fa-trash"></i></a>
-                                @if (item.IsDefault)
-                                {
-                                    <a href="#" data-id="@item.Id" class="btn btn-sm btn-success btnDefault"><i class="fa fa-check"></i></a>
-                                }
-                                else
-                                {
-                                    <a href="#" data-id="@item.Id" class="btn btn-sm btn-warning btnDefault">X</a>
-                                }
-                            </div>
-                        </li>
-                    }
-                }
-            </ul>
-        </div>
-        <!-- /.card-body -->
-        <div class="card-footer">
-
-        </div>
-        <!-- /.card-footer-->
     </div>
-    <!-- /.card -->
+</div>
 
-</section>
-<!-- /.content -->
-
-<script>
-    function BrowseServer(field) {
-        var finder = new CKFinder();
-        finder.selectActionFunction = function (fileUrl) {
-            debugger;
-            AddImage(@ViewBag.productId, fileUrl);
-        };
-        finder.popup();
+<div class="row mt-3">
+    @if (Model != null && Model.Any())
+    {
+        foreach (var item in Model)
+        {
+            <div class="col-md-3 mb-3" id="image_@item.Id">
+                <div class="card">
+                    <img src="@item.Image" class="card-img-top" alt="product image" />
+                    <div class="card-body text-center">
+                        @if (item.IsDefault)
+                        {
+                            <span class="badge badge-primary mb-2">Ảnh đại diện</span>
+                        }
+                        else
+                        {
+                            <button class="btn btn-sm btn-outline-primary mb-2 btnSetDefault" data-id="@item.Id">
+                                Đặt làm ảnh đại diện
+                            </button>
+                        }
+                        <button class="btn btn-sm btn-danger btnDeleteImage" data-id="@item.Id">
+                            Xóa
+                        </button>
+                    </div>
+                </div>
+            </div>
+        }
     }
-    function AddImage(id, url) {
-        debugger;
-        $.ajax({
-            url: '/admin/productimage/AddImage',
-            type: 'POST',
-            data: { productId: id, url: url },
-            success: function (rs) {
-                if (rs.Success) {
-                    window.location.reload();
+</div>
+
+@section scripts {
+    <script>
+        $(document).ready(function () {
+
+            $('body').on('click', '.btnDeleteImage', function (e) {
+                e.preventDefault();
+                var btn = $(this);
+                var id = btn.data('id');
+                if (confirm('Bạn có chắc muốn xóa ảnh này?')) {
+                    $.ajax({
+                        url: '/admin/ProductImage/Delete',
+                        type: 'POST',
+                        data: { id: id },
+                        success: function (rs) {
+                            if (rs.success) {
+                                $('#image_' + id).remove();
+                                // Reload page để cập nhật trạng thái ảnh đại diện
+                                location.reload();
+                            }
+                        }
+                    });
                 }
-            }
-        });
-    }
-    $(document).ready(function () {
-        $('body').on('click', '.btnDelete', function () {
-            var id = $(this).data('id');
-            var conf = confirm('ban có muốn xóa ảnh này không?');
-            if (conf === true) {
+            });
+
+            $('.btnSetDefault').click(function (e) {
+                e.preventDefault();
+                var id = $(this).data('id');
                 $.ajax({
-                    url: '/admin/productimage/delete',
+                    url: '/admin/ProductImage/SetDefault',
                     type: 'POST',
                     data: { id: id },
                     success: function (rs) {
                         if (rs.success) {
-                            $('#trow_' + id).remove();
+                            location.reload();
                         }
                     }
                 });
-            }
-        });
+            });
+
+            $('#btnDeleteAll').click(function (e) {
+                e.preventDefault();
+                var productId = @ViewBag.ProductId;
+                if (confirm('Bạn có chắc muốn xóa tất cả ảnh?')) {
+                    $.ajax({
+                        url: '/admin/ProductImage/DeleteAll',
+                        type: 'POST',
+                        data: { productId: productId },
+                        success: function (rs) {
+                            if (rs.success) {
+                                location.reload();
+                            }
+                        }
+                    });
+                }
+            });
     });
-</script>
+    </script>
+}

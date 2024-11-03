@@ -316,6 +316,7 @@
     <Compile Include="Areas\Admin\AdminAreaRegistration.cs" />
     <Compile Include="Areas\Admin\Controllers\AccountController.cs" />
     <Compile Include="Areas\Admin\Controllers\CategoryController.cs" />
+    <Compile Include="Areas\Admin\Controllers\ExtrasController.cs" />
     <Compile Include="Areas\Admin\Controllers\FeedBackLetterController.cs" />
     <Compile Include="Areas\Admin\Controllers\HomeController.cs" />
     <Compile Include="Areas\Admin\Controllers\ImageSlidersController.cs" />
@@ -325,11 +326,14 @@
     <Compile Include="Areas\Admin\Controllers\ProductCategoryController.cs" />
     <Compile Include="Areas\Admin\Controllers\ProductController.cs" />
     <Compile Include="Areas\Admin\Controllers\ProductImageController.cs" />
+    <Compile Include="Areas\Admin\Controllers\ProductTypesController.cs" />
     <Compile Include="Areas\Admin\Controllers\PromotionsController.cs" />
     <Compile Include="Areas\Admin\Controllers\RoleController.cs" />
+    <Compile Include="Areas\Admin\Controllers\SizesController.cs" />
     <Compile Include="Areas\Admin\Controllers\StatisticalController.cs" />
     <Compile Include="Areas\Admin\Controllers\StoreProductsController.cs" />
     <Compile Include="Areas\Admin\Controllers\StoresController.cs" />
+    <Compile Include="Areas\Admin\Controllers\ToppingsController.cs" />
     <Compile Include="Areas\Admin\Controllers\VouchersController.cs" />
     <Compile Include="Areas\Employee\Controllers\AccountController.cs" />
     <Compile Include="Areas\Employee\Controllers\HomeController.cs" />
@@ -363,20 +367,19 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="IServiceCollection.cs" />
-    <Compile Include="Migrations\202410201201406_UpdateDatabaseWithSizeAndTopping.cs" />
-    <Compile Include="Migrations\202410201201406_UpdateDatabaseWithSizeAndTopping.designer.cs">
-      <DependentUpon>202410201201406_UpdateDatabaseWithSizeAndTopping.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202410230543226_Sizes.cs" />
-    <Compile Include="Migrations\202410230543226_Sizes.designer.cs">
-      <DependentUpon>202410230543226_Sizes.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202410230544431_Toppings.cs" />
-    <Compile Include="Migrations\202410230544431_Toppings.designer.cs">
-      <DependentUpon>202410230544431_Toppings.cs</DependentUpon>
+    <Compile Include="Migrations\202411031124373_Bevergers.cs" />
+    <Compile Include="Migrations\202411031124373_Bevergers.Designer.cs">
+      <DependentUpon>202411031124373_Bevergers.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
+    <Compile Include="Models\EF\Combo.cs" />
+    <Compile Include="Models\EF\ComboDetail.cs" />
+    <Compile Include="Models\EF\Extra.cs" />
     <Compile Include="Models\EF\MemberRanks.cs" />
+    <Compile Include="Models\EF\ProductExtra.cs" />
+    <Compile Include="Models\EF\ProductSize.cs" />
+    <Compile Include="Models\EF\ProductTopping.cs" />
+    <Compile Include="Models\EF\ProductType.cs" />
     <Compile Include="Models\EF\ProductViewHistory.cs" />
     <Compile Include="Models\EF\Size.cs" />
     <Compile Include="Models\EF\StoreDTO.cs" />
@@ -426,6 +429,12 @@
     <Compile Include="Startup.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Content\assets\images\clock.jpg" />
+    <Content Include="Content\assets\images\dinhvi.jpg" />
+    <Content Include="Content\assets\images\discount.jpg" />
+    <Content Include="Content\assets\images\home.jpg" />
+    <Content Include="Content\assets\images\motorbike.jpg" />
+    <Content Include="Content\assets\images\phone.png" />
     <Content Include="Content\bootstrap-grid.css" />
     <Content Include="Content\bootstrap-grid.min.css" />
     <Content Include="Content\bootstrap-grid.rtl.css" />
@@ -449,10 +458,13 @@
     <Content Include="Image\cach-lam-mi-y.jpg" />
     <Content Include="Image\computer.png" />
     <Content Include="Image\details.jpg" />
+    <Content Include="Image\editorconfig.txt" />
     <Content Include="Image\flat-design-food-banner-template_23-2149076251.jpg" />
     <Content Include="Image\flat-design-food-sale-banner_23-2149138014.jpg" />
     <Content Include="Image\gaphomai.jpg" />
     <Content Include="Image\hand-drawn-horizontal-banner-template-thanksgiving-day-celebration_23-2150948327.jpg" />
+    <Content Include="Image\icons8-back-24.png" />
+    <Content Include="Image\icons8forward24.png" />
     <Content Include="Image\images5430979_EH_day3_0594.jpg" />
     <Content Include="Image\slideban.png" />
     <Content Include="Image\TCH-Hoàng-Đạo-Thuý.jpg" />
@@ -469,6 +481,26 @@
     <Content Include="Areas\Admin\Views\StoreProducts\Details.cshtml" />
     <Content Include="Areas\Admin\Views\StoreProducts\Edit.cshtml" />
     <Content Include="Areas\Admin\Views\StoreProducts\Index.cshtml" />
+    <Content Include="Areas\Admin\Views\Extras\Create.cshtml" />
+    <Content Include="Areas\Admin\Views\Extras\Delete.cshtml" />
+    <Content Include="Areas\Admin\Views\Extras\Details.cshtml" />
+    <Content Include="Areas\Admin\Views\Extras\Edit.cshtml" />
+    <Content Include="Areas\Admin\Views\Extras\Index.cshtml" />
+    <Content Include="Areas\Admin\Views\Toppings\Create.cshtml" />
+    <Content Include="Areas\Admin\Views\Toppings\Delete.cshtml" />
+    <Content Include="Areas\Admin\Views\Toppings\Details.cshtml" />
+    <Content Include="Areas\Admin\Views\Toppings\Edit.cshtml" />
+    <Content Include="Areas\Admin\Views\Toppings\Index.cshtml" />
+    <Content Include="Areas\Admin\Views\Sizes\Create.cshtml" />
+    <Content Include="Areas\Admin\Views\Sizes\Delete.cshtml" />
+    <Content Include="Areas\Admin\Views\Sizes\Details.cshtml" />
+    <Content Include="Areas\Admin\Views\Sizes\Edit.cshtml" />
+    <Content Include="Areas\Admin\Views\Sizes\Index.cshtml" />
+    <Content Include="Areas\Admin\Views\ProductTypes\Create.cshtml" />
+    <Content Include="Areas\Admin\Views\ProductTypes\Delete.cshtml" />
+    <Content Include="Areas\Admin\Views\ProductTypes\Details.cshtml" />
+    <Content Include="Areas\Admin\Views\ProductTypes\Edit.cshtml" />
+    <Content Include="Areas\Admin\Views\ProductTypes\Index.cshtml" />
     <None Include="Scripts\jquery-3.7.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.7.1.js" />
     <Content Include="Scripts\jquery-3.7.1.min.js" />
@@ -3911,14 +3943,8 @@
     <WCFMetadata Include="Connected Services\" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\202410201201406_UpdateDatabaseWithSizeAndTopping.resx">
-      <DependentUpon>202410201201406_UpdateDatabaseWithSizeAndTopping.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202410230543226_Sizes.resx">
-      <DependentUpon>202410230543226_Sizes.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202410230544431_Toppings.resx">
-      <DependentUpon>202410230544431_Toppings.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\202411031124373_Bevergers.resx">
+      <DependentUpon>202411031124373_Bevergers.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

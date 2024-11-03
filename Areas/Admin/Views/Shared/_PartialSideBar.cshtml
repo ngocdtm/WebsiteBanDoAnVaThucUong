@@ -1,11 +1,10 @@
-﻿
-<!-- Sidebar -->
+﻿<!-- Sidebar -->
 <div class="sidebar">
     <!-- Sidebar user (optional) -->
     <div class="user-panel mt-3 pb-3 mb-3 d-flex">
         @*<div class="image">
-            <img src="~/Uploads/images/logo.png" class="img-circle elevation-2" alt="User Image">
-        </div>*@
+                <img src="~/Uploads/images/logo.png" class="img-circle elevation-2" alt="User Image">
+            </div>*@
         <div class="info">
             <a href="/admin/home" class="d-block admin-name" style="font-size:25px">  Quản trị viên</a>
             <style>
@@ -22,15 +21,15 @@
 
     <!-- SidebarSearch Form -->
     @*<div class="form-inline">
-        <div class="input-group" data-widget="sidebar-search">
-            <input class="form-control form-control-sidebar" type="search" placeholder="Search" aria-label="Search">
-            <div class="input-group-append">
-                <button class="btn btn-sidebar">
-                    <i class="fas fa-search fa-fw"></i>
-                </button>
+            <div class="input-group" data-widget="sidebar-search">
+                <input class="form-control form-control-sidebar" type="search" placeholder="Search" aria-label="Search">
+                <div class="input-group-append">
+                    <button class="btn btn-sidebar">
+                        <i class="fas fa-search fa-fw"></i>
+                    </button>
+                </div>
             </div>
-        </div>
-    </div>*@
+        </div>*@
 
     <!-- Sidebar Menu -->
     <nav class="mt-2">
@@ -119,7 +118,30 @@
                             <p>Sản phẩm</p>
                         </a>
                     </li>
-
+                    <li class="nav-item">
+                        <a href="/Admin/ProductTypes" class="nav-link">
+                            <i class="far fa-circle nav-icon"></i>
+                            <p>Nhóm Sản phẩm</p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/Admin/Toppings" class="nav-link">
+                            <i class="far fa-circle nav-icon"></i>
+                            <p>Topping</p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/Admin/Sizes" class="nav-link">
+                            <i class="far fa-circle nav-icon"></i>
+                            <p>Size</p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/Admin/Extras" class="nav-link">
+                            <i class="far fa-circle nav-icon"></i>
+                            <p>Extra</p>
+                        </a>
+                    </li>
                 </ul>
             </li>
 
@@ -141,30 +163,6 @@
                     </p>
                 </a>
             </li>
-            @*<li class="nav-item">
-            <a href="/Admin/promotions" class="nav-link">
-                <i class="nav-icon fas fa-tachometer-alt"></i>
-                <p>
-                    Quản lý Khuyến mãi
-                    <i class="right fas fa-angle-left"></i>
-                </p>
-            </a>
-            <ul class="nav nav-treeview">
-                <li class="nav-item">
-                    <a href="/Admin/promotiontypes" class="nav-link">
-                        <i class="far fa-circle nav-icon"></i>
-                        <p>Loại khuyến mãi</p>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="/Admin/promotions" class="nav-link">
-                        <i class="far fa-circle nav-icon"></i>
-                        <p>Chương trình khuyến mãi</p>
-                    </a>
-                </li>
-
-            </ul>
-        </li>*@
             <li class="nav-item">
                 <a href="/Admin/vouchers" class="nav-link">
                     <i class="nav-icon fas fa-th"></i>
@@ -192,17 +190,15 @@
                     </p>
                 </a>
             </li>
-
-
             <!--<li class="nav-item">
-    <a href="/post" class="nav-link">
-        <i class="nav-icon fas fa-th"></i>
-        <p>
-            Cấu hình hệ thống-->
+            <a href="/post" class="nav-link">
+                <i class="nav-icon fas fa-th"></i>
+                <p>
+                    Cấu hình hệ thống-->
             @*<span class="right badge badge-danger">New</span>*@
             <!--</p>
-        </a>
-    </li>-->
+                </a>
+            </li>-->
 
         </ul>
     </nav>

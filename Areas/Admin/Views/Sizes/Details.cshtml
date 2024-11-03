@@ -1,0 +1,35 @@
+﻿@model WebsiteBanDoAnVaThucUong.Models.EF.Size
+
+@{
+    ViewBag.Title = "Details";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>Size</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.NameSize)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.NameSize)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.PriceSize)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.PriceSize)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>

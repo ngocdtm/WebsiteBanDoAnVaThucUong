@@ -28,6 +28,15 @@ namespace WebsiteBanDoAnVaThucUong.Models.EF
         public decimal FinalAmount { get; set; }
         public virtual Order Orders { get; set; }
         public virtual Product Products { get; set; }
+        // Thông tin về size, topping, extra
+        public string SelectedSizeIds { get; set; }  // Lưu dưới dạng chuỗi JSON
+        public string SelectedToppingIds { get; set; }  // Lưu dưới dạng chuỗi JSON
+        public string SelectedExtraIds { get; set; }  // Lưu dưới dạng chuỗi JSON
+
+        // Giá của từng option
+        public decimal SizePrice { get; set; }
+        public decimal ToppingPrice { get; set; }
+        public decimal ExtraPrice { get; set; }
 
         public virtual ICollection<OrderDetailPromotion> OrderDetailPromotion { get; set; }
     }

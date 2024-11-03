@@ -4,63 +4,66 @@
         e.preventDefault();
         console.log('AddToCart button clicked'); // Add this line
         var id = $(this).data('id');
-        //var storeId = $(this).data('storeid');
-        var storeId = 1;
-
-
+        var storeId = $(this).data('storeid');
         var quantity = 1;
         var tQuantity = $('#quantity_value').text();
-        var selectedToppingIds = [];
+        // Collect selected topping, size, and extra IDs
+        var toppingIds = [];
+        $('.topping-option:checked').each(function () {
+            toppingIds.push($(this).val());
+            console.log("Selected topping id:", $(this).val());
+        });
+
+        var sizeId = null;
+        var selectedSize = $('.size-option:checked');
+        if (selectedSize.length > 0) {
+            sizeId = selectedSize.val();
+            console.log("Selected size id:", sizeId);
+        }
+
+        // Get selected extra IDs
+        var extraIds = [];
+        $('.extra-option:checked').each(function () {
+            extraIds.push(parseInt($(this).val()));
+            console.log("Selected extra id:", $(this).val());
+        });
+
+        console.log('Selected options:', {
+            id: id,
+            storeId: storeId,
+            quantity: quantity,
+            sizeId: sizeId,
+            toppingIds: toppingIds,
+            extraIds: extraIds
+        });
+
         if (tQuantity != '') {
             quantity = parseInt(tQuantity);
         }
-        var toppings = []; // Khởi tạo mảng toppings
-        $('input[name="selectedToppingIds"]:checked').each(function () {
-            toppings.push($(this).val()); // Thêm topping được chọn vào mảng
-        });
-        var Size = $('#selectedSizeId option:selected').text();  // Giả sử bạn có dropdown hoặc input với ID là 'sizeSelector'
-
-        if (Size === undefined || Size === "" || Size === null) {
-            Size = "S";
-        }
-
-        if (selectedToppingIds === undefined || selectedToppingIds.length === 0) {
-            selectedToppingIds = [];
-        } else {
-            selectedToppingIds = toppings
-        }
-
-
         // Kiểm tra nếu storeId không tồn tại
         if (!storeId) {
             alert("Không tìm thấy storeId.");
             return;
         }
-
         $.ajax({
             url: '/shoppingCart/AddToCart',
             type: 'POST',
+            traditional: true, // Quan trọng khi gửi mảng
             data: {
-                id: id, quantity: quantity, selectedSizeId: Size,
-                selectedToppingIds: toppings, storeId: storeId
+                id: id, quantity: quantity, storeId: storeId,
+                sizeId: sizeId,
+                toppingIds: toppingIds,
+                extraIds: extraIds
             },
             success: function (rs) {
                 if (rs.Success) {
                     $('#checkout_items').html(rs.Count);
-                    toastr.success(rs.msg); // Hiển thị thông báo thành công
+                    alert(rs.msg);
                 } else {
-                  
                     alert("Có lỗi xảy ra: " + rs.msg);
                 }
             },
-             
             error: function (xhr, status, error) {
-                console.log("ID: " + id);
-                console.log("Quantity: " + quantity);
-                console.log("Selected Size ID: " + Size);
-                console.log("Selected Topping IDs: " + toppings);
-                console.log("Store ID: " + storeId);
-
                 console.error("AJAX Error: " + status + error);
                 alert("Có lỗi xảy ra khi thêm sản phẩm vào giỏ hàng");
             }
@@ -71,6 +74,10 @@
         var id = $(this).data("id");
         var quantity = $('#Quantity_' + id).val();
         var storeId = $(this).data('storeid') || $('#store_id_hidden').val(); // Thử lấy từ nút bấm hoặc input hidden
+        // Lấy thông tin về size, toppings và extras từ item
+        var sizeIds = $(this).data('sizeids') ? $(this).data('sizeids').toString().split(',').map(Number) : [];
+        var toppingIds = $(this).data('toppingids') ? $(this).data('toppingids').toString().split(',').map(Number) : [];
+        var extraIds = $(this).data('extraids') ? $(this).data('extraids').toString().split(',').map(Number) : [];
 
         // Kiểm tra nếu storeId không tồn tại
         if (!storeId) {
@@ -78,7 +85,8 @@
             return;
         }
 
-        Update(id, quantity, storeId);
+        Update(id, quantity, storeId, sizeIds, toppingIds, extraIds);
+
     });
 
     $('body').on('click', '.btnDeleteAll', function (e) {
@@ -95,6 +103,11 @@
         e.preventDefault();
         var id = $(this).data('id');
         var storeId = $(this).data('storeid') || $('#store_id_hidden').val(); // Thử lấy từ nút bấm hoặc input hidden
+
+        // Lấy thông tin về size, toppings và extras từ item
+        var sizeIds = $(this).data('sizeids') ? $(this).data('sizeids').toString().split(',').map(Number) : [];
+        var toppingIds = $(this).data('toppingids') ? $(this).data('toppingids').toString().split(',').map(Number) : [];
+        var extraIds = $(this).data('extraids') ? $(this).data('extraids').toString().split(',').map(Number) : [];
         var conf = confirm('Bạn có chắc muốn xóa sản phẩm này khỏi giỏ hàng?');
 
         if (conf == true) {
@@ -105,13 +118,23 @@
             $.ajax({
                 url: '/shoppingcart/Delete',
                 type: 'POST',
-                data: { id: id, storeId: storeId },
+                data: {
+                    id: id,
+                    storeId: storeId,
+                    sizeId: sizeIds && sizeIds.length > 0 ? sizeIds[0] : null,
+                    toppingIds: toppingIds || [],
+                    extraIds: extraIds || []
+                },
+                traditional: true,
                 success: function (rs) {
                     if (rs.Success) {
                         $('#checkout_items').html(rs.Count);
                         $('#trow_' + id).remove();
                         LoadCart();  // Reload giỏ hàng sau khi xóa sản phẩm
+                    } else {
+                        alert(rs.msg);
                     }
+
                 },
                 error: function (xhr, status, error) {
                     console.error("AJAX Error: Status = " + status + ", Error = " + error);
@@ -150,14 +173,25 @@ function DeleteAll() {
     });
 }
 
-function Update(id, quantity, storeId) {
+function Update(id, quantity, storeId, sizeIds, toppingIds, extraIds) {
     $.ajax({
         url: '/shoppingCart/Update',
         type: 'POST',
-        data: { id: id, quantity: quantity, storeId: storeId },
+        data: {
+            id: id,
+            quantity: quantity,
+            storeId: storeId,
+            sizeId: sizeIds && sizeIds.length > 0 ? sizeIds[0] : null,
+            toppingIds: toppingIds || [],
+            extraIds: extraIds || []
+        },
+        traditional: true,
         success: function (rs) {
             if (rs.Success) {
                 LoadCart();  // Reload giỏ hàng sau khi cập nhật
+                ShowCount(); // Cập nhật số lượng items trong giỏ hàng
+            } else {
+                alert(rs.msg);
             }
         },
         error: function (xhr, status, error) {

@@ -13,7 +13,6 @@ namespace WebsiteBanDoAnVaThucUong.Models.EF
     {
         public Promotion()
         {
-            //this.PromotionRule = new HashSet<PromotionRule>();
             this.PromotionProduct = new HashSet<PromotionProduct>();
             this.OrderDetailPromotion = new HashSet<OrderDetailPromotion>();
         }

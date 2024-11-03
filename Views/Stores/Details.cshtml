@@ -1,4 +1,4 @@
-﻿@model WebsiteBanDoAnVaThucUong.Models.EF.Store
+﻿﻿@model WebsiteBanDoAnVaThucUong.Models.EF.Store
 
 @{
     Layout = null;
@@ -10,65 +10,108 @@
 <head>
     <meta name="viewport" content="width=device-width" />
     <title>Details</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            width: 80%;
+            margin: 20px auto;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            padding: 20px;
+            border-radius: 8px;
+        }
+
+        h4 {
+            color: #333;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        dl {
+            display: flex;
+            flex-direction: row; /* Keep items in a row */
+            align-items: flex-start; /* Align items at the start */
+            gap: 20px;
+        }
+
+        dd {
+            margin-top: 15px;
+            text-align: left; /* Align text to the left */
+        }
+
+        .image-store {
+            position: relative; /* Ensures the image is positioned relative to its container */
+            margin-right: -150px; /* Adjust to control spacing */
+            width: 100%; /* Ensures the image takes up the available width */
+            max-width: 85%; /* Maintains aspect ratio */
+        }
+
+            .image-store img {
+                width: 100%; /* Ensures the image stretches or shrinks as needed */
+                height: auto; /* Keeps the image aspect ratio */
+            }
+
+        .info {
+            display: flex;
+            flex-direction: column; /* Stack info vertically */
+            margin-top: 10px; /* Add some space above each info item */
+        }
+
+        p {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        a {
+            color: #007bff;
+            text-decoration: none;
+            font-weight: bold;
+            padding: 8px 12px;
+            border: 1px solid #007bff;
+            border-radius: 4px;
+            transition: background-color 0.3s ease;
+        }
+
+            a:hover {
+                background-color: #007bff;
+                color: white;
+            }
+    </style>
 </head>
 <body>
-    <div>
-        <h4>Store</h4>
-        <hr />
+    <div class="container">
+        <h4>Chi Nhánh</h4>
         <dl class="dl-horizontal">
-            <dt>
-                @Html.DisplayNameFor(model => model.Alias)
-            </dt>
-    
-            <dd>
-                @Html.DisplayFor(model => model.Alias)
+            <dd class="image-store">
+                <img src="@Url.Content("~/Image/" + @Model.Image)" alt="@Model.Name" style="max-width: 85%; height: auto;" />
             </dd>
-    
-            <dt>
-                @Html.DisplayNameFor(model => model.Name)
-            </dt>
-    
-            <dd>
-                @Html.DisplayFor(model => model.Name)
-            </dd>
-    
-            <dt>
-                @Html.DisplayNameFor(model => model.Address)
-            </dt>
-    
-            <dd>
-                @Html.DisplayFor(model => model.Address)
-            </dd>
-    
-            <dt>
-                @Html.DisplayNameFor(model => model.Long)
-            </dt>
-    
-            <dd>
-                @Html.DisplayFor(model => model.Long)
-            </dd>
-    
-            <dt>
-                @Html.DisplayNameFor(model => model.Lat)
-            </dt>
-    
-            <dd>
-                @Html.DisplayFor(model => model.Lat)
-            </dd>
-    
-            <dt>
-                @Html.DisplayNameFor(model => model.Image)
-            </dt>
-    
-            <dd>
-                @Html.DisplayFor(model => model.Image)
-            </dd>
-    
+
+            <div class="info">
+                <dd>
+                    <img src="~/Content/assets/images/home.jpg" alt="Location" style="max-width: 8%; height: auto;" />
+                    @Html.DisplayFor(model => model.Name)
+                </dd>
+                <dd>
+                    <img src="~/Content/assets/images/dinhvi.jpg" alt="Location" style="max-width: 8%; height: auto;" />
+                    @Html.DisplayFor(model => model.Address)
+                </dd>
+
+                <dd>
+                    <img src="~/Content/assets/images/phone.png" alt="PhoneNumber" style="max-width: 8%; height: auto;" />
+                    Số Điện Thoại: 0000000
+                </dd>
+            </div>
         </dl>
     </div>
     <p>
-        @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
-        @Html.ActionLink("Back to List", "Index")
+        @Html.ActionLink("Về Trang Chủ", "Index")
     </p>
 </body>
 </html>
