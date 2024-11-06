@@ -346,6 +346,7 @@
     <Compile Include="Common\Common.cs" />
     <Compile Include="Common\SettingHelper.cs" />
     <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Controllers\AddressesController.cs" />
     <Compile Include="Controllers\ArticleController.cs" />
     <Compile Include="Controllers\ContactController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
@@ -371,7 +372,18 @@
     <Compile Include="Migrations\202411031124373_Bevergers.Designer.cs">
       <DependentUpon>202411031124373_Bevergers.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202411061140145_address_v1.cs" />
+    <Compile Include="Migrations\202411061140145_address_v1.Designer.cs">
+      <DependentUpon>202411061140145_address_v1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202411061202002_address_v2.cs" />
+    <Compile Include="Migrations\202411061202002_address_v2.Designer.cs">
+      <DependentUpon>202411061202002_address_v2.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
+    <Compile Include="Models\AddressModel.cs" />
+    <Compile Include="Models\AddressParser.cs" />
+    <Compile Include="Models\EF\Address.cs" />
     <Compile Include="Models\EF\Combo.cs" />
     <Compile Include="Models\EF\ComboDetail.cs" />
     <Compile Include="Models\EF\Extra.cs" />
@@ -3919,6 +3931,11 @@
     <Content Include="Views\Products\_RelatedProducts.cshtml" />
     <Content Include="Views\Products\ViewHistory.cshtml" />
     <Content Include="Views\MemberRank\MemberRank.cshtml" />
+    <Content Include="Views\Addresses\Create.cshtml" />
+    <Content Include="Views\Addresses\Delete.cshtml" />
+    <Content Include="Views\Addresses\Details.cshtml" />
+    <Content Include="Views\Addresses\Edit.cshtml" />
+    <Content Include="Views\Addresses\Index.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -3945,6 +3962,12 @@
   <ItemGroup>
     <EmbeddedResource Include="Migrations\202411031124373_Bevergers.resx">
       <DependentUpon>202411031124373_Bevergers.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202411061140145_address_v1.resx">
+      <DependentUpon>202411061140145_address_v1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202411061202002_address_v2.resx">
+      <DependentUpon>202411061202002_address_v2.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

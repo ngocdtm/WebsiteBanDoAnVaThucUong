@@ -19,7 +19,7 @@ namespace WebsiteBanDoAnVaThucUong.Filters
                 {
                     Id = s.Id,
                     Name = s.Name,
-                    Address = s.Address
+                  //  Address = s.Address
                 }).ToList();
 
             // Check if stores are populated correctly

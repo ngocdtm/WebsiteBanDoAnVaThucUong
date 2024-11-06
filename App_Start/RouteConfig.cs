@@ -82,7 +82,7 @@ namespace WebsiteBanDoAnVaThucUong
           url: "{alias}-n{id}",
           defaults: new { controller = "News", action = "Detail", id = UrlParameter.Optional },
           namespaces: new[] { "WebsiteBanDoAnVaThucUong.Controllers" }
-      );
+             );
             routes.MapRoute(
              name: "NewsList",
              url: "tin-tuc",
@@ -101,7 +101,19 @@ namespace WebsiteBanDoAnVaThucUong
                 defaults: new { controller = "Home", action = "Index", id = UrlParameter.Optional },
                 namespaces: new[] { "WebsiteBanDoAnVaThucUong.Controllers" }
             );
-          
+            routes.MapRoute(
+        name: "GetDistricts",
+        url: "Addresses/GetDistricts/{code}",
+        defaults: new { controller = "Addresses", action = "GetDistricts" }
+    );
+
+            routes.MapRoute(
+                name: "GetWards",
+                url: "Addresses/GetWards/{code}",
+                defaults: new { controller = "Addresses", action = "GetWards" }
+            );
+
+
         }
     }
 }

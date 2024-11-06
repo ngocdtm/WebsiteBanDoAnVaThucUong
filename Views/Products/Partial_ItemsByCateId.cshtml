@@ -56,10 +56,60 @@
                             Còn lại: @stockInfo.StockCount
                         </div>
                     }
-
+                    @if (item.Product.SalePrice > 0)
+                    {
+                        <div class="product_bubble product_bubble_right product_bubble_red d-flex flex-column align-items-center"><span>sale</span></div>
+                    }
                     <div class="product_info">
                         <h6 class="product_name"><a href="/chi-tiet/@item.Product.Alias-p@(item.Product.Id)">@item.Product.Title</a></h6>
                         <div class="product_price">@WebsiteBanDoAnVaThucUong.Common.Common.FormatNumber(item.Product.SalePrice, 0)</div>
+                    </div>
+
+                    <div class="promotions-section">
+
+                        @{
+                            var activePromotions = item.Product.PromotionProduct
+                                .Where(pp => pp.Promotion.IsActive
+                                    && pp.Promotion.StartDate <= DateTime.Now
+                                    && pp.Promotion.EndDate >= DateTime.Now)
+                                .Select(pp => pp.Promotion);
+                        }
+
+                        @if (activePromotions.Any())
+                        {
+                            foreach (var promo in activePromotions)
+                            {
+                                <div class="promotion-detail">
+                                    <div class="promotion-value">
+                                        @if (promo.DiscountType == 3)
+                                        {
+                                            var promotionProducts = promo.PromotionProduct.ToList();
+                                            var productsToBuy = promotionProducts
+                                                .Where(pp => pp.IsBuyProduct)
+                                                .Select(pp => pp.Product.Title).ToList();
+
+                                            var productsToGet = promotionProducts
+                                           .Where(pp => !pp.IsBuyProduct)
+                                           .Select(pp => pp.Product.Title)
+                                           .ToList();
+                                            <span style="color: #d15151; font-size: 11px; ">
+                                                <i class="fas fa-gifts">   </i> MUA @string.Join(" và ", productsToBuy)
+                                                TẶNG @string.Join(", ", productsToGet)
+                                            </span>
+                                        }
+                                        @switch (promo.DiscountType)
+                                        {
+                                            case 1:
+                                                <span style="color: #e53935; font-size: 11px; ">  <i class="fas fa-tags"></i> Giảm @promo.Name khi mua sản phẩm @item.Product.Title </span>
+                                                break;
+                                            case 2:
+                                                <span style="color: #d15151; font-size: 11px; "> <i class="fas fa-gift">   </i> @promo.Name sản phẩm @item.Product.Title</span>
+                                                break;
+                                        }
+                                    </div>
+                                </div>
+                            }
+                        }
                     </div>
                 </div>
 
@@ -176,8 +226,8 @@
         position: absolute;
         bottom: 10px;
         right: 10px;
-        background-color: cadetblue;
-        color: white;
+        background-color: white;
+        color: black;
         padding: 5px 10px;
         border-radius: 3px;
         font-size: 12px;
@@ -251,3 +301,54 @@
         });
     });
 </script>
+@section Styles {
+    <style>
+        .promotions-section {
+            margin-top: 20px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+
+        .promotion-detail {
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #f8f8f8;
+            border-radius: 6px;
+        }
+
+        .promotion-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+            .promotion-header i {
+                color: #e53935;
+                margin-right: 10px;
+                font-size: 20px;
+            }
+
+            .promotion-header h4 {
+                margin: 0;
+                color: #333;
+            }
+
+        .promotion-description {
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .promotion-period {
+            font-size: 14px;
+            color: #888;
+            margin-bottom: 10px;
+        }
+
+        .promotion-value {
+            font-weight: bold;
+            color: #e53935;
+            font-size: 16px;
+        }
+    </style>
+}

@@ -69,98 +69,144 @@
                         <h2>@Model.Product.Title</h2>
                         <p>@Model.Product.Description</p>
                         <p>Lượt xem: <b>@Model.Product.ViewCount</b></p>
-                    </div>
-                    @*<input type="hidden" id="basePrice" value="@Model.Product.SalePrice" />*@
-                    @*Base price display*@
-                    <div class="product_price" id="totalPrice">
-                        @WebsiteBanDoAnVaThucUong.Common.Common.FormatNumber(Model.Product.SalePrice, 0)
-                    </div>
-                    <!-- Size Selection -->
-                    @if (Model.Product.ProductSize.Any())
-                    {
-                        <div class="size-options">
-                            <h4>Chọn Size</h4>
-                            <div class="options-container">
-                                @foreach (var size in Model.Product.ProductSize)
-                                {
-                                    <div class="option-item">
-                                        <input type="radio"
-                                               class="size-option"
-                                               name="size"
-                                               id="size_@size.Id"
-                                               value="@size.Id"
-                                               data-price="@size.Size.PriceSize" />
-                                        <label for="size_@size.Id">
-                                            @size.Size.NameSize (+@WebsiteBanDoAnVaThucUong.Common.Common.FormatNumber(size.Size.PriceSize, 0))
-                                        </label>
-                                    </div>
-                                }
-                            </div>
-                        </div>
-                    }
-                    @if (Model.Product.ProductTopping.Any())
-                    {
-                        <div class="topping-options">
-                            <h4>Chọn Topping</h4>
-                            <div class="options-container">
-                                @foreach (var topping in Model.Product.ProductTopping)
-                                {
-                                    <div class="option-item">
-                                        <input type="checkbox"
-                                               class="topping-option"
-                                               id="topping_@topping.Id"
-                                               value="@topping.Id"
-                                               data-price="@topping.Topping.PriceTopping" />
-                                        <label for="topping_@topping.Id">
-                                            @topping.Topping.NameTopping (+@WebsiteBanDoAnVaThucUong.Common.Common.FormatNumber(topping.Topping.PriceTopping, 0))
-                                        </label>
-                                    </div>
-                                }
-                            </div>
-                        </div>
-                    }
-                    <!-- Extra Selection -->
-                    @if (Model.Product.ProductExtra.Any())
-                    {
-                        <div class="extra-options">
-                            <h4>Chọn Extra</h4>
-                            <div class="options-container">
-                                @foreach (var extra in Model.Product.ProductExtra)
-                                {
-                                    <div class="option-item">
-                                        <input type="checkbox"
-                                               class="extra-option"
-                                               id="extra_@extra.Id"
-                                               value="@extra.Id"
-                                               data-price="@extra.Extra.Price" />
-                                        <label for="extra_@extra.Id">
-                                            @extra.Extra.Name (+@WebsiteBanDoAnVaThucUong.Common.Common.FormatNumber(extra.Extra.Price, 0))
-                                        </label>
-                                    </div>
-                                }
-                            </div>
-                        </div>
-                    }
-                    <div class="quantity d-flex flex-column flex-sm-row align-items-sm-center">
-                        <span>Quantity:</span>
-                        <div class="quantity_selector">
-                            <span class="minus"><i class="fa fa-minus" aria-hidden="true"></i></span>
-                            <span id="quantity_value">1</span>
-                            <span class="plus"><i class="fa fa-plus" aria-hidden="true"></i></span>
-                        </div>
+                        <div class="promotions-section">
 
-                        <div class="red_button cart">
-                            <a href="#" class="btnAddToCart" data-id="@Model.ProductId" data-storeid="@Model.StoreId">add to cart</a>
+                            @{
+                                var activePromotions = Model.Product.PromotionProduct
+                                    .Where(pp => pp.Promotion.IsActive
+                                        && pp.Promotion.StartDate <= DateTime.Now
+                                        && pp.Promotion.EndDate >= DateTime.Now)
+                                    .Select(pp => pp.Promotion);
+                            }
+
+                            @if (activePromotions.Any())
+                            {
+                                foreach (var promo in activePromotions)
+                                {
+                                    <div class="promotion-detail">
+                                        <div class="promotion-value">
+                                            @if (promo.DiscountType == 3)
+                                            {
+                                                var promotionProducts = promo.PromotionProduct.ToList();
+                                                var productsToBuy = promotionProducts
+                                                    .Where(pp => pp.IsBuyProduct)
+                                                    .Select(pp => pp.Product.Title).ToList();
+
+                                                var productsToGet = promotionProducts
+                                               .Where(pp => !pp.IsBuyProduct)
+                                               .Select(pp => pp.Product.Title)
+                                               .ToList();
+                                                <span style="color: #d15151; font-size: 15px; ">
+                                                    <i class="fas fa-gifts">   </i> MUA @string.Join(" và ", productsToBuy)
+                                                    TẶNG @string.Join(", ", productsToGet)
+                                                </span>
+                                            }
+                                            @switch (promo.DiscountType)
+                                            {
+                                                case 1:
+                                                    <span style="color: #e53935; font-size: 15px; ">  <i class="fas fa-tags"></i> Giảm @promo.Name khi mua sản phẩm @Model.Product.Title </span>
+                                                    break;
+                                                case 2:
+                                                    <span style="color: #d15151; font-size: 15px; "> <i class="fas fa-gift">   </i> @promo.Name sản phẩm @Model.Product.Title</span>
+                                                    break;
+                                            }
+                                        </div>
+                                    </div>
+                                }
+                            }
                         </div>
                     </div>
 
                 </div>
+                @*<input type="hidden" id="basePrice" value="@Model.Product.SalePrice" />*@
+                @*Base price display*@
+                <div class="product_price" id="totalPrice">
+                    @WebsiteBanDoAnVaThucUong.Common.Common.FormatNumber(Model.Product.SalePrice, 0)
+                </div>
+
+                <!-- Size Selection -->
+                @if (Model.Product.ProductSize.Any())
+                {
+                    <div class="size-options">
+                        <h4>Chọn Size</h4>
+                        <div class="options-container">
+                            @foreach (var size in Model.Product.ProductSize)
+                            {
+                                <div class="option-item">
+                                    <input type="radio"
+                                           class="size-option"
+                                           name="size"
+                                           id="size_@size.Id"
+                                           value="@size.Id"
+                                           data-price="@size.Size.PriceSize" />
+                                    <label for="size_@size.Id">
+                                        @size.Size.NameSize (+@WebsiteBanDoAnVaThucUong.Common.Common.FormatNumber(size.Size.PriceSize, 0))
+                                    </label>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                }
+                @if (Model.Product.ProductTopping.Any())
+                {
+                    <div class="topping-options">
+                        <h4>Chọn Topping</h4>
+                        <div class="options-container">
+                            @foreach (var topping in Model.Product.ProductTopping)
+                            {
+                                <div class="option-item">
+                                    <input type="checkbox"
+                                           class="topping-option"
+                                           id="topping_@topping.Id"
+                                           value="@topping.Id"
+                                           data-price="@topping.Topping.PriceTopping" />
+                                    <label for="topping_@topping.Id">
+                                        @topping.Topping.NameTopping (+@WebsiteBanDoAnVaThucUong.Common.Common.FormatNumber(topping.Topping.PriceTopping, 0))
+                                    </label>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                }
+                <!-- Extra Selection -->
+                @if (Model.Product.ProductExtra.Any())
+                {
+                    <div class="extra-options">
+                        <h4>Chọn Extra</h4>
+                        <div class="options-container">
+                            @foreach (var extra in Model.Product.ProductExtra)
+                            {
+                                <div class="option-item">
+                                    <input type="checkbox"
+                                           class="extra-option"
+                                           id="extra_@extra.Id"
+                                           value="@extra.Id"
+                                           data-price="@extra.Extra.Price" />
+                                    <label for="extra_@extra.Id">
+                                        @extra.Extra.Name (+@WebsiteBanDoAnVaThucUong.Common.Common.FormatNumber(extra.Extra.Price, 0))
+                                    </label>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                }
+                <div class="quantity d-flex flex-column flex-sm-row align-items-sm-center">
+                    <span>Quantity:</span>
+                    <div class="quantity_selector">
+                        <span class="minus"><i class="fa fa-minus" aria-hidden="true"></i></span>
+                        <span id="quantity_value">1</span>
+                        <span class="plus"><i class="fa fa-plus" aria-hidden="true"></i></span>
+                    </div>
+
+                    <div class="red_button cart">
+                        <a href="#" class="btnAddToCart" data-id="@Model.ProductId" data-storeid="@Model.StoreId">add to cart</a>
+                    </div>
+                </div>
 
             </div>
+
         </div>
-
     </div>
-
     <div class="tabs_section_container">
 
         <div class="container">
@@ -268,80 +314,5 @@ $(document).ready(function() {
     // Event listeners for price updates
     $('.size-option, .topping-option, .extra-option').change(calculateTotalPrice);
 
-
-
-    //// Add to Cart functionality
-    //$('.btnAddToCart').click(function(e) {
-    //    e.preventDefault();
-
-    //    const productId = $(this).data('id');
-    //    const storeId = $(this).data('storeid');
-    //    const quantity = parseInt($('#quantity_value').text());
-
-    //    // Collect selected options
-    //    const selectedSize = $('.size-option:checked').val();
-    //    const selectedToppings = $('.topping-option:checked').map(function() {
-    //        return $(this).val();
-    //    }).get();
-    //    const selectedExtras = $('.extra-option:checked').map(function() {
-    //        return $(this).val();
-    //    }).get();
-
-    //    // Create cart item object
-    //    const cartItem = {
-    //        id: productId,
-    //        quantity: quantity,
-    //        storeId: storeId,
-    //        sizeId: selectedSize,
-    //        toppingIds: selectedToppings,
-    //        extraIds: selectedExtras
-    //    };
-
-    //    // Send AJAX request
-    //    $.ajax({
-    //        url: '/shoppingcart/AddToCart',
-    //        type: 'POST',
-    //        data: cartItem,
-    //        success: function(rs) {
-    //            if (rs.Success) {
-    //                $('#checkout_items').html(rs.Count);
-
-    //                // Show success message with selected options
-    //                let message = `Đã thêm sản phẩm vào giỏ hàng:\n`;
-    //                message += `- Số lượng: ${quantity}\n`;
-
-    //                if (selectedSize) {
-    //                    const sizeName = $(`input[value="${selectedSize}"]`).next('label').text().trim();
-    //                    message += `- Size: ${sizeName}\n`;
-    //                }
-
-    //                if (selectedToppings.length > 0) {
-    //                    message += `- Toppings: ${selectedToppings.map(id =>
-    //                        $(`input[value="${id}"]`).next('label').text().trim()
-    //                    ).join(', ')}\n`;
-    //                }
-
-    //                if (selectedExtras.length > 0) {
-    //                    message += `- Extras: ${selectedExtras.map(id =>
-    //                        $(`input[value="${id}"]`).next('label').text().trim()
-    //                    ).join(', ')}\n`;
-    //                }
-
-    //                message += `- Tổng tiền: ${$('#totalPrice').text()}`;
-
-    //                alert(message);
-    //            } else {
-    //                alert(rs.msg);
-    //            }
-    //        },
-    //        error: function(xhr, status, error) {
-    //            console.error("AJAX Error:", error);
-    //            alert("Có lỗi xảy ra khi thêm vào giỏ hàng");
-    //        }
-    //    });
-    //});
-
-    //// Initialize price on page load
-    //calculateTotalPrice();
 });
 </script>

@@ -160,7 +160,34 @@
                                         <span aria-hidden="true">&times;</span>
                                     </button>
                                 </div>
+
                                 <div class="modal-body">
+                                    <!-- Form chọn địa chỉ trong modal -->
+                                    <div class="form-group">
+                                        <label>Tỉnh/Thành phố</label>
+                                        <select id="province" class="form-control">
+                                            <option value="">Chọn tỉnh/thành phố</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label>Quận/Huyện</label>
+                                        <select id="district" class="form-control">
+                                            <option value="">Chọn quận/huyện</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label>Phường/Xã</label>
+                                        <select id="ward" class="form-control">
+                                            <option value="">Chọn phường/xã</option>
+                                        </select>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" id="find-stores">Tìm Cửa Hàng</button>
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+                                    </div>
+
                                     <!-- Danh sách các cửa hàng -->
                                     <ul id="store-list">
                                         @if (ViewBag.Stores != null)
@@ -183,9 +210,6 @@
                                             <p>Không có cửa hàng nào được tìm thấy.</p>
                                         }
                                     </ul>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
                                 </div>
                             </div>
                         </div>
@@ -273,7 +297,114 @@
             $(document).ready(function () {
                 $('#open-store-modal').click(function () {
                     $('#storeModal').modal('show');
+                    loadProvinces();
                 });
+
+                // Load provinces
+                function loadProvinces() {
+                    $.ajax({
+                        url: '/Addresses/GetProvinces',
+                        type: 'GET',
+                        success: function (response) {
+                            try {
+                                var provinces = JSON.parse(response);
+                                var options = '<option value="">Chọn tỉnh/thành phố</option>';
+                                provinces.forEach(function (province) {
+                                    options += `<option value="${province.code}">${province.name}</option>`;
+                                });
+                                $('#province').html(options);
+                            } catch (e) {
+                                console.error("Error parsing provinces:", e);
+                            }
+                        },
+                        error: function (xhr, status, error) {
+                            console.error("Error loading provinces:", error);
+                        }
+                    });
+                }
+                $('#province').change(function () {
+                    var provinceCode = $(this).val();
+                    if (provinceCode) {
+                        $.ajax({
+                            url: '/Addresses/GetDistricts',
+                            type: 'GET',
+                            data: { code: provinceCode },
+                            success: function (response) {
+                                try {
+                                    var data = JSON.parse(response); // Parse JSON response
+                                    var options = '<option value="">Chọn quận/huyện</option>';
+                                    if (data.districts && Array.isArray(data.districts)) {
+                                        data.districts.forEach(function (district) {
+                                            options += `<option value="${district.code}">${district.name}</option>`;
+                                        });
+                                    }
+                                    $('#district').html(options);
+                                } catch (e) {
+                                    console.error("Error parsing districts:", e);
+                                    $('#district').html('<option value="">Lỗi xử lý dữ liệu</option>');
+                                }
+                            },
+                            error: function (xhr, status, error) {
+                                console.error("Error loading districts:", error);
+                                $('#district').html('<option value="">Lỗi tải dữ liệu</option>');
+                            }
+                        });
+                    } else {
+                        $('#district').html('<option value="">Chọn quận/huyện</option>');
+                        $('#ward').html('<option value="">Chọn phường/xã</option>');
+                    }
+                });
+
+
+
+                // District change event
+                $('#district').change(function () {
+                    var districtCode = $(this).val();
+                    if (districtCode) {
+                        $.ajax({
+                            url: '/Addresses/GetWards',
+                            type: 'GET',
+                            data: { code: districtCode },
+                            success: function (response) {
+                                try {
+                                    var data = JSON.parse(response);
+                                    var options = '<option value="">Chọn phường/xã</option>';
+                                    if (data.wards && Array.isArray(data.wards)) {
+                                        data.wards.forEach(function (ward) {
+                                            options += `<option value="${ward.code}">${ward.name}</option>`;
+                                        });
+                                    }
+                                    $('#ward').html(options);
+                                } catch (e) {
+                                    console.error("Error parsing wards:", e);
+                                }
+                            },
+                            error: function (xhr, status, error) {
+                                console.error("Error loading wards:", error);
+                            }
+                        });
+                    } else {
+                        $('#ward').html('<option value="">Chọn phường/xã</option>');
+                    }
+                });
+
+
+                // Tìm cửa hàng gần đây
+
+                // Validate address
+                function validateAddress() {
+                    return $('#province').val() &&
+                        $('#district').val() &&
+                        $('#ward').val();
+                }
+
+                function getFullAddress() {
+                    var ward = $('#ward option:selected').text();
+                    var district = $('#district option:selected').text();
+                    var province = $('#province option:selected').text();
+                    return `${ward}, ${district}, ${province}, Vietnam`;
+                }
+
 
                 // Khi người dùng chọn cửa hàng
                 $(document).on('click', '.select-store', function (e) {
@@ -311,6 +442,135 @@
                         }
                     });
                 });
+
+                // Tự động tìm cửa hàng khi chọn ward
+                $('#ward').change(function () {
+                    if ($(this).val()) {
+                        getNearbystores();
+                    }
+                });
+
+                // Tìm cửa hàng gần đây
+                function getNearbystores() {
+                    var province = $('#province option:selected').text();
+                    var district = $('#district option:selected').text();
+                    var ward = $('#ward option:selected').text();
+
+                    console.log('Searching stores for:', { province, district, ward });
+
+                    if (!province || !district || !ward) {
+                        alert('Vui lòng chọn đầy đủ địa chỉ');
+                        return;
+                    }
+
+                    $.ajax({
+                        url: '/Stores/GetNearbyStores',
+                        type: 'POST',
+                        data: {
+                            province: province,
+                            district: district,
+                            ward: ward
+                        },
+                        success: function (response) {
+                            console.log('Server response:', response);
+                            if (response.success) {
+                                if (response.stores && response.stores.length > 0) {
+                                    console.log('Found stores:', response.stores);
+                                    displayStores(response.stores);
+                                } else {
+                                    console.log('No stores found in response');
+                                    $('#store-list').html('<p>Không tìm thấy cửa hàng nào gần đây.</p>');
+                                }
+                            } else {
+                                console.log('Server reported failure:', response.message);
+                                $('#store-list').html(`<p>Không tìm thấy cửa hàng: ${response.message || 'Không có kết quả'}</p>`);
+                            }
+                        },
+                        error: function (xhr, status, error) {
+                            console.error('Ajax error:', { status, error, response: xhr.responseText });
+                            $('#store-list').html('<p>Có lỗi xảy ra khi tìm cửa hàng.</p>');
+                        }
+                    });
+                }
+
+
+                // Hiển thị danh sách cửa hàng
+                function displayStores(stores) {
+                    var storeList = $('#store-list');
+                    storeList.empty();
+
+                    if (!stores || stores.length === 0) {
+                        storeList.html('<p>Không tìm thấy cửa hàng nào gần đây.</p>');
+                        return;
+                    }
+
+                    stores.forEach(function (store) {
+                        var storeCard = $(`
+                        <div class="store-card">
+                            <a href="#" class="select-store"
+                               data-store-id="${store.Id}"
+                               data-store-name="${store.Name}"
+                               data-store-address="${store.Address}">
+                                <div class="store-info">
+                                    <h5>${store.Name}</h5>
+                                    <p>${store.Address}</p>
+                                    ${store.Distance ? `<p>Khoảng cách: ${store.Distance.toFixed(2)} km</p>` : ''}
+                                </div>
+                            </a>
+                        </div>
+                        <hr class="store-divider">
+                    `);
+                        storeList.append(storeCard);
+                    }); function displayStores(stores) {
+                        var storeList = $('#store-list');
+                        storeList.empty();
+
+                        console.log('Displaying stores:', stores);
+
+                        if (!stores || stores.length === 0) {
+                            storeList.html('<p>Không tìm thấy cửa hàng nào gần đây.</p>');
+                            return;
+                        }
+
+                        stores.forEach(function (store) {
+                            // Check if all required data exists
+                            if (!store.Id || !store.Name || !store.Address) {
+                                console.error('Invalid store data:', store);
+                                return;
+                            }
+
+                            var storeCard = $(`
+                    <div class="store-card">
+                        <a href="#" class="select-store"
+                           data-store-id="${store.Id}"
+                           data-store-name="${store.Name}"
+                           data-store-address="${store.Address}">
+                            <div class="store-info">
+                                <h5>${store.Name}</h5>
+                                <p>${store.Address}</p>
+                                ${typeof store.Distance !== 'undefined' ?
+                                    `<p>Khoảng cách: ${Number(store.Distance).toFixed(2)} km</p>` : ''}
+                            </div>
+                        </a>
+                    </div>
+                    <hr class="store-divider">
+                `);
+                            storeList.append(storeCard);
+                        });
+                    }
+                }
+
+                // Nút tìm cửa hàng
+                $('#find-stores').click(function () {
+                    getNearbystores();
+                });
+                $(document).ready(function () {
+                    console.log('Store finder initialized');
+                    // Test if selectors are working
+                    console.log('Province select exists:', $('#province').length > 0);
+                    console.log('District select exists:', $('#district').length > 0);
+                    console.log('Ward select exists:', $('#ward').length > 0);
+                });
             });
 
         </script>
@@ -321,21 +581,8 @@ $(document).ready(function() {
         $('#storeToast').toast({ delay: 5000 });
         $('#storeToast').toast('show');
     }
-});
-    <div aria-live="polite" aria-atomic="true" style="position: relative; min-height: 200px;">
-        <div class="toast" style="position: absolute; top: 0; right: 0;" role="alert" aria-live="assertive" aria-atomic="true" id="storeToast">
-            <div class="toast-header">
-                <strong class="mr-auto">Thông báo</strong>
-                <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="toast-body">
-                Vui lòng chọn cửa hàng trước khi xem chi tiết sản phẩm.
-            </div>
-        </div>
-    </div>
 
+});
         </script>
         <script>
     $(document).ready(function () {

@@ -104,6 +104,23 @@ namespace WebsiteBanDoAnVaThucUong.Models
                 .HasForeignKey(ps => ps.ProductId)
                 .WillCascadeOnDelete(false);
 
+            modelBuilder.Entity<Store>()
+          .HasRequired(s => s.Address)
+          .WithMany()
+          .HasForeignKey(s => s.AddressId)
+          .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<Address>()
+      .Property(a => a.Latitude)
+      .HasPrecision(18, 9);
+
+            modelBuilder.Entity<Address>()
+                .Property(a => a.Longitude)
+                .HasPrecision(18, 9);
+
+            modelBuilder.Entity<Address>()
+                .HasIndex(a => new { a.ProvinceId, a.DistrictId, a.WardId });
+
         }
 
         public DbSet<OrderDetailPromotion> OrderDetailPromotion { get; set; }
@@ -140,6 +157,7 @@ namespace WebsiteBanDoAnVaThucUong.Models
         public DbSet<Topping> Topping { get; set; }
         public DbSet<ProductTopping> ProductTopping { get; set; }
         public DbSet<ProductType> ProductType { get; set; }
+        public DbSet<Address> Addresses { get; set; }
 
         public static ApplicationDbContext Create()
         {

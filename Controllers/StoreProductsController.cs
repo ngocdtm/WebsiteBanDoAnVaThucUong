@@ -28,6 +28,7 @@ namespace WebsiteBanDoAnVaThucUong.Controllers
             var storeProducts = db.StoreProducts
                 .Where(sp => sp.StoreId == storeId)
                 .Include(sp => sp.Product)
+                .Include(sp => sp.Product.PromotionProduct.Select(pp => pp.Promotion))
                 .OrderBy(sp => sp.Product.Title);
 
             int pageSize = 10;

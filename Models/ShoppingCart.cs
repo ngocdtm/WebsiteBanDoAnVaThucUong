@@ -220,6 +220,13 @@ namespace WebsiteBanDoAnVaThucUong.Models
         {
             get
             {
+                if (IsGift)
+                {
+                    return Quantity > 0 &&
+                           ProductId > 0 &&
+                           StoreId > 0;
+                }
+
                 return Quantity > 0 &&
                        ProductId > 0 &&
                        StoreId > 0 &&
@@ -266,6 +273,11 @@ namespace WebsiteBanDoAnVaThucUong.Models
         {
             try
             {
+                if (IsGift)
+                {
+                    TotalPrice = 0;
+                    return;
+                }
                 decimal basePrice = Price;
                 decimal customizationPrice = 0;
 
@@ -293,19 +305,31 @@ namespace WebsiteBanDoAnVaThucUong.Models
                         .Sum(pe => pe.Extra?.Price ?? 0);
                 }
 
+
                 // Store base price for later use
                 BasePrice = basePrice;
 
-                // Calculate final price
+                // Calculate final price before discount
                 decimal unitPrice = basePrice + customizationPrice;
-                TotalPrice = unitPrice * Quantity;
+                decimal totalBeforeDiscount = unitPrice * Quantity;
 
-                // Calculate discount if applicable
+                // Apply discount if available
                 if (DiscountAmount > 0)
                 {
-                    TotalPrice -= DiscountAmount * Quantity;
+                    // Calculate total discount for all items
+                    decimal totalDiscount = DiscountAmount * Quantity;
+                    // Set final price after discount
+                    TotalPrice = totalBeforeDiscount - totalDiscount;
                 }
+                else
+                {
+                    TotalPrice = totalBeforeDiscount;
+                }
+
+                // Ensure price doesn't go below 0
+                TotalPrice = Math.Max(0, TotalPrice);
             }
+
             catch (Exception ex)
             {
                 // Log the error
