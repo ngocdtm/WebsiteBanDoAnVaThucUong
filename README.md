@@ -1,3 +1,5 @@
+Các chức năng: Mua hàng trên từng chi nhánh kèm các món ăn tự chọn, các danh sách chương trình khuyến mãi(combo 2 tặng 1, 20% trên 1 sản phẩm, 15% trên 1 sản phẩm), tìm kiếm sản phẩm và hiển thị sản phẩm gợi ý, lịch sử các sản phẩm đã xem, mua hàng COD và chuyển khoản trực tuyến, xem các sản phẩm liên quan, chatbot, đăng review(rating, comment), khóa tài khoản khách hàng, quản lý thống kê trên các chi nhánh,...
+* Cách thức tham khảo project
 1) Copy web URL của project
 ![image](https://github.com/user-attachments/assets/0bcbbdc7-e6eb-41be-9f82-2872cba981c7)
 
