@@ -44,18 +44,7 @@
                         <img class="hover-img" src="@secondHoverImage" style="width:220px; height:180px; display:none;" alt="@item.Product.Title" />
                     </div>
                     <div data-id="@item.Product.Id" class="favorite @(isWishlist ? "active" : "")" style="margin-right: 160px; font-size:20px"></div>
-                    @if (isSoldOut)
-                    {
-                        <div class="sold-out-overlay">
-                            <span>Hết hàng</span>
-                        </div>
-                    }
-                    else
-                    {
-                        <div class="stock-count">
-                            Còn lại: @stockInfo.StockCount
-                        </div>
-                    }
+
                     @if (item.Product.SalePrice > 0)
                     {
                         <div class="product_bubble product_bubble_right product_bubble_red d-flex flex-column align-items-center"><span>sale</span></div>
@@ -112,7 +101,18 @@
                         }
                     </div>
                 </div>
-
+                @if (isSoldOut)
+                {
+                    <div class="sold-out-overlay">
+                        <span>Hết hàng</span>
+                    </div>
+                }
+                else
+                {
+                    <div class="stock-count">
+                        Còn lại: @stockInfo.StockCount
+                    </div>
+                }
                 @if (!isSoldOut)
                 {
                     <div class="red_button add_to_cart_button">
@@ -224,14 +224,13 @@
 
     .stock-count {
         position: absolute;
-        bottom: 10px;
+        bottom: 37px;
         right: 10px;
         background-color: white;
         color: black;
-        padding: 5px 10px;
-        border-radius: 3px;
         font-size: 12px;
     }
+
 
     .sold-out-btn {
         background-color: #ccc;
@@ -267,6 +266,51 @@
             opacity: 1;
             display: inline;
         }
+    .promotions-section {
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+
+    .promotion-detail {
+        margin-bottom: 20px;
+        padding: 5px;
+        background-color: #f8f8f8;
+        border-radius: 6px;
+    }
+
+    .promotion-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 5px;
+    }
+
+        .promotion-header i {
+            color: #e53935;
+            margin-right: 10px;
+            font-size: 20px;
+        }
+
+        .promotion-header h4 {
+            margin: 0;
+            color: #333;
+        }
+
+    .promotion-description {
+        color: #666;
+        margin-bottom: 10px;
+    }
+
+    .promotion-period {
+        font-size: 14px;
+        color: #888;
+        margin-bottom: 10px;
+    }
+
+    .promotion-value {
+        font-weight: bold;
+        color: #e53935;
+        font-size: 16px;
+    }
 </style>
 <script>
     $(document).ready(function () {
@@ -301,54 +345,3 @@
         });
     });
 </script>
-@section Styles {
-    <style>
-        .promotions-section {
-            margin-top: 20px;
-            padding: 20px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-        }
-
-        .promotion-detail {
-            margin-bottom: 20px;
-            padding: 15px;
-            background-color: #f8f8f8;
-            border-radius: 6px;
-        }
-
-        .promotion-header {
-            display: flex;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-
-            .promotion-header i {
-                color: #e53935;
-                margin-right: 10px;
-                font-size: 20px;
-            }
-
-            .promotion-header h4 {
-                margin: 0;
-                color: #333;
-            }
-
-        .promotion-description {
-            color: #666;
-            margin-bottom: 10px;
-        }
-
-        .promotion-period {
-            font-size: 14px;
-            color: #888;
-            margin-bottom: 10px;
-        }
-
-        .promotion-value {
-            font-weight: bold;
-            color: #e53935;
-            font-size: 16px;
-        }
-    </style>
-}

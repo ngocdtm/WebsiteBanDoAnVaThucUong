@@ -30,8 +30,8 @@ namespace WebsiteBanDoAnVaThucUong.Areas.Admin.Controllers
                 ProductId = productId,
                 Image = url,
                 IsDefault = !existingImages.Any() // Nếu chưa có ảnh nào thì ảnh mới sẽ là default
-
-            });
+           
+        });
             db.SaveChanges();
             return Json(new { Success = true });
         }

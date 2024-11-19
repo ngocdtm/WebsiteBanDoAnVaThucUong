@@ -218,22 +218,22 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Web.Helpers, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>packages\Microsoft.AspNet.WebPages.3.3.0\lib\net45\System.Web.Helpers.dll</HintPath>
+      <HintPath>packages\Microsoft.AspNet.WebPages.3.2.9\lib\net45\System.Web.Helpers.dll</HintPath>
     </Reference>
-    <Reference Include="System.Web.Mvc, Version=5.3.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>packages\Microsoft.AspNet.Mvc.5.3.0\lib\net45\System.Web.Mvc.dll</HintPath>
+    <Reference Include="System.Web.Mvc, Version=5.2.9.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>packages\Microsoft.AspNet.Mvc.5.2.9\lib\net45\System.Web.Mvc.dll</HintPath>
     </Reference>
     <Reference Include="System.Web.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>packages\Microsoft.AspNet.Razor.3.3.0\lib\net45\System.Web.Razor.dll</HintPath>
     </Reference>
     <Reference Include="System.Web.WebPages, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>packages\Microsoft.AspNet.WebPages.3.3.0\lib\net45\System.Web.WebPages.dll</HintPath>
+      <HintPath>packages\Microsoft.AspNet.WebPages.3.2.9\lib\net45\System.Web.WebPages.dll</HintPath>
     </Reference>
     <Reference Include="System.Web.WebPages.Deployment, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>packages\Microsoft.AspNet.WebPages.3.3.0\lib\net45\System.Web.WebPages.Deployment.dll</HintPath>
+      <HintPath>packages\Microsoft.AspNet.WebPages.3.2.9\lib\net45\System.Web.WebPages.Deployment.dll</HintPath>
     </Reference>
     <Reference Include="System.Web.WebPages.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>packages\Microsoft.AspNet.WebPages.3.3.0\lib\net45\System.Web.WebPages.Razor.dll</HintPath>
+      <HintPath>packages\Microsoft.AspNet.WebPages.3.2.9\lib\net45\System.Web.WebPages.Razor.dll</HintPath>
     </Reference>
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
@@ -357,6 +357,7 @@
     <Compile Include="Controllers\NewsController.cs" />
     <Compile Include="Controllers\ProductsController.cs" />
     <Compile Include="Controllers\ReviewController.cs" />
+    <Compile Include="Controllers\ShippingFeesController.cs" />
     <Compile Include="Controllers\ShoppingCartController.cs" />
     <Compile Include="Controllers\StoreProductsController.cs" />
     <Compile Include="Controllers\StoresController.cs" />
@@ -367,36 +368,88 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="IServiceCollection.cs" />
-    <Compile Include="Migrations\202411031124373_Bevergers.cs" />
-    <Compile Include="Migrations\202411031124373_Bevergers.Designer.cs">
-      <DependentUpon>202411031124373_Bevergers.cs</DependentUpon>
+    <Compile Include="Migrations\202410210625137_MemberRank.cs" />
+    <Compile Include="Migrations\202410210625137_MemberRank.Designer.cs">
+      <DependentUpon>202410210625137_MemberRank.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\202411061140145_address_v1.cs" />
-    <Compile Include="Migrations\202411061140145_address_v1.Designer.cs">
-      <DependentUpon>202411061140145_address_v1.cs</DependentUpon>
+    <Compile Include="Migrations\202410220719296_d.cs" />
+    <Compile Include="Migrations\202410220719296_d.Designer.cs">
+      <DependentUpon>202410220719296_d.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\202411061202002_address_v2.cs" />
-    <Compile Include="Migrations\202411061202002_address_v2.Designer.cs">
-      <DependentUpon>202411061202002_address_v2.cs</DependentUpon>
+    <Compile Include="Migrations\202410281339274_Bevergers.cs" />
+    <Compile Include="Migrations\202410281339274_Bevergers.Designer.cs">
+      <DependentUpon>202410281339274_Bevergers.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202410281352120_Bevergers_version2.cs" />
+    <Compile Include="Migrations\202410281352120_Bevergers_version2.Designer.cs">
+      <DependentUpon>202410281352120_Bevergers_version2.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202410281408427_Bevergers_version3.cs" />
+    <Compile Include="Migrations\202410281408427_Bevergers_version3.Designer.cs">
+      <DependentUpon>202410281408427_Bevergers_version3.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202410291312279_Bevergers_v5.cs" />
+    <Compile Include="Migrations\202410291312279_Bevergers_v5.Designer.cs">
+      <DependentUpon>202410291312279_Bevergers_v5.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202410291326008_Bevergers_v6.cs" />
+    <Compile Include="Migrations\202410291326008_Bevergers_v6.Designer.cs">
+      <DependentUpon>202410291326008_Bevergers_v6.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202411021446358_berverage_v8.cs" />
+    <Compile Include="Migrations\202411021446358_berverage_v8.Designer.cs">
+      <DependentUpon>202411021446358_berverage_v8.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202411030326502_beverage_v9.cs" />
+    <Compile Include="Migrations\202411030326502_beverage_v9.Designer.cs">
+      <DependentUpon>202411030326502_beverage_v9.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202411030858228_beverage_v10.cs" />
+    <Compile Include="Migrations\202411030858228_beverage_v10.Designer.cs">
+      <DependentUpon>202411030858228_beverage_v10.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202411040628488_address_v1.cs" />
+    <Compile Include="Migrations\202411040628488_address_v1.Designer.cs">
+      <DependentUpon>202411040628488_address_v1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202411050858487_isgiftBuy2X1.cs" />
+    <Compile Include="Migrations\202411050858487_isgiftBuy2X1.Designer.cs">
+      <DependentUpon>202411050858487_isgiftBuy2X1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202411080957565_ShippingFee.cs" />
+    <Compile Include="Migrations\202411080957565_ShippingFee.Designer.cs">
+      <DependentUpon>202411080957565_ShippingFee.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202411081203284_Fee_v2.cs" />
+    <Compile Include="Migrations\202411081203284_Fee_v2.Designer.cs">
+      <DependentUpon>202411081203284_Fee_v2.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202411081213456_Fee_v3.cs" />
+    <Compile Include="Migrations\202411081213456_Fee_v3.Designer.cs">
+      <DependentUpon>202411081213456_Fee_v3.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202411090125493_Fee_v31.cs" />
+    <Compile Include="Migrations\202411090125493_Fee_v31.Designer.cs">
+      <DependentUpon>202411090125493_Fee_v31.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
-    <Compile Include="Models\AddressModel.cs" />
     <Compile Include="Models\AddressParser.cs" />
     <Compile Include="Models\EF\Address.cs" />
     <Compile Include="Models\EF\Combo.cs" />
     <Compile Include="Models\EF\ComboDetail.cs" />
     <Compile Include="Models\EF\Extra.cs" />
-    <Compile Include="Models\EF\MemberRanks.cs" />
+    <Compile Include="Models\EF\MemberRank.cs" />
     <Compile Include="Models\EF\ProductExtra.cs" />
     <Compile Include="Models\EF\ProductSize.cs" />
     <Compile Include="Models\EF\ProductTopping.cs" />
     <Compile Include="Models\EF\ProductType.cs" />
     <Compile Include="Models\EF\ProductViewHistory.cs" />
+    <Compile Include="Models\EF\ShippingFee.cs" />
     <Compile Include="Models\EF\Size.cs" />
     <Compile Include="Models\EF\StoreDTO.cs" />
     <Compile Include="Models\EF\StoreProduct.cs" />
     <Compile Include="Models\EF\Topping.cs" />
+    <Compile Include="Models\StoreProductViewModel.cs" />
     <Compile Include="Models\RankingService.cs" />
     <Compile Include="Models\StockInfo.cs" />
     <Compile Include="Models\ViewModels\AccountViewModels.cs" />
@@ -404,6 +457,7 @@
     <Compile Include="Models\Common\Filter.cs" />
     <Compile Include="Models\Common\ThongKeTruyCap.cs" />
     <Compile Include="Models\CustomAuthorizeAttribute .cs" />
+    <Compile Include="Models\Address.cs" />
     <Compile Include="Models\ViewModels\CustomerViewModel.cs" />
     <Compile Include="Models\EF\Advertisement.cs" />
     <Compile Include="Models\EF\Category.cs" />
@@ -493,11 +547,6 @@
     <Content Include="Areas\Admin\Views\StoreProducts\Details.cshtml" />
     <Content Include="Areas\Admin\Views\StoreProducts\Edit.cshtml" />
     <Content Include="Areas\Admin\Views\StoreProducts\Index.cshtml" />
-    <Content Include="Areas\Admin\Views\Extras\Create.cshtml" />
-    <Content Include="Areas\Admin\Views\Extras\Delete.cshtml" />
-    <Content Include="Areas\Admin\Views\Extras\Details.cshtml" />
-    <Content Include="Areas\Admin\Views\Extras\Edit.cshtml" />
-    <Content Include="Areas\Admin\Views\Extras\Index.cshtml" />
     <Content Include="Areas\Admin\Views\Toppings\Create.cshtml" />
     <Content Include="Areas\Admin\Views\Toppings\Delete.cshtml" />
     <Content Include="Areas\Admin\Views\Toppings\Details.cshtml" />
@@ -508,6 +557,11 @@
     <Content Include="Areas\Admin\Views\Sizes\Details.cshtml" />
     <Content Include="Areas\Admin\Views\Sizes\Edit.cshtml" />
     <Content Include="Areas\Admin\Views\Sizes\Index.cshtml" />
+    <Content Include="Areas\Admin\Views\Extras\Create.cshtml" />
+    <Content Include="Areas\Admin\Views\Extras\Delete.cshtml" />
+    <Content Include="Areas\Admin\Views\Extras\Details.cshtml" />
+    <Content Include="Areas\Admin\Views\Extras\Edit.cshtml" />
+    <Content Include="Areas\Admin\Views\Extras\Index.cshtml" />
     <Content Include="Areas\Admin\Views\ProductTypes\Create.cshtml" />
     <Content Include="Areas\Admin\Views\ProductTypes\Delete.cshtml" />
     <Content Include="Areas\Admin\Views\ProductTypes\Details.cshtml" />
@@ -3931,11 +3985,11 @@
     <Content Include="Views\Products\_RelatedProducts.cshtml" />
     <Content Include="Views\Products\ViewHistory.cshtml" />
     <Content Include="Views\MemberRank\MemberRank.cshtml" />
-    <Content Include="Views\Addresses\Create.cshtml" />
-    <Content Include="Views\Addresses\Delete.cshtml" />
-    <Content Include="Views\Addresses\Details.cshtml" />
-    <Content Include="Views\Addresses\Edit.cshtml" />
-    <Content Include="Views\Addresses\Index.cshtml" />
+    <Content Include="Views\ShippingFees\Create.cshtml" />
+    <Content Include="Views\ShippingFees\Delete.cshtml" />
+    <Content Include="Views\ShippingFees\Details.cshtml" />
+    <Content Include="Views\ShippingFees\Edit.cshtml" />
+    <Content Include="Views\ShippingFees\Index.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -3949,6 +4003,7 @@
     <Folder Include="Areas\Employee\Data\" />
     <Folder Include="Content\ckfinder\ckfinder\userfiles\" />
     <Folder Include="Reports\" />
+    <Folder Include="Views\Voucher\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -3960,14 +4015,53 @@
     <WCFMetadata Include="Connected Services\" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\202411031124373_Bevergers.resx">
-      <DependentUpon>202411031124373_Bevergers.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\202410210625137_MemberRank.resx">
+      <DependentUpon>202410210625137_MemberRank.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202411061140145_address_v1.resx">
-      <DependentUpon>202411061140145_address_v1.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\202410220719296_d.resx">
+      <DependentUpon>202410220719296_d.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202411061202002_address_v2.resx">
-      <DependentUpon>202411061202002_address_v2.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\202410281339274_Bevergers.resx">
+      <DependentUpon>202410281339274_Bevergers.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202410281352120_Bevergers_version2.resx">
+      <DependentUpon>202410281352120_Bevergers_version2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202410281408427_Bevergers_version3.resx">
+      <DependentUpon>202410281408427_Bevergers_version3.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202410291312279_Bevergers_v5.resx">
+      <DependentUpon>202410291312279_Bevergers_v5.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202410291326008_Bevergers_v6.resx">
+      <DependentUpon>202410291326008_Bevergers_v6.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202411021446358_berverage_v8.resx">
+      <DependentUpon>202411021446358_berverage_v8.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202411030326502_beverage_v9.resx">
+      <DependentUpon>202411030326502_beverage_v9.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202411030858228_beverage_v10.resx">
+      <DependentUpon>202411030858228_beverage_v10.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202411040628488_address_v1.resx">
+      <DependentUpon>202411040628488_address_v1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202411050858487_isgiftBuy2X1.resx">
+      <DependentUpon>202411050858487_isgiftBuy2X1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202411080957565_ShippingFee.resx">
+      <DependentUpon>202411080957565_ShippingFee.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202411081203284_Fee_v2.resx">
+      <DependentUpon>202411081203284_Fee_v2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202411081213456_Fee_v3.resx">
+      <DependentUpon>202411081213456_Fee_v3.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202411090125493_Fee_v31.resx">
+      <DependentUpon>202411090125493_Fee_v31.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

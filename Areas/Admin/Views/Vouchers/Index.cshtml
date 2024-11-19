@@ -1,6 +1,5 @@
 ﻿﻿@model PagedList.PagedList<WebsiteBanDoAnVaThucUong.Models.EF.Voucher>
 @using PagedList.Mvc
-@using PagedList;
 @{
     ViewBag.Title = "Danh sách Voucher";
     Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
@@ -46,17 +45,16 @@
                         <th>Giảm giá</th>
                         <th>Ngày bắt đầu</th>
                         <th>Ngày kết thúc</th>
+                        <th>Hoạt động</th>
                         <th style="width:150px;"></th>
                     </tr>
                 </thead>
                 <tbody>
                     @if (Model != null && Model.Any())
-                                {
-
-                                    var i = 0;
-
-                                    foreach (var item in Model)
-                                    {
+                    {
+                        var i = ((ViewBag.Page - 1) * ViewBag.PageSize) + 1;
+                        foreach (var item in Model)
+                        {
                             <tr id="trow_@item.Id">
                                 <td>@i</td>
                                 <td>@item.VoucherName</td>
@@ -65,6 +63,7 @@
                                 <td>@item.Discount</td>
                                 <td>@item.StartDate</td>
                                 <td>@item.EndDate</td>
+                                <td>@item.IsActive</td>
                                 <td>
                                     <a href="/admin/vouchers/edit/@item.Id" class="btn btn-primary">Sửa</a>
                                     <a href="#" data-id="@item.Id" class="btn btn-sm btn-danger btnDelete">Xóa</a>
@@ -82,19 +81,12 @@
                 </tbody>
             </table>
 
-            @*<div class="row">
+            <div class="row">
                 <div class="col-6"></div>
                 <div class="col-6" style="text-align:right;">
-                    @if (Model != null)
-                    {
-                        @Html.PagedListPager(Model, page => Url.Action("Index", new { page }))
-                    }
-                    else
-                    {
-                        <p>No vouchers found.</p>
-                    }
+                    @Html.PagedListPager(Model, page => Url.Action("Index", new { page }))
                 </div>
-            </div>*@
+            </div>
 
         </div>
         <!-- /.card-body -->

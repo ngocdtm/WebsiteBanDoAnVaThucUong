@@ -101,52 +101,134 @@
                             </div>
 
                             <!-- Product Grid -->
-
                             <div class="product-grid">
-
-                                <!-- Product 1 -->
                                 @if (Model != null && Model.Any())
                                 {
                                     foreach (var item in Model)
                                     {
                                         var strImge = "";
+                                        var hoverImage = "";
+                                        var secondHoverImage = "";
                                         var img = item.Product.ProductImage.FirstOrDefault(x => x.IsDefault);
                                         if (img != null)
                                         {
                                             strImge = img.Image;
                                         }
+
+                                        var hoverImg = item.Product.ProductImage.FirstOrDefault(x => !x.IsDefault); // Get a non-default image for hover
+                                        if (hoverImg != null)
+                                        {
+                                            hoverImage = hoverImg.Image; // Assign the hover image
+                                        }
+                                        var secondHoverImg = item.Product.ProductImage.Skip(1).LastOrDefault(x => !x.IsDefault); // Assuming the next image is the second hover
+                                        if (secondHoverImg != null)
+                                        {
+                                            secondHoverImage = secondHoverImg.Image; // Assign the second hover image
+                                        }
+
                                         var wishlist = item.Product.Wishlist.FirstOrDefault(x => x.CustomerId == User.Identity.GetUserId());
                                         var isWishlist = wishlist != null;
 
                                         var stockInfo = ViewBag.StockInfo[item.ProductId];
                                         var isSoldOut = stockInfo.IsSoldOut;
+
                                         <div class="product-item @item.Product.ProductCategory.Alias @(isSoldOut ? "sold-out" : "")">
                                             <div class="product discount product_filter">
                                                 <div class="product_image">
-                                                    <img src="@strImge" alt="@item.Product.Title">
+                                                    <img class="default-img" src="@strImge" style="width:220px; height:180px" alt="@item.Product.Title"
+                                                         onmouseover="this.src='@hoverImage';"
+                                                         onmouseout="this.src='@strImge';">
+                                                    <!-- First Hover Image -->
+                                                    <img class="hover-img" src="@hoverImage" style="width:220px; height:180px; display:none;" alt="@item.Product.Title" />
+                                                    <!-- Second Hover Image -->
+                                                    <img class="hover-img" src="@secondHoverImage" style="width:220px; height:180px; display:none;" alt="@item.Product.Title" />
                                                 </div>
-                                                <div data-id="@item.Id" class="favorite favorite_left"></div>
-                                                @*@if (item.PriceSale > 0)
-                                                    {
-                                                        <div class="product_bubble product_bubble_right product_bubble_red d-flex flex-column align-items-center"><span>sale</span></div>
-                                                    }*@
-                                                @* <div class="product_bubble product_bubble_right product_bubble_red d-flex flex-column align-items-center"><span>-$20</span></div>*@
+                                                <div data-id="@item.Product.Id" class="favorite @(isWishlist ? "active" : "")" style="margin-right: 160px; font-size:20px"></div>
+                                                @if (isSoldOut)
+                                                {
+                                                    <div class="sold-out-overlay">
+                                                        <span>Hết hàng</span>
+                                                    </div>
+                                                }
+                                                else
+                                                {
+                                                    <div class="stock-count">
+                                                        Còn lại: @stockInfo.StockCount
+                                                    </div>
+                                                }
+                                                @if (item.Product.SalePrice > 0)
+                                                {
+                                                    <div class="product_bubble product_bubble_right product_bubble_red d-flex flex-column align-items-center"><span>sale</span></div>
+                                                }
                                                 <div class="product_info">
-                                                    <h6 class="product_name"><a href="/chi-tiet/@item.Product.Alias-p@(item.Id)">@item.Product.Title</a></h6>
-
+                                                    <h6 class="product_name"><a href="/chi-tiet/@item.Product.Alias-p@(item.Product.Id)">@item.Product.Title</a></h6>
                                                     <div class="product_price">@WebsiteBanDoAnVaThucUong.Common.Common.FormatNumber(item.Product.SalePrice, 0)</div>
+                                                </div>
 
+                                                <div class="promotions-section">
+
+                                                    @{
+                                                        var activePromotions = item.Product.PromotionProduct
+                                                            .Where(pp => pp.Promotion.IsActive
+                                                                && pp.Promotion.StartDate <= DateTime.Now
+                                                                && pp.Promotion.EndDate >= DateTime.Now)
+                                                            .Select(pp => pp.Promotion);
+                                                    }
+
+                                                    @if (activePromotions.Any())
+                                                    {
+                                                        foreach (var promo in activePromotions)
+                                                        {
+                                                            <div class="promotion-detail">
+                                                                <div class="promotion-value">
+                                                                    @if (promo.DiscountType == 3)
+                                                                    {
+                                                                        var promotionProducts = promo.PromotionProduct.ToList();
+                                                                        var productsToBuy = promotionProducts
+                                                                            .Where(pp => pp.IsBuyProduct)
+                                                                            .Select(pp => pp.Product.Title).ToList();
+
+                                                                        var productsToGet = promotionProducts
+                                                                       .Where(pp => !pp.IsBuyProduct)
+                                                                       .Select(pp => pp.Product.Title)
+                                                                       .ToList();
+                                                                        <span style="color: #d15151; font-size: 11px; ">
+                                                                            <i class="fas fa-gifts">   </i> MUA @string.Join(" và ", productsToBuy)
+                                                                            TẶNG @string.Join(", ", productsToGet)
+                                                                        </span>
+                                                                    }
+                                                                    @switch (promo.DiscountType)
+                                                                    {
+                                                                        case 1:
+                                                                            <span style="color: #e53935; font-size: 11px; ">  <i class="fas fa-tags"></i> Giảm @promo.Name khi mua sản phẩm @item.Product.Title </span>
+                                                                            break;
+                                                                        case 2:
+                                                                            <span style="color: #d15151; font-size: 11px; "> <i class="fas fa-gift">   </i> @promo.Name sản phẩm @item.Product.Title</span>
+                                                                            break;
+                                                                    }
+                                                                </div>
+                                                            </div>
+                                                        }
+                                                    }
                                                 </div>
                                             </div>
-                                            <div class="red_button add_to_cart_button"><a href="#" class="btnAddToCart" data-id="@item.Product.Id" data-storeid="@item.StoreId">add to cart</a></div>
-                                            @*<div class="red_button add_to_cart_button"><a href="#" class="btnAddToCart" data-id="@item.Id">add to cart</a></div>*@
+
+                                            @if (!isSoldOut)
+                                            {
+                                                <div class="red_button add_to_cart_button">
+                                                    <a href="#" class="btnAddToCart" data-id="@item.Product.Id" data-storeid="@item.StoreId">Thêm vào giỏ hàng</a>
+                                                </div>
+                                            }
+                                            else
+                                            {
+                                                <div class="sold-out-btn">
+                                                    <span>Hết hàng</span>
+                                                </div>
+                                            }
                                         </div>
                                     }
                                 }
-
-
                             </div>
-
                             <!-- Product Sorting -->
 
                             <div class="product_sorting_container product_sorting_container_bottom clearfix">
@@ -177,5 +259,225 @@
 
 
 <script src="~/Content/assets/js/categories_custom.js"></script>
+<script>
+
+    $(document).ready(function () {
+        $('.favorite').click(function (e) {
+            e.preventDefault();
+            var productId = $(this).data('id');
+            var $heartIcon = $(this);
+
+            if ($heartIcon.hasClass('active')) {
+                // Xóa khỏi danh sách yêu thích
+                $.ajax({
+                    url: '/Wishlist/RemoveFromWishlist',
+                    type: 'POST',
+                    data: { productId: productId },
+                    success: function (response) {
+                        console.log('Remove response:', response); // Log server response
+                        if (response.success) {
+                            $heartIcon.removeClass('active');
+                            alert(response.message);
+                        } else {
+                            alert(response.message);
+                        }
+                    },
+                    error: function (error) {
+                        console.log('Error removing from wishlist:', error); // Log any errors
+                        alert('Error occurred while removing the item. Please try again.');
+                    }
+                });
+            } else {
+                // Thêm vào danh sách yêu thích
+                $.ajax({
+                    url: '/Wishlist/AddToWishlist',
+                    type: 'POST',
+                    data: { productId: productId },
+                    success: function (response) {
+                        if (response.success) {
+                            $heartIcon.addClass('active');
+                            alert(response.message);
+                        } else {
+                            alert(response.message);
+                        }
+                    }
+                });
+            }
+        });
+    });
+    function checkStockAndAddToCart(productId) {
+        $.ajax({
+            url: '/Products/CheckStockAvailability',
+            type: 'POST',
+            data: { productId: productId },
+            success: function (response) {
+                if (response.success) {
+                    // Proceed with adding to cart
+                    AddToCart(productId);
+                } else {
+                    alert(response.message);
+                }
+            },
+            error: function () {
+                alert('Có lỗi xảy ra. Vui lòng thử lại sau.');
+            }
+        });
+    }
+</script>
+
+<style>
+    .favorite {
+        cursor: pointer;
+        transition: color 0.3s ease;
+    }
+
+        .favorite.active {
+            color: red;
+        }
+    /* Khi hết hàng thì sản phẩm sẽ có màu mờ */
+    .sold-out {
+        opacity: 0.7;
+    }
+
+    .sold-out-overlay {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: rgba(255, 0, 0, 0.7);
+        color: white;
+        padding: 10px 20px;
+        border-radius: 5px;
+        font-weight: bold;
+        cursor: not-allowed;
+    }
+
+    .stock-count {
+        position: absolute;
+        bottom: 10px;
+        right: 10px;
+        background-color: white;
+        color: black;
+        padding: 5px 10px;
+        border-radius: 3px;
+        font-size: 12px;
+    }
+
+    .sold-out-btn {
+        background-color: #ccc;
+        cursor: not-allowed;
+    }
+
+    .product_image {
+        position: relative;
+        width: 220px;
+        height: 180px;
+        overflow: hidden;
+    }
+
+        .product_image img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            transition: opacity 0.5s ease-in-out;
+        }
+
+        .product_image .hover-img {
+            opacity: 0;
+        }
+
+        .product_image:hover .default-img {
+            opacity: 0;
+            display: none;
+        }
+
+        .product_image:hover .hover-img {
+            opacity: 1;
+            display: inline;
+        }
+
+    .promotions-section {
+        margin-top: 1px;
+        padding-left: 10px;
+        border-radius: 1px;
+        padding-right: 10px;
+    }
+
+    .promotion-detail {
+        margin-bottom: 20px;
+        padding: 5px;
+        background-color: #f8f8f8;
+        border-radius: 6px;
+    }
+
+    .promotion-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 5px;
+    }
+
+        .promotion-header i {
+            color: #e53935;
+            margin-right: 10px;
+            font-size: 20px;
+        }
+
+        .promotion-header h4 {
+            margin: 0;
+            color: #333;
+        }
+
+    .promotion-description {
+        color: #666;
+        margin-bottom: 10px;
+    }
+
+    .promotion-period {
+        font-size: 14px;
+        color: #888;
+        margin-bottom: 10px;
+    }
+
+    .promotion-value {
+        font-weight: bold;
+        color: #e53935;
+        font-size: 16px;
+    }
+</style>
+<script>
+    $(document).ready(function () {
+        $('.product_image').each(function () { // Loop through each product_image
+            var hoverIndex = 0; // Index to track the current hover image
+            var hoverImages = $(this).find('.hover-img'); // Get all hover images for the current product
+            var hoverInterval;
+
+            $(this).hover(
+                function () {
+                    $(this).find('.default-img').hide();
+                    $(this).find('.hover-img').hide(); // Hide all hover images
+                    hoverIndex = 0; // Reset index
+                    $(this).find('.hover-img').eq(hoverIndex).show(); // Show the first hover image
+
+                    // Set up interval to switch images
+                    hoverInterval = setInterval(() => {
+                        hoverIndex++;
+                        if (hoverIndex >= hoverImages.length) {
+                            hoverIndex = 0; // Reset to first image
+                        }
+                        $(this).find('.hover-img').hide(); // Hide all images
+                        $(this).find('.hover-img').eq(hoverIndex).show(); // Show the current hover image
+                    }, 2000); // Change image every 1 second
+                },
+                function () {
+                    clearInterval(hoverInterval); // Stop the interval
+                    $(this).find('.hover-img').hide(); // Hide all hover images
+                    $(this).find('.default-img').show(); // Show the default image
+                }
+            );
+        });
+    });
+</script>
 
 

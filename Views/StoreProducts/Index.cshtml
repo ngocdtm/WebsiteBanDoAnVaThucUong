@@ -93,51 +93,7 @@
 
                             </div>
                             <div class="product-grid">
-                                <!-- Product 1 -->
-                                @if (Model != null && Model.Any())
-                                {
-                                    foreach (var item in Model)
-                                    {
-
-                                        var strImge = "";
-                                        var img = item.Product.ProductImage.FirstOrDefault(x => x.IsDefault);
-                                        if (img != null)
-                                        {
-                                            strImge = img.Image;
-                                        }
-
-                                        <div class="product-item @item.Product.ProductCategory.Alias">
-                                            <div class="product discount product_filter">
-                                                <div class="product_image">
-                                                    <img src="@strImge" style="width: 190px; height: 170px; margin-left:15px" alt="@item.Product.Title">
-                                                </div>
-
-                                                @*<div data-id="@item.Id" class="favorite @(isWishlist ? "active" : "")" style="margin-right: 160px; font-size:20px"></div>*@
-
-                                                @if (item.Product.SalePrice > 0)
-                                                {
-                                                    <div class="product_bubble product_bubble_right product_bubble_red d-flex flex-column align-items-center"><span>sale</span></div>
-                                                }
-                                                @* <div class="product_bubble product_bubble_right product_bubble_red d-flex flex-column align-items-center"><span>-$20</span></div>*@
-                                                <div class="product_info">
-                                                    <h6 class="product_name"><a href="/chi-tiet/@item.Product.Alias-p@(item.Product.Id)">@item.Product.Title</a></h6>
-                                                    @if (item.Product.SalePrice > 0)
-                                                    {
-                                                        <div class="product_price">@WebsiteBanDoAnVaThucUong.Common.Common.FormatNumber(item.Product.SalePrice, 0)<span>@WebsiteBanDoAnVaThucUong.Common.Common.FormatNumber(item.Product.SalePrice, 0)</span></div>
-                                                        <div style="display:none;" class="in_product_price"> @item.Product.SalePrice</div>
-                                                    }
-                                                    else
-                                                    {
-                                                        <div class="product_price">@WebsiteBanDoAnVaThucUong.Common.Common.FormatNumber(item.Product.SalePrice, 0)</div>
-                                                        <div style="display:none;" class="in_product_price"> @item.Product.SalePrice</div>
-                                                    }
-                                                </div>
-                                            </div>
-                                            <div class="red_button add_to_cart_button"><a href="#" class="btnAddToCart" data-id="@item.Product.Id" data-storeid="@item.StoreId">add to cart</a></div>
-                                        </div>
-                                    }
-                                }
-
+                                @Html.Action("Partial_ItemsByCateId", "Products")
 
                             </div>
                         </div>

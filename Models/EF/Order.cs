@@ -9,7 +9,7 @@ namespace WebsiteBanDoAnVaThucUong.Models.EF
 {
     [Table("Order")]
     public class Order : CommonAbstract
-    {      
+    {
         public Order()
         {
             this.OrderDetails = new HashSet<OrderDetail>();
@@ -33,6 +33,7 @@ namespace WebsiteBanDoAnVaThucUong.Models.EF
         public int StoreId { get; set; }
         public int OrderStatus { get; set; }
         public int ShippingStatus { get; set; }
+        public decimal ShippingFee { get; set; }
         public virtual Voucher Vouchers { get; set; }
         public virtual ICollection<OrderDetail> OrderDetails { get; set; }
         public virtual ICollection<Store> Stores { get; set; }

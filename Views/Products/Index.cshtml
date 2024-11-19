@@ -1,6 +1,5 @@
 ﻿﻿﻿@model IEnumerable<WebsiteBanDoAnVaThucUong.Models.EF.StoreProduct>
 @using Microsoft.AspNet.Identity
-
 @using WebsiteBanDoAnVaThucUong.Models.EF
 @{
     ViewBag.Title = "Danh sách sản phẩm";
@@ -108,7 +107,7 @@
                     <li><a href="/home/index">Home</a></li>
                     <li class="active"><a href="/products/index"><i class="fa fa-angle-right" aria-hidden="true"></i>Danh sách sản phẩm</a></li>
 
-                    @*<li class="active-cate"><a href="#"><i class="fa fa-angle-right" aria-hidden="true"></i>@ViewBag.Title</a></li>*@
+                    <li class="active-cate"><a href="#"><i class="fa fa-angle-right" aria-hidden="true"></i>@ViewBag.Title</a></li>
                 </ul>
             </div>
 
@@ -183,6 +182,14 @@
                                             <option value="">Chọn phường/xã</option>
                                         </select>
                                     </div>
+                                    <div class="form-group">
+                                        <label>Địa chỉ nhà</label>
+                                        <input type="text" id="address-line" class="form-control" placeholder="Nhập địa chỉ nhà" />
+                                    </div>
+                                    <button type="button" class="btn btn-primary" id="save-address">Lưu địa chỉ</button>
+
+                                    <!-- Hiển thị địa chỉ và phí ship -->
+                                 
                                     <div class="modal-footer">
                                         <button type="button" class="btn btn-secondary" id="find-stores">Tìm Cửa Hàng</button>
                                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
@@ -199,6 +206,7 @@
                                                         <div class="store-info">
                                                             <h5>@store.Name</h5>
                                                             <p>@store.Address</p>
+                                                            <p>@store.ShippingFee.ToString("0.00") VND</p>
                                                         </div>
                                                     </a>
                                                 </div>
@@ -282,6 +290,24 @@
                             <!-- Product Grid -->
                             <div class="product-grid">
                                 @Html.Action("Partial_ItemsByCateId", "Products")
+
+                            </div>
+                            <!-- Product Sorting -->
+
+                            <div class="product_sorting_container product_sorting_container_bottom clearfix">
+                                <ul class="product_sorting">
+                                    <li>
+                                        <span>Show:</span>
+                                        <span class="num_sorting_text">04</span>
+                                        <i class="fa fa-angle-down"></i>
+                                        <ul class="sorting_num">
+                                            <li class="num_sorting_btn"><span>01</span></li>
+                                            <li class="num_sorting_btn"><span>02</span></li>
+                                            <li class="num_sorting_btn"><span>03</span></li>
+                                            <li class="num_sorting_btn"><span>04</span></li>
+                                        </ul>
+                                    </li>
+                                </ul>
 
                             </div>
                         </div>
@@ -388,77 +414,16 @@
                     }
                 });
 
-
-                // Tìm cửa hàng gần đây
-
-                // Validate address
-                function validateAddress() {
-                    return $('#province').val() &&
-                        $('#district').val() &&
-                        $('#ward').val();
-                }
-
-                function getFullAddress() {
-                    var ward = $('#ward option:selected').text();
-                    var district = $('#district option:selected').text();
-                    var province = $('#province option:selected').text();
-                    return `${ward}, ${district}, ${province}, Vietnam`;
-                }
-
-
-                // Khi người dùng chọn cửa hàng
-                $(document).on('click', '.select-store', function (e) {
-                    e.preventDefault();
-
-                    var storeId = $(this).data('store-id');
-                    var storeName = $(this).data('store-name');
-                    var storeAddress = $(this).data('store-address');
-
-                    // Cập nhật UI
-                    $('#selected-store-info').html(`
-                                                                    <div class="store-details">
-                                                                        <h4>${storeName}</h4>
-                                                                        <p>${storeAddress}</p>
-                                                                    </div>
-                                                                `);
-
-                    // Gửi AJAX để lưu store đã chọn
-                    $.ajax({
-                        url: '/Products/SelectStore',
-                        type: 'POST',
-                        data: { storeId: storeId },
-                        success: function (response) {
-                            if (response.success) {
-                                $('#storeModal').modal('hide');
-                                // Reload trang để cập nhật danh sách sản phẩm
-                                window.location.href = '/Products/Index?storeId=' + storeId;
-                            } else {
-                                alert('Có lỗi xảy ra khi chọn cửa hàng');
-                            }
-                        },
-                        error: function (xhr, status, error) {
-                            console.error("Error selecting store:", error);
-                            alert('Có lỗi xảy ra khi chọn cửa hàng');
-                        }
-                    });
-                });
-
-                // Tự động tìm cửa hàng khi chọn ward
-                $('#ward').change(function () {
-                    if ($(this).val()) {
-                        getNearbystores();
-                    }
-                });
-
                 // Tìm cửa hàng gần đây
                 function getNearbystores() {
                     var province = $('#province option:selected').text();
                     var district = $('#district option:selected').text();
                     var ward = $('#ward option:selected').text();
+                    var addressLine = $('#address-line').val();
 
-                    console.log('Searching stores for:', { province, district, ward });
+                    console.log('Searching stores for:', { province, district, ward, addressLine });
 
-                    if (!province || !district || !ward) {
+                    if (!province || !district || !ward || !addressLine) {
                         alert('Vui lòng chọn đầy đủ địa chỉ');
                         return;
                     }
@@ -469,7 +434,8 @@
                         data: {
                             province: province,
                             district: district,
-                            ward: ward
+                            ward: ward,
+                            addressLine: addressLine
                         },
                         success: function (response) {
                             console.log('Server response:', response);
@@ -505,65 +471,82 @@
                     }
 
                     stores.forEach(function (store) {
+                        // Chỉ hiển thị khoảng cách và phí ship nếu có địa chỉ khách hàng
+                        var distanceInfo = store.Distance ? `<p>Khoảng cách: ${store.Distance.toFixed(2)} km</p>` : '';
+                        var shippingInfo = store.ShippingFee ? `<p>Phí ship: ${formatCurrency(store.ShippingFee)} VND</p>` : '';
+
                         var storeCard = $(`
-                        <div class="store-card">
-                            <a href="#" class="select-store"
-                               data-store-id="${store.Id}"
-                               data-store-name="${store.Name}"
-                               data-store-address="${store.Address}">
-                                <div class="store-info">
-                                    <h5>${store.Name}</h5>
-                                    <p>${store.Address}</p>
-                                    ${store.Distance ? `<p>Khoảng cách: ${store.Distance.toFixed(2)} km</p>` : ''}
-                                </div>
-                            </a>
-                        </div>
-                        <hr class="store-divider">
-                    `);
+                                        <div class="store-card">
+                                            <a href="#" class="select-store"
+                                               data-store-id="${store.Id}"
+                                               data-store-name="${store.Name}"
+                                               data-store-address="${store.Address}">
+                                                <div class="store-info">
+                                                    <h5>${store.Name}</h5>
+                                                    <p>${store.Address}</p>
+                                                            ${distanceInfo}
+                                                            ${shippingInfo}
+                                                </div>
+                                            </a>
+                                        </div>
+                                        <hr class="store-divider">
+                                    `);
                         storeList.append(storeCard);
-                    }); function displayStores(stores) {
-                        var storeList = $('#store-list');
-                        storeList.empty();
-
-                        console.log('Displaying stores:', stores);
-
-                        if (!stores || stores.length === 0) {
-                            storeList.html('<p>Không tìm thấy cửa hàng nào gần đây.</p>');
-                            return;
-                        }
-
-                        stores.forEach(function (store) {
-                            // Check if all required data exists
-                            if (!store.Id || !store.Name || !store.Address) {
-                                console.error('Invalid store data:', store);
-                                return;
-                            }
-
-                            var storeCard = $(`
-                    <div class="store-card">
-                        <a href="#" class="select-store"
-                           data-store-id="${store.Id}"
-                           data-store-name="${store.Name}"
-                           data-store-address="${store.Address}">
-                            <div class="store-info">
-                                <h5>${store.Name}</h5>
-                                <p>${store.Address}</p>
-                                ${typeof store.Distance !== 'undefined' ?
-                                    `<p>Khoảng cách: ${Number(store.Distance).toFixed(2)} km</p>` : ''}
-                            </div>
-                        </a>
-                    </div>
-                    <hr class="store-divider">
-                `);
-                            storeList.append(storeCard);
-                        });
-                    }
+                    });
                 }
+                // Tự động tìm cửa hàng khi chọn ward
+                //$('#ward').change(function () {
+                //    if ($(this).val()) {
+                //        getNearbystores();
+                //    }
+                //});
 
+                // Hàm format tiền tệ
+                function formatCurrency(amount) {
+                    return new Intl.NumberFormat('vi-VN').format(amount);
+                }
                 // Nút tìm cửa hàng
                 $('#find-stores').click(function () {
                     getNearbystores();
                 });
+                // Khi người dùng chọn cửa hàng
+                $(document).on('click', '.select-store', function (e) {
+                    e.preventDefault();
+
+                    var storeId = $(this).data('store-id');
+                    var storeName = $(this).data('store-name');
+                    var storeAddress = $(this).data('store-address');
+                    var shippingFee = $(this).data('shipping-fee');
+
+                    // Cập nhật UI
+                $('#selected-store-info').html(`
+                  <div class="store-details">
+                 <h4>${storeName}</h4>
+                  <p>${storeAddress}</p>
+                 </div>
+                 `);
+
+                    // Gửi AJAX để lưu store đã chọn
+                    $.ajax({
+                        url: '/Products/SelectStore',
+                        type: 'POST',
+                        data: { storeId: storeId },
+                        success: function (response) {
+                            if (response.success) {
+                                $('#storeModal').modal('hide');
+                                // Reload trang để cập nhật danh sách sản phẩm
+                                window.location.href = '/Products/Index?storeId=' + storeId;
+                            } else {
+                                alert('Có lỗi xảy ra khi chọn cửa hàng');
+                            }
+                        },
+                        error: function (xhr, status, error) {
+                            console.error("Error selecting store:", error);
+                            alert('Có lỗi xảy ra khi chọn cửa hàng');
+                        }
+                    });
+                });
+
                 $(document).ready(function () {
                     console.log('Store finder initialized');
                     // Test if selectors are working
@@ -571,6 +554,24 @@
                     console.log('District select exists:', $('#district').length > 0);
                     console.log('Ward select exists:', $('#ward').length > 0);
                 });
+                // Validate address
+                function validateAddress() {
+                    return $('#province').val() &&
+                        $('#district').val() &&
+                        $('#ward').val() && $('#addressLine').val();
+                }
+
+                function getFullAddress() {
+                    var ward = $('#ward option:selected').text();
+                    var district = $('#district option:selected').text();
+                    var province = $('#province option:selected').text();
+                    var addressLine = $('#addressLine').text();
+                    return `${ward}, ${district}, ${province},${addressLine}, Vietnam`;
+                }
+
+
+               
+              
             });
 
         </script>

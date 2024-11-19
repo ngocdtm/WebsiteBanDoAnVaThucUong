@@ -29,7 +29,7 @@ namespace WebsiteBanDoAnVaThucUong.Areas.Admin.Controllers
             ViewBag.Page = page;
             return View(items);
         }
-
+       
         public ActionResult Add()
         {
             // Load dữ liệu cho các dropdown ngay từ đầu
@@ -105,7 +105,7 @@ namespace WebsiteBanDoAnVaThucUong.Areas.Admin.Controllers
                                .Select(c => new { c.Id, c.Title })
                                .ToList();
             return Json(categories, JsonRequestBehavior.AllowGet);
-
+ 
         }
 
         private void LoadDropDownLists(Product model)
@@ -174,7 +174,7 @@ namespace WebsiteBanDoAnVaThucUong.Areas.Admin.Controllers
                     model.SelectedExtraIds);
             }
         }
-
+       
         public JsonResult GetToppings()
         {
             var toppings = db.Topping.Select(t => new
@@ -276,7 +276,7 @@ namespace WebsiteBanDoAnVaThucUong.Areas.Admin.Controllers
             }
         }
 
-
+       
         private void ProcessProductImages(Product model, List<string> images, int defaultImageIndex)
         {
             for (int i = 0; i < images.Count; i++)
@@ -394,7 +394,7 @@ namespace WebsiteBanDoAnVaThucUong.Areas.Admin.Controllers
                         {
                             ProcessBeverageToppingsAndSizes(existingProduct.Id, model.SelectedToppingIds, model.SelectedSizeIds);
                         }
-
+                    
                         db.SaveChanges();
                         transaction.Commit();
                         return RedirectToAction("Index");

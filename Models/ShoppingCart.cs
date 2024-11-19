@@ -9,11 +9,13 @@ namespace WebsiteBanDoAnVaThucUong.Models
     public class ShoppingCart
     {
         public List<ShoppingCartItem> Items { get; set; }
+        public decimal ShippingFee { get; set; }
         public int StoreId { get; set; }
         public ShoppingCart()
         {
             this.Items = new List<ShoppingCartItem>();
-
+            this.ShippingFee = 0;
+           
         }
         // Add validation method
         public bool IsValidForCheckout()
@@ -189,7 +191,7 @@ namespace WebsiteBanDoAnVaThucUong.Models
         {
             return Items.Sum(x => x.DiscountAmount);
         }
-
+   
     }
 
     public class ShoppingCartItem
@@ -206,6 +208,7 @@ namespace WebsiteBanDoAnVaThucUong.Models
         public decimal TotalPrice { get; set; }
         public decimal OriginalPrice { get; set; }
         public bool IsGift { get; set; }
+        public decimal ShippingFee { get; set; }
         // Add these new properties for beverage customizations
         public string IceLevel { get; set; }
         public string SweetnessLevel { get; set; }
@@ -238,7 +241,7 @@ namespace WebsiteBanDoAnVaThucUong.Models
         public List<int> SelectedSizeIds { get; set; }
         public List<int> SelectedExtraIds { get; set; }
 
-
+       
 
         // Related entity collections
         public List<ProductTopping> ProductToppings { get; set; }
@@ -255,7 +258,7 @@ namespace WebsiteBanDoAnVaThucUong.Models
             ProductSizes = new List<ProductSize>();
             ProductExtras = new List<ProductExtra>();
             // Initialize new properties
-
+        
 
         }
         // Helper properties for display
@@ -338,7 +341,7 @@ namespace WebsiteBanDoAnVaThucUong.Models
         }
 
     }
+        
 
-
-
+      
 }

@@ -298,20 +298,22 @@ namespace WebsiteBanDoAnVaThucUong.Controllers
         }
 
         [HttpPost]
-        public JsonResult SelectStore(int storeId)
+        public ActionResult SelectStore(int storeId, string province, string district, string ward)
         {
-            try
+            // Lưu địa chỉ đã chọn của khách hàng vào session
+            Session["CustomerAddress"] = new Address
             {
-                Session["SelectedStoreId"] = storeId;
-                var store = db.Stores.Find(storeId);
-                return Json(new { success = true, storeName = store.Name });
-            }
-            catch (Exception ex)
-            {
-                return Json(new { success = false, message = ex.Message });
-            }
-        }
+                ProvinceName = province,
+                DistrictName = district,
+                WardName = ward
+            };
 
+            // Lưu thông tin cửa hàng đã chọn vào session
+            Session["SelectedStoreId"] = storeId;
+
+            // Trả về kết quả thành công
+            return Json(new { success = true });
+        }
         public ActionResult Partial_ProductSales()
         {
             var products = db.Products.Where(x => x.IsActive).ToList();

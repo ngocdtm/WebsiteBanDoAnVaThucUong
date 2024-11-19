@@ -947,7 +947,7 @@ section
 }
 .new_arrivals_title
 {
-	margin-top: 74px;
+	margin-top: 30px;
 }
 
 /*********************************
@@ -1048,11 +1048,11 @@ section
 {
 	width: 100%;
 }
-.product_info
-{
+.product_info {
 	text-align: center;
 	padding-left: 10px;
 	padding-right: 10px;
+	padding-bottom: 10px; /* Điều chỉnh khoảng cách dưới */
 }
 .product_name
 {
@@ -1077,6 +1077,7 @@ section
 	color: #fe4c50;
 	font-weight: 600;
 }
+
 .product_price span
 {
 	font-size: 12px;

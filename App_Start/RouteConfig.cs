@@ -113,7 +113,7 @@ namespace WebsiteBanDoAnVaThucUong
                 defaults: new { controller = "Addresses", action = "GetWards" }
             );
 
-
+         
         }
     }
 }

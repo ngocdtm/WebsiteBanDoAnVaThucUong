@@ -14,7 +14,7 @@ namespace WebsiteBanDoAnVaThucUong.Models
     {
         public bool Status { get; set; }
         public string FullName { get; set; }
-        public string Phone { get; set; }
+        public string Phone {  get; set; }
         public string Address { get; set; }
         public virtual ICollection<New> News { get; set; }
         public virtual ICollection<Wishlist> Wishlists { get; set; }
@@ -110,13 +110,13 @@ namespace WebsiteBanDoAnVaThucUong.Models
           .HasForeignKey(s => s.AddressId)
           .WillCascadeOnDelete(false);
 
-            modelBuilder.Entity<Address>()
-      .Property(a => a.Latitude)
-      .HasPrecision(18, 9);
+                modelBuilder.Entity<Address>()
+          .Property(a => a.Latitude)
+          .HasPrecision(18, 9);
 
-            modelBuilder.Entity<Address>()
-                .Property(a => a.Longitude)
-                .HasPrecision(18, 9);
+                modelBuilder.Entity<Address>()
+                    .Property(a => a.Longitude)
+                    .HasPrecision(18, 9);
 
             modelBuilder.Entity<Address>()
                 .HasIndex(a => new { a.ProvinceId, a.DistrictId, a.WardId });
@@ -144,8 +144,8 @@ namespace WebsiteBanDoAnVaThucUong.Models
         public DbSet<Contact> Contacts { get; set; }
         public DbSet<Order> Orders { get; set; }
         public DbSet<OrderDetail> OrderDetails { get; set; }
-        public DbSet<Subscribe> Subscribe { get; set; }
-        public DbSet<StoreProduct> StoreProducts { get; set; }
+        public DbSet <Subscribe> Subscribe { get; set; }
+        public DbSet <StoreProduct> StoreProducts { get; set; }
         public DbSet<ProductViewHistory> ProductViewHistory { get; set; }
         public DbSet<MemberRank> MemberRanks { get; set; }
         public DbSet<Combo> Combo { get; set; }
@@ -158,11 +158,12 @@ namespace WebsiteBanDoAnVaThucUong.Models
         public DbSet<ProductTopping> ProductTopping { get; set; }
         public DbSet<ProductType> ProductType { get; set; }
         public DbSet<Address> Addresses { get; set; }
+        public DbSet<ShippingFee> ShippingFee { get; set; }
 
         public static ApplicationDbContext Create()
         {
             return new ApplicationDbContext();
         }
-
+     
     }
 }

@@ -53,8 +53,7 @@
                 id: id, quantity: quantity, storeId: storeId,
                 sizeId: sizeId,
                 toppingIds: toppingIds,
-                extraIds: extraIds
-            },
+                extraIds: extraIds },
             success: function (rs) {
                 if (rs.Success) {
                     $('#checkout_items').html(rs.Count);
@@ -103,7 +102,7 @@
         e.preventDefault();
         var id = $(this).data('id');
         var storeId = $(this).data('storeid') || $('#store_id_hidden').val(); // Thử lấy từ nút bấm hoặc input hidden
-
+       
         // Lấy thông tin về size, toppings và extras từ item
         var sizeIds = $(this).data('sizeids') ? $(this).data('sizeids').toString().split(',').map(Number) : [];
         var toppingIds = $(this).data('toppingids') ? $(this).data('toppingids').toString().split(',').map(Number) : [];

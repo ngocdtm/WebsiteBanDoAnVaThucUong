@@ -15,6 +15,7 @@ namespace WebsiteBanDoAnVaThucUong.Models.EF
         public double Lat { get; set; }
         public string Image { get; set; }
         public string Alias { get; set; }
+        public decimal ShippingFee {  get; set; }
     }
 
 }

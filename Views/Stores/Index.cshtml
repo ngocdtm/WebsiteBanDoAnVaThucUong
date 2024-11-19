@@ -4,7 +4,7 @@
     ViewBag.Title = "Index";
 }
 
-<div style="margin: 10px auto; width: 90%;">
+<div style="margin: 10px auto; width: 90%; padding-top:50px">
 
     <div class="row">
         <div class="col text-center">
@@ -53,9 +53,18 @@
 <script src="~/lib/leaf/leaflet.min.js"></script>
 <link href="~/lib/leaf/leaflet.min.css" rel="stylesheet" />
 <link href="~/lib/leaf/leaflet.css" rel="stylesheet" />
-<div id="map" style="width:100%;height:400px"></div>
+<div style="width: 90%;margin: 0 auto">
+    <div id="map" style="width:100%;height:400px"></div>
+</div>
 <script>
-    var map = L.map('map').setView([10.902522935042768, 106.5834090763168], 8);
+    var map = L.map('map', {
+        maxBounds: L.latLngBounds(
+            L.latLng(10.5, 106.0),  // Góc dưới trái
+            L.latLng(11.5, 107.0)   // Góc trên phải
+        ),
+        maxBoundsViscosity: 1.0  // Độ đàn hồi của giới hạn
+    }).setView([10.902522935042768, 106.5834090763168], 8);
+
     L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(map);
@@ -88,4 +97,41 @@
         }
 
     }
+    map.dragging.disable();  // Tắt kéo bản đồ mặc định
+
+    map.on('keydown', function (event) {
+        if (event.originalEvent.ctrlKey) {
+            map.dragging.enable();  // Bật kéo khi giữ Ctrl
+        }
+    });
+
+    map.on('keyup', function (event) {
+        if (!event.originalEvent.ctrlKey) {
+            map.dragging.disable();  // Tắt kéo khi thả Ctrl
+        }
+    });
+
 </script>
+<style>
+    header {
+        position: relative;
+        z-index: 10; /* Giá trị lớn hơn của bản đồ */
+    }
+
+    #map {
+        position: relative;
+        z-index: 1;
+    }
+    .map-container {
+        overflow: hidden;
+        position: relative;
+    }
+
+    #map{
+        max-width: 100%;
+        width: 100%;
+        height: 400px;
+        margin: 0 auto;/*center the map*/
+        overflow: hidden;
+    }
+</style>

@@ -14,3 +14,4 @@ namespace WebsiteBanDoAnVaThucUong.Models.ViewModels
         public string NextRank { get; set; }
     }
 }
+

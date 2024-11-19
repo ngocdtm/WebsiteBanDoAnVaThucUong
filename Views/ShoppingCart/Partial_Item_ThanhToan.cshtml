@@ -3,13 +3,15 @@
 
 @if (Model != null && Model.Any())
 {
-    <h3>GIỎ HÀNG <span style="float:right;position:relative"><small>@*@Model.Count()*@</small></span></h3>
+    <h3>GIỎ HÀNG <span style="float:right;position:relative"><small></small></span></h3>
 
     var i = 0;
     var tongtien = decimal.Zero;
     var tongsl = 0;
     var soluong = 0;
     var thanhtien = decimal.Zero;
+    var shippingFee = ViewBag.ShippingFee ?? 0m;
+
     <div style="border:1px solid #808080; width:470px; height:600px">
         <table class="table">
             <tr>
@@ -19,8 +21,7 @@
                 <th style="width:100px;">Giá</th>
                 <th style="width:100px;">Số lượng</th>
                 <th style="width:100px;">Thành tiền</th>
-                <td style="width:200px;">
-                </td>
+                <td style="width:200px;"></td>
             </tr>
             @foreach (var item in Model)
             {
@@ -32,45 +33,51 @@
                     <td></td>
                     <td>@item.ProductName @item.FormattedSizeNames</td>
                     <td>@item.FormattedToppingNames @item.FormattedExtraNames</td>
-                    <td>@Common.FormatNumber(item.Price, 0)</td>
+                    <td>
+                        @if (item.IsGift)
+                        {
+                            <del>@Common.FormatNumber(item.OriginalPrice, 0)</del>
+                            <span>0đ</span>
+                        }
+                        else if (item.DiscountAmount > 0)
+                        {
+                            <del>@Common.FormatNumber(item.Price, 0)</del><br />
+                            <span class="text-danger">@Common.FormatNumber(item.Price - (item.DiscountAmount / item.Quantity), 0)</span>
+                        }
+                        else
+                        {
+                            @Common.FormatNumber(item.Price, 0)
+                        }
+                    </td>
                     <td>@soluong</td>
                     <td>@Common.FormatNumber(thanhtien, 0)</td>
                 </tr>
             }
             <tr>
                 <td>Tổng số lượng</td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
+                <td colspan="4"></td>
                 <td>@tongsl</td>
             </tr>
             <tr id="originalTotalRow">
                 <td>Tổng tiền</td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
+                <td colspan="4"></td>
                 <td id="originalTotal">@Common.FormatNumber(tongtien, 0)</td>
+            </tr>
+            <tr id="shippingFeeRow">
+                <td>Phí vận chuyển</td>
+                <td colspan="4"></td>
+                <td id="shippingFee">@Common.FormatNumber(shippingFee, 0)</td>
             </tr>
             <tr id="discountRow" style="display:none;">
                 <td>Giảm giá</td>
-                <td></td>
-                <td></td>
+                <td colspan="4"></td>
                 <td id="discountAmount"></td>
             </tr>
             <tr id="newTotalRow" style="display:none;">
-                <td>Tổng tiền sau giảm giá</td>
-                <td></td>
-                <td></td>
-                <td id="newTotal"></td>
+                <td>Tổng thanh toán</td>
+                <td colspan="4"></td>
+                <td id="finalTotal">@Common.FormatNumber(tongtien + shippingFee, 0)</td>
             </tr>
-
         </table>
     </div>
-
-}
-else
-{
-
 }

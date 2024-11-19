@@ -24,7 +24,7 @@ namespace WebsiteBanDoAnVaThucUong.Controllers
         {
             _httpClient = new HttpClient();
             _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            _httpClient.BaseAddress = new Uri("https://provinces.open-api.vn/api/ depth==2");
+            _httpClient.BaseAddress = new Uri("https://provinces.open-api.vn/api/?depth=2");
         }
 
         [HttpGet]
@@ -82,7 +82,20 @@ namespace WebsiteBanDoAnVaThucUong.Controllers
                 return Json(new { error = ex.Message }, JsonRequestBehavior.AllowGet);
             }
         }
+        [HttpPost]
+        public ActionResult SaveCustomerAddress(string province, string district, string ward, string addressLine)
+        {
+            // Save the customer address to the session
+            Session["CustomerAddress"] = new Address
+            {
+                ProvinceName = province,
+                DistrictName = district,
+                WardName = ward,
+                StreetAddress = addressLine
+            };
 
+            return Json(new { success = true });
+        }
         protected override void Dispose(bool disposing)
         {
             if (disposing)

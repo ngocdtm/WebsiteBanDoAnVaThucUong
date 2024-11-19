@@ -7,7 +7,7 @@ using System.Web;
 
 namespace WebsiteBanDoAnVaThucUong.Models.EF
 {
-
+  
     // Combo (Set đồ ăn kèm nước)
     [Table("Combo")]
     public class Combo

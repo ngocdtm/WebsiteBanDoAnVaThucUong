@@ -26,6 +26,7 @@ namespace WebsiteBanDoAnVaThucUong.Models.EF
         public decimal Subtotal { get; set; }
         public decimal DiscountAmount { get; set; }
         public decimal FinalAmount { get; set; }
+        public bool IsGift { get; set; }
         public virtual Order Orders { get; set; }
         public virtual Product Products { get; set; }
         // Thông tin về size, topping, extra
