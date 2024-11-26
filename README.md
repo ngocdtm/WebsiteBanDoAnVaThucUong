@@ -6,7 +6,7 @@ Tổng quan trang user: ![image](https://github.com/user-attachments/assets/736f
 
 Tổng quan trang admin: ![image](https://github.com/user-attachments/assets/aa94f261-98dd-45d8-8b64-758eee17976f)
 
-Công nghệ sử dụng: Asp.net c# trên visual studio
+Công nghệ sử dụng: Asp.net c# trên visual studio và hệ quản trị: sql server
 1) Copy web URL của project
 ![image](https://github.com/user-attachments/assets/0bcbbdc7-e6eb-41be-9f82-2872cba981c7)
 
