@@ -7,6 +7,7 @@ Tổng quan trang admin: ![image](https://github.com/user-attachments/assets/aa9
 
 Mật khẩu test trên hosting của admin như sau: UserName: admin và Password: Admin*123
 
+Công nghệ sử dụng: Asp.net c# trên visual studio
 1) Copy web URL của project
 ![image](https://github.com/user-attachments/assets/0bcbbdc7-e6eb-41be-9f82-2872cba981c7)
 
